@@ -1,0 +1,41 @@
+<idea-plugin>
+    <id>com.cherryleafroad.rust.playground</id>
+    <name>Rust Playground</name>
+    <vendor>Cherryleafroad</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.rust.lang</depends>
+
+    <description>Use a local Rust playground straight from your IDE!</description>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.RustScratchCreationHelper"/>
+        <fileDocumentManagerListener implementation="com.cherryleafroad.rust.playground.listeners.FileListener"/>
+
+        <projectConfigurable instance="com.cherryleafroad.rust.playground.config.SettingsConfigurable" id="Rust.Playground.Settings"
+                             displayName="Playground" nonDefaultProject="true" groupId="language" parentId="language.rust"/>
+
+        <notificationGroup id="Rust Playground" displayType="BALLOON" key="Rust.Playground.ProjectNotifications"/>
+        <editorNotificationProvider implementation="com.cherryleafroad.rust.playground.notifications.CargoPlayNotInstalledNotificationProvider"/>
+    </extensions>
+
+    <applicationListeners>
+        <listener class="com.cherryleafroad.rust.playground.listeners.ProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </applicationListeners>
+
+    <actions>
+        <action id="Rust.Playground.Run" class="com.cherryleafroad.rust.playground.actions.RunAction"
+                text="Run in Playground" description="Runs the currently open scratch file in Rust Playground"
+                icon="AllIcons.Actions.Execute">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl COMMA"/>
+            <add-to-group group-id="Rust.Tools" anchor="last"/>
+        </action>
+
+        <group id="Rust.Playground.RunMenu" class="com.cherryleafroad.rust.playground.actions.PlaygroundGroup">
+            <reference id="Rust.Playground.Run"/>
+            <add-to-group group-id="RunMenu" anchor="before" relative-to-action="ChooseRunConfiguration"/>
+            <separator/>
+        </group>
+    </actions>
+</idea-plugin>
