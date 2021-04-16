@@ -45,13 +45,13 @@ These must be separated by commas,
 Example `//@ edition 2015, mode build`  
 Options **MUST** come last after flags
 
-| Short | Long         | Parameters                          | What it does             |
-| ----- | ------------ | --------------------                | ------------------------ |
-|       | cargo-option | Any cargo options                   | Sets cargo options       |
-| e     | edition      | 2015, 2018                          | Changes rust edition     |
-| m     | mode         | Any cargo subcommand                | Changes cargo subcommand |
-|       | toolchain    | DEFAULT, STABLE, BETA, NIGHTLY, DEV | Changes playground toolchain for this file (you can also specify default toolchain for all files in playground settings |
-|       | src          | Any .rs file                        | Compiles additional .rs files with your open scratch. CWD is the scratch dir, so you can reference multiple scratches easily |
+| Short | Long         | Parameters                          |
+| ----- | ------------ | --------------------                |
+|       | cargo-option | Any cargo options                   |
+| e     | edition      | 2015, 2018                          |
+| m     | mode         | Any cargo subcommand                |
+|       | toolchain    | DEFAULT, STABLE, BETA, NIGHTLY, DEV |
+|       | src          | Any .rs files                       |
 
 
 Examples  
