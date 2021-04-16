@@ -55,6 +55,7 @@ object Helpers {
 
         var toolchain = Settings.getSelectedToolchain()
 
+        var parsedPlayArgs = false
         if (lines.isNotEmpty()) {
             val first = lines[0]
             val second = lines.getOrNull(1)
@@ -64,12 +65,18 @@ object Helpers {
                     parseArgs(args, first)
                 } else if (first.startsWith("//@ ")) {
                     toolchain = parsePlayArgs(playArgs, src, first)
+                    parsedPlayArgs = true
                 }
             }
 
             if (second != null && second.startsWith("//$ ")) {
                 parseArgs(args, second)
             }
+        }
+
+        if (!parsedPlayArgs) {
+            // so we can setup default args that don't require anything
+            toolchain = parsePlayArgs(playArgs, src, "")
         }
 
         val files = mutableListOf(filename)
@@ -101,7 +108,11 @@ object Helpers {
             "DEFAULT", "STABLE", "BETA", "NIGHTLY", "DEV"
         )
 
-        val newLine = line.substring(4, line.length)
+        val newLine = if (line.length > 4) {
+            line.substring(4, line.length)
+        } else {
+            ""
+        }
 
         val firstComma = newLine.indexOf(',')
         val split: MutableList<String>

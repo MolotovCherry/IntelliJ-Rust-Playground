@@ -5,6 +5,7 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.rust.lang</depends>
+    <depends>org.toml.lang</depends>
 
     <description>Use a local Rust playground straight from your IDE!</description>
 
