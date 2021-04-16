@@ -15,7 +15,7 @@
         <projectConfigurable instance="com.cherryleafroad.rust.playground.config.SettingsConfigurable" id="Rust.Playground.Settings"
                              displayName="Playground" nonDefaultProject="true" groupId="language" parentId="language.rust"/>
 
-        <notificationGroup id="Rust Playground" displayType="BALLOON" key="Rust.Playground.ProjectNotifications"/>
+        <notificationGroup id="Rust Playground" displayType="BALLOON"/>
         <editorNotificationProvider implementation="com.cherryleafroad.rust.playground.notifications.CargoPlayNotInstalledNotificationProvider"/>
     </extensions>
 
