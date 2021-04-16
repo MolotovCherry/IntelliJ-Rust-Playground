@@ -21,7 +21,7 @@ An IntelliJ plugin allowing you to use a similar playground experience just like
 
 Case doesn't matter in options or option arguments, except for short flags which are case-sensitive
 
-###`//@` flags
+### `//@` flags
 These are separated by spaces,  
 Example `//@ i q release`  
 Flags **MUST** precede options
@@ -40,7 +40,7 @@ Flags **MUST** precede options
 Examples  
 `//@ c i q release`
 
-###`//@` options
+### `//@` options
 These must be separated by commas,  
 Example `//@ edition 2015, mode build`  
 Options **MUST** come last after flags
@@ -57,13 +57,13 @@ Options **MUST** come last after flags
 Examples  
 `//@ cargo-option --verbose --color=auto, e 2015, m build, src scratch_2.rs scratch_3.rs`
 
-###`//$` usage
+### `//$` usage
 Example `//$ --my prog args`
 
 Of course, you can combine both flags and options together. Just space separate flags, then use a comma between options  
 `//@ quiet release, edition 2015, mode build`
 
-###`//#` usage
+### `//#` usage
 This is part of cargo-play itself. This is used to add build-dependencies. It accepts any valid Cargo-TOML syntax. This MUST be after the `//@` and `//$` configuration lines.  
 Example `//# serde_json = "*"`
 
