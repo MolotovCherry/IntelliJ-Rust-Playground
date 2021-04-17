@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.cherryleafroad.rust.playground</id>
     <name>Rust Playground</name>
-    <vendor>Cherryleafroad</vendor>
+    <vendor url="https://github.com/cherryleafroad/intellij-rust-playground/" email="cherryleafroad.software@gmail.com">Cherryleafroad</vendor>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>org.rust.lang</depends>
