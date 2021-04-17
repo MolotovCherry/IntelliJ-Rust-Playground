@@ -73,10 +73,15 @@ object Helpers {
                 }
 
                 lines.removeAt(0)
+            } else if (first == "//@" || first == "//$") {
+                // while these are not complete lines, we'll remove them anyways
+                lines.removeAt(0)
             }
 
             if (second != null && second.startsWith("//$ ")) {
                 parseArgs(args, second)
+                lines.removeAt(0)
+            } else if (second != null && second == "//$") {
                 lines.removeAt(0)
             }
         }
