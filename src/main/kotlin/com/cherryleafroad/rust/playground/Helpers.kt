@@ -7,9 +7,13 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
+import org.apache.commons.io.IOUtils
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.toolchain.RustChannel
 import org.rust.cargo.toolchain.tools.cargo
+import java.io.FileOutputStream
+import java.nio.charset.Charset
+import java.nio.file.Paths
 
 object Helpers {
     fun checkCargoPlayInstalled(project: Project): Boolean {
@@ -47,7 +51,7 @@ object Helpers {
 
     // <Path to saved files, Pair<playArgs, args>, toolchain>
     fun parseScratch(filename: String, content: String): Pair<List<String>, RustChannel> {
-        val lines = content.lines()
+        val lines = content.lines().toMutableList()
 
         val args = mutableListOf<String>()
         val playArgs = mutableListOf<String>()
@@ -67,10 +71,13 @@ object Helpers {
                     toolchain = parsePlayArgs(playArgs, src, first)
                     parsedPlayArgs = true
                 }
+
+                lines.removeAt(0)
             }
 
             if (second != null && second.startsWith("//$ ")) {
                 parseArgs(args, second)
+                lines.removeAt(0)
             }
         }
 
@@ -79,7 +86,12 @@ object Helpers {
             toolchain = parsePlayArgs(playArgs, src, "")
         }
 
-        val files = mutableListOf(filename)
+        val tmpfile = Paths.get(System.getProperty("java.io.tmpdir"), filename).toString()
+        val outStream = FileOutputStream(tmpfile)
+        IOUtils.write(lines.joinToString(System.lineSeparator()), outStream, Charset.defaultCharset())
+        outStream.close()
+
+        val files = mutableListOf(tmpfile)
         files.addAll(src)
 
         val finalArgs = mutableListOf<String>()
