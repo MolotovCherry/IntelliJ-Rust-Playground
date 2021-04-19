@@ -1,6 +1,4 @@
 import io.gitlab.arturbosch.detekt.Detekt
-import org.jetbrains.changelog.closure
-import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun properties(key: String) = project.findProperty(key).toString()
@@ -31,6 +29,8 @@ repositories {
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.16.0")
     implementation(kotlin("stdlib-jdk8"))
+    compile("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+    compile("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.4.3")
 }
 
 // Configure gradle-intellij-plugin plugin.

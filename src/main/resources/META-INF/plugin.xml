@@ -29,7 +29,6 @@
         <action id="Rust.Playground.Run" class="com.cherryleafroad.rust.playground.actions.RunAction"
                 text="Run in Playground" description="Runs the currently open scratch file in Rust Playground"
                 icon="AllIcons.Actions.Execute">
-            <keyboard-shortcut keymap="$default" first-keystroke="ctrl COMMA"/>
             <add-to-group group-id="Rust.Tools" anchor="last"/>
         </action>
 
