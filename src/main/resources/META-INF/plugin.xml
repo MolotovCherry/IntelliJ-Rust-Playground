@@ -10,7 +10,7 @@
     <description>Use a local Rust playground straight from your IDE!</description>
 
     <extensions defaultExtensionNs="com.intellij">
-        <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.RustScratchCreationHelper"/>
+        <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.scratch.RustScratchCreationHelper"/>
         <fileDocumentManagerListener implementation="com.cherryleafroad.rust.playground.listeners.FileListener"/>
 
         <projectConfigurable instance="com.cherryleafroad.rust.playground.config.SettingsConfigurable" id="Rust.Playground.Settings"
@@ -18,6 +18,8 @@
 
         <notificationGroup id="Rust Playground" displayType="BALLOON"/>
         <editorNotificationProvider implementation="com.cherryleafroad.rust.playground.notifications.CargoPlayNotInstalledNotificationProvider"/>
+
+        <fileEditorProvider implementation="com.cherryleafroad.rust.playground.scratch.ui.RustScratchFileEditorProvider"/>
     </extensions>
 
     <applicationListeners>
@@ -26,10 +28,11 @@
     </applicationListeners>
 
     <actions>
-        <action id="Rust.Playground.Run" class="com.cherryleafroad.rust.playground.actions.RunAction"
-                text="Run in Playground" description="Runs the currently open scratch file in Rust Playground"
+        <action id="Rust.Playground.Run" class="com.cherryleafroad.rust.playground.actions.ExecuteAction"
+                text="Run in Playground" description="Run scratch in Rust Playground"
                 icon="AllIcons.Actions.Execute">
-            <add-to-group group-id="Rust.Tools" anchor="last"/>
+            <keyboard-shortcut first-keystroke="control alt COMMA" keymap="$default"/>
+            <add-to-group group-id="RunContextPopupGroup" anchor="last"/>
         </action>
 
         <group id="Rust.Playground.RunMenu" class="com.cherryleafroad.rust.playground.actions.PlaygroundGroup">
