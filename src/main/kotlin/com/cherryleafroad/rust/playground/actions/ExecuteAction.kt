@@ -2,13 +2,13 @@ package com.cherryleafroad.rust.playground.actions
 
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
 
-class ExecuteAction : AnAction() {
+class ExecuteAction : DumbAwareAction() {
     override fun actionPerformed(e: AnActionEvent) {
         ActionTools.actionPerformed(e)
     }

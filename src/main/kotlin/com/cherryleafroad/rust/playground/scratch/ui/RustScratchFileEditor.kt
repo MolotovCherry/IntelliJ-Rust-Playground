@@ -40,6 +40,8 @@ class RustScratchFileEditor(
             add(TestCheckBoxAction(file))
             addSeparator()
             add(VerboseCheckBoxAction(file))
+            addSeparator()
+            add(OnlyRunCheckBoxAction(file))
         }
     }
 
@@ -49,6 +51,25 @@ class RustScratchFileEditor(
             addSeparator()
             add(EditionComboBoxAction(file, updateToolbar))
         }
+    }
+}
+
+class OnlyRunCheckBoxAction(
+    val file: VirtualFile
+) : SmallBorderCheckboxAction("Only Run Window", "Only use the run window (don't compile in build window)") {
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
+
+    init {
+        // reset to default
+        properties.setValue("userun/${file.path}", false)
+    }
+
+    override fun isSelected(e: AnActionEvent): Boolean {
+        return properties.getBoolean("userun/${file.path}")
+    }
+
+    override fun setSelected(e: AnActionEvent, state: Boolean) {
+        properties.setValue("userun/${file.path}", state)
     }
 }
 
