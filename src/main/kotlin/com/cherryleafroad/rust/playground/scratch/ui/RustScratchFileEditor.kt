@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.vfs.VirtualFile
 import org.rust.cargo.toolchain.RustChannel
+import java.awt.event.KeyEvent
 
 class RustScratchFileEditor(
     val project: Project,
@@ -29,6 +30,7 @@ class RustScratchFileEditor(
             add(CheckCheckBoxAction(file))
             addSeparator()
             add(CleanCheckBoxAction(file))
+            addSeparator()
             add(ExpandCheckBoxAction(file))
             addSeparator()
             add(InferCheckBoxAction(file))
@@ -50,7 +52,59 @@ class RustScratchFileEditor(
             add(ToolchainComboBoxAction(file, updateToolbar))
             addSeparator()
             add(EditionComboBoxAction(file, updateToolbar))
+            addSeparator()
+            add(SrcTextField(file))
+            addSeparator()
+            add(ArgsTextField(file))
+            addSeparator()
+            add(ModeTextField(file))
+            addSeparator()
+            add(CargoOptionTextField(file))
         }
+    }
+}
+
+class ArgsTextField(
+    val file: VirtualFile
+) : LabeledTextEditAction("Args", "Aguments to pass along to program") {
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
+    override val textfieldLength: Int =  100
+
+    override fun keyEntered(e: KeyEvent) {
+        properties.setValue("args/${file.path}", enteredText)
+    }
+}
+
+class SrcTextField(
+    val file: VirtualFile
+) : LabeledTextEditAction("Src", "Any additional Rust files to include in the build") {
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
+    override val textfieldLength: Int =  100
+
+    override fun keyEntered(e: KeyEvent) {
+        properties.setValue("src/${file.path}", enteredText)
+    }
+}
+
+class CargoOptionTextField(
+    val file: VirtualFile
+) : LabeledTextEditAction("Cargo Option", "Customize flags passing to Cargo") {
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
+    override val textfieldLength: Int =  100
+
+    override fun keyEntered(e: KeyEvent) {
+        properties.setValue("cargooption/${file.path}", enteredText)
+    }
+}
+
+class ModeTextField(
+    val file: VirtualFile
+) : LabeledTextEditAction("Mode", "Specify subcommand to use when calling Cargo [default: run]") {
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
+    override val textfieldLength: Int =  65
+
+    override fun keyEntered(e: KeyEvent) {
+        properties.setValue("mode/${file.path}", enteredText)
     }
 }
 
