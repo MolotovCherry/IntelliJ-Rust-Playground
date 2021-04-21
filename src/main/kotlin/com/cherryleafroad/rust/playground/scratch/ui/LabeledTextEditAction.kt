@@ -20,18 +20,16 @@ abstract class LabeledTextEditAction(
     private val description: String? = null
 ) : AnAction(label, description, null), CustomComponentAction {
     open val textfieldLength: Int = 100
-    var enteredText: String = ""
+    val textfield = JBTextField()
 
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {
-        val textfield = JBTextField()
-
         textfield.addKeyListener(object : KeyListener {
             override fun keyTyped(e: KeyEvent) {
                 val printable = e.keyChar != '\uFFFF' && e.keyCode != KeyEvent.VK_DELETE
                 if (!printable) return
 
-                enteredText += e.keyChar
-                keyEntered(e)
+                val text = textfield.text + e.keyChar
+                textChanged(text)
             }
 
             override fun keyPressed(e: KeyEvent) {
@@ -40,10 +38,7 @@ abstract class LabeledTextEditAction(
 
             override fun keyReleased(e: KeyEvent) {
                 if (e.keyCode == KeyEvent.VK_BACK_SPACE) {
-                    if (enteredText.isNotEmpty()) {
-                        // slice one last character
-                        enteredText = enteredText.subSequence(0, enteredText.lastIndex).toString()
-                    }
+                    textChanged(textfield.text)
                 }
             }
         })
@@ -73,5 +68,5 @@ abstract class LabeledTextEditAction(
         // nothing
     }
 
-    abstract fun keyEntered(e: KeyEvent)
+    abstract fun textChanged(text: String)
 }

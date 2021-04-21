@@ -1,9 +1,6 @@
 package com.cherryleafroad.rust.playground.scratch.ui
 
-import com.cherryleafroad.rust.playground.actions.CleanAction
-import com.cherryleafroad.rust.playground.actions.ToolbarExecuteAction
 import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorPolicy
 import com.intellij.openapi.fileEditor.FileEditorProvider

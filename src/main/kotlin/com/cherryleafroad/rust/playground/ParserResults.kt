@@ -3,37 +3,42 @@ package com.cherryleafroad.rust.playground
 import com.cherryleafroad.rust.playground.config.Settings
 import org.rust.cargo.toolchain.RustChannel
 
+enum class Edition(val index: Int, val myName: String) {
+    DEFAULT(0, "DEFAULT"),
+    _2015(1, "2015"),
+    _2018(2, "2018");
+
+    companion object {
+        fun fromIndex(index: Int): Edition = values().find { it.index == index } ?: DEFAULT
+    }
+}
+
 data class ParserResults(
-    var check: Boolean = false,
-    var clean: Boolean = false,
-    var expand: Boolean = false,
-    var infer: Boolean = false,
-    var quiet: Boolean = false,
-    var release: Boolean = false,
-    var test: Boolean = false,
-    var verbose: Boolean = false,
-    var toolchain: RustChannel = Settings.getSelectedToolchain(),
+    val check: Boolean = false,
+    val clean: Boolean = false,
+    val expand: Boolean = false,
+    val infer: Boolean = false,
+    val quiet: Boolean = false,
+    val release: Boolean = false,
+    val test: Boolean = false,
+    val verbose: Boolean = false,
+    val toolchain: RustChannel = Settings.getSelectedToolchain(),
 
     val cargoOption: MutableList<String> = mutableListOf(),
-    var edition: String? = null,
-    var mode: String? = null,
+    val edition: Edition = Edition.DEFAULT,
+    val mode: String = "",
 
-    val src: MutableList<String> = mutableListOf(),
-    val args: MutableList<String> = mutableListOf(),
-    val playArgs: MutableList<String> = mutableListOf(),
+    val src: List<String> = listOf(),
+    val args: List<String> = listOf(),
+    val playArgs: List<String> = listOf(),
 
-    var runCmd: MutableList<String> = mutableListOf(),
-    var buildCmd: MutableList<String> = mutableListOf("play"),
-
-    var lineOffset: Int = 0,
-
-    var noMatches: Boolean = false,
-    var skipBuild: Boolean = false,
+    val runCmd: List<String> = listOf(),
+    val buildCmd: List<String> = listOf(""),
 
     // controls whether to use the build screen
-    var runBuild: Boolean = false,
-    var runRun: Boolean = false,
-    var cleanAndRun: Boolean = false,
-    var cleanSingle: Boolean = false,
-    var cleanAndRunCmd: MutableList<String> = mutableListOf("play")
+    val runBuild: Boolean = false,
+    val runRun: Boolean = false,
+    val cleanAndRun: Boolean = false,
+    val cleanSingle: Boolean = false,
+    val cleanAndRunCmd: List<String> = listOf("")
 )

@@ -7,13 +7,19 @@ package com.cherryleafroad.rust.playground.scratch.ui
 
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
+import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.JBUI
 import javax.swing.JComponent
 
 abstract class SmallBorderCheckboxAction(text: String, description: String? = null) : CheckboxAction(text, description, null) {
+    lateinit var checkbox: JBCheckBox
+
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {
-        val checkbox = super.createCustomComponent(presentation, place)
+        checkbox = super.createCustomComponent(presentation, place) as JBCheckBox
         checkbox.border = JBUI.Borders.emptyRight(4)
+        setPreselected(checkbox)
         return checkbox
     }
+
+    open fun setPreselected(checkbox: JBCheckBox) {}
 }

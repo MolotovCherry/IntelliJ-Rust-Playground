@@ -77,7 +77,8 @@ object ActionTools {
             val cwd = doc.toNioPath().parent
             val fileName = doc.name
 
-            val results = Helpers.parseScratch(fileName, code)
+            Helpers.parseOptions(doc)
+            /*val results = Helpers.parseScratch(fileName, code)
 
             // we need our own to patch a bug in the cmd arg processing # see setCmd
             val commandLine = CargoCommandLine(
@@ -135,8 +136,8 @@ object ActionTools {
                     if ((future != null && future!!.succeeded) || results.skipBuild) {
                         commandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
                     }
-                }
-            }
+                }*/
+
 
         } else {
             Helpers.cargoPlayInstallNotification(project)
