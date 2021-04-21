@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground.scratch.ui
 
+import com.cherryleafroad.rust.playground.actions.CleanAction
 import com.cherryleafroad.rust.playground.actions.ToolbarExecuteAction
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -28,17 +29,4 @@ class RustScratchFileEditorProvider : FileEditorProvider, DumbAware {
     override fun getEditorTypeId(): String = RUST_SCRATCH_EDITOR_PROVIDER
 
     override fun getPolicy(): FileEditorPolicy = FileEditorPolicy.HIDE_DEFAULT_EDITOR
-}
-
-class RustScratchFileEditor(
-    project: Project,
-    file: VirtualFile
-) : ToolbarTextEditor(project, file) {
-
-    override fun addActions(toolbarGroup: DefaultActionGroup) {
-        toolbarGroup.apply {
-            add(ToolbarExecuteAction())
-            addSeparator()
-        }
-    }
 }

@@ -18,7 +18,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.UIUtil
-import java.awt.BorderLayout
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.beans.PropertyChangeEvent
@@ -29,12 +28,13 @@ import javax.swing.JPanel
 
 
 /*
- * Just a normal text editor, except with an editor toolbar at the top
+ * Just a normal text editor, but with an editor toolbar at the top
  * for different types of actions
  */
 abstract class ToolbarTextEditor(
     project: Project,
-    private val virtualFile: VirtualFile
+    private val virtualFile: VirtualFile,
+    private val doubleToolbar: Boolean = false
 ) : UserDataHolderBase(), TextEditor, FileEditor {
 
     private val myEditor = run {
@@ -48,7 +48,8 @@ abstract class ToolbarTextEditor(
 
     private lateinit var myComponent: JComponent
     private lateinit var myToolbarWrapper: EditorToolbar
-    private lateinit var myActionToolbar: ActionToolbar
+    private lateinit var myTopActionToolbar: ActionToolbar
+    private var myBottomActionToolbar: ActionToolbar? = null
 
     override fun getBackgroundHighlighter(): BackgroundEditorHighlighter? {
         return this.myEditor.backgroundHighlighter
@@ -97,21 +98,35 @@ abstract class ToolbarTextEditor(
     }
 
     private fun createToolbarWrapper(): EditorToolbar {
-        val toolbarGroup = DefaultActionGroup()
-        addActions(toolbarGroup)
+        val topToolbarGroup = DefaultActionGroup()
+        addTopActions(topToolbarGroup)
+        myTopActionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, topToolbarGroup, true)
+        myTopActionToolbar.setTargetComponent(myTopActionToolbar.component)
+        myTopActionToolbar.setReservePlaceAutoPopupIcon(false)
 
-        myActionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, toolbarGroup, true)
+        val bottomToolbarGroup = DefaultActionGroup()
+        if (doubleToolbar) {
+            addBottomActions(bottomToolbarGroup)
+            myBottomActionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, bottomToolbarGroup, true)
+            myBottomActionToolbar!!.setTargetComponent(myBottomActionToolbar!!.component)
+            myBottomActionToolbar!!.setReservePlaceAutoPopupIcon(false)
+        }
 
-        myActionToolbar.setTargetComponent(myActionToolbar.component)
-        myActionToolbar.setReservePlaceAutoPopupIcon(false)
-
-        return EditorToolbar(myActionToolbar)
+        return EditorToolbar(myTopActionToolbar, myBottomActionToolbar)
     }
 
-    abstract fun addActions(toolbarGroup: DefaultActionGroup)
+    open fun addTopActions(toolbarGroup: DefaultActionGroup) {
+        TODO("Implement actions")
+    }
+    open fun addBottomActions(toolbarGroup: DefaultActionGroup) {
+        TODO("Implement actions")
+    }
 
     fun refreshToolbar() {
-        myToolbarWrapper.refresh()
+        myTopActionToolbar.updateActionsImmediately()
+        if (doubleToolbar) {
+            myBottomActionToolbar!!.updateActionsImmediately()
+        }
     }
 
     override fun setState(state: FileEditorState) {
@@ -201,22 +216,30 @@ abstract class ToolbarTextEditor(
     }
 }
 
-private class EditorToolbar(private val myToolbar: ActionToolbar) : JPanel(GridBagLayout()), Disposable {
+private class EditorToolbar(
+    myTopToolbar: ActionToolbar,
+    myBottomToolbar: ActionToolbar?
+) : JPanel(GridBagLayout()), Disposable {
     init {
         val gbc = GridBagConstraints(
             1, 0, 1, 1, 1.0, 1.0,
             GridBagConstraints.WEST, GridBagConstraints.BOTH, JBUI.emptyInsets(), 0, 0
         )
 
-        add(myToolbar.component, gbc)
+        add(myTopToolbar.component, gbc)
+
+        if (myBottomToolbar != null) {
+            val gbc2 = GridBagConstraints(
+                1, 1, 1, 1, 1.0, 1.0,
+                GridBagConstraints.WEST, GridBagConstraints.BOTH, JBUI.emptyInsets(), 0, 0
+            )
+
+            add(myBottomToolbar.component, gbc2)
+        }
 
         border = BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtil.CONTRAST_BORDER_COLOR)
 
-        myToolbar.updateActionsImmediately()
-    }
-
-    fun refresh() {
-        myToolbar.updateActionsImmediately()
+        myTopToolbar.updateActionsImmediately()
     }
 
     override fun dispose() {}

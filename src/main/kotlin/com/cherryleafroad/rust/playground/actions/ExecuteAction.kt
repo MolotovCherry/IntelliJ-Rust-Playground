@@ -1,33 +1,11 @@
 package com.cherryleafroad.rust.playground.actions
 
-import com.cherryleafroad.rust.playground.Helpers
-import com.cherryleafroad.rust.playground.cargo.runconfig.buildtool.CargoBuildConfiguration
-import com.intellij.execution.ExecutorRegistry
-import com.intellij.execution.RunManager
-import com.intellij.execution.executors.DefaultRunExecutor
-import com.intellij.execution.impl.RunManagerImpl
-import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
-import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.execution.runners.ProgramRunner
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
-import com.cherryleafroad.rust.playground.cargo.runconfig.CargoCommandRunner
-import com.cherryleafroad.rust.playground.cargo.runconfig.buildtool.CargoBuildManager
-import com.cherryleafroad.rust.playground.cargo.runconfig.buildtool.CargoProject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import com.cherryleafroad.rust.playground.cargo.toolchain.CargoCommandLine
-import com.intellij.icons.AllIcons
-import org.rust.cargo.project.model.cargoProjects
-import org.rust.cargo.runconfig.buildtool.CargoBuildResult
-import org.rust.cargo.runconfig.command.CargoCommandConfiguration
-import org.rust.cargo.runconfig.command.CargoCommandConfigurationType
 import org.rust.lang.core.psi.isRustFile
-import org.rust.openapiext.document
 import org.rust.openapiext.psiFile
 
 class ExecuteAction : AnAction() {
