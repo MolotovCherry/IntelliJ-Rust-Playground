@@ -87,7 +87,7 @@ object Helpers {
 
         var cleanAndRun = false
         var cleanSingle = false
-        val cleanCmd = mutableListOf<String>()
+        val cleanCmd = mutableListOf("play")
         if (check) {
             if (!onlyrun) {
                 buildCmd2.add("--check")
@@ -102,6 +102,7 @@ object Helpers {
                 cleanAndRun = true
                 cleanCmd.add("--mode")
                 cleanCmd.add("clean")
+                cleanCmd.addAll(src.toList())
             } else {
                 // this will do a clean + run in one go
                 runCmd.add("--clean")
@@ -143,6 +144,7 @@ object Helpers {
                 if (!onlyrun) {
                     cleanCmd.add("--mode")
                     cleanCmd.add("clean")
+                    cleanCmd.addAll(src.toList())
                     cleanSingle = true
                     runRun = false
                 } else {
