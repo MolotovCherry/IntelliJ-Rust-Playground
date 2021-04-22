@@ -12,7 +12,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.rust.cargo.toolchain.RustChannel
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.toolchain.tools.cargo
-import kotlin.math.max
 
 object Helpers {
     fun checkCargoPlayInstalled(project: Project): Boolean {
@@ -92,6 +91,7 @@ object Helpers {
             if (!onlyrun) {
                 buildCmd2.add("--check")
                 runRun = false
+                runBuild = false
                 runBuild2 = true
             } else {
                 runCmd.add("--check")
@@ -111,10 +111,12 @@ object Helpers {
         if (expand) {
             buildCmd.subList(1, buildCmd.size).clear()
             buildCmd.add("--expand")
+            buildCmd2.add("--expand")
             runCmd.add("--expand")
         }
         if (infer) {
             buildCmd.add("--infer")
+            buildCmd2.add("--infer")
             runCmd.add("--infer")
         }
         if (quiet) {
@@ -122,6 +124,7 @@ object Helpers {
         }
         if (release) {
             buildCmd.add("--release")
+            buildCmd2.add("--release")
             runCmd.add("--release")
         }
         if (test) {
@@ -131,11 +134,14 @@ object Helpers {
         }
         if (verbose) {
             buildCmd.add("--verbose")
+            buildCmd2.add("--verbose")
             runCmd.add("--verbose")
         }
         if (edition != Edition.DEFAULT) {
             buildCmd.add("--edition")
             buildCmd.add(edition.myName)
+            buildCmd2.add("--edition")
+            buildCmd2.add(edition.myName)
             runCmd.add("--edition")
             runCmd.add(edition.myName)
         }

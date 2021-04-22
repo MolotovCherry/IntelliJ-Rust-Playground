@@ -206,7 +206,7 @@ object ActionTools {
 
             GlobalScope.launch(Dispatchers.Main) {
                 var future: CargoBuildResult? = null
-                if (results.runBuild) {
+                if (results.runBuild || results.runBuild2) {
                     if (results.cleanAndRun || results.cleanSingle) {
                         val job = GlobalScope.launch(Dispatchers.IO) {
                             CargoBuildManager.build(buildProject, cleanRunBuild!!).get()
