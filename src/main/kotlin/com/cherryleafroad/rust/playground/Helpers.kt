@@ -64,10 +64,10 @@ object Helpers {
         val edition = Edition.fromIndex(properties.getInt("edition/${file.path}", Edition.DEFAULT.index))
 
         val src = mutableListOf(file.name)
-        src.addAll(properties.getValue("src/${file.path}", "").split(" "))
-        val args = properties.getValue("args/${file.path}", "").split(" ").toMutableList()
+        src.addAll(properties.getValue("src/${file.path}", "").split(" ").filter { it.isNotEmpty() })
+        val args = properties.getValue("args/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
         val mode = properties.getValue("mode/${file.path}", "")
-        val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").toMutableList()
+        val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
         val cargoOptionInRun =  properties.getBoolean("cargorun/${file.path}", false)
 
         if (args.isNotEmpty()) {
