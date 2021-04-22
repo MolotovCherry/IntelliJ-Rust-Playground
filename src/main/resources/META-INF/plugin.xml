@@ -10,7 +10,7 @@
     <description>A powerful local Rust playground, straight from your IDE! Inspired by the official Rust playground, but more convenient to use!</description>
 
     <change-notes><![CDATA[
-<h3>2.0</h3>
+<h3>2.0.0-beta1</h3>
 <ul>
     <li>New editor toolbar system</li>
     <li>Using comments for controlling options is now deprecated and now unsupported</li>
