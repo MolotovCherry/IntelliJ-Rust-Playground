@@ -69,6 +69,7 @@ object Helpers {
         val args = properties.getValue("args/${file.path}", "").split(" ").toMutableList()
         val mode = properties.getValue("mode/${file.path}", "")
         val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").toMutableList()
+        val cargoOptionInRun =  properties.getBoolean("cargorun/${file.path}", false)
 
         if (args.isNotEmpty()) {
             args.add(0, "--")
@@ -155,10 +156,17 @@ object Helpers {
         }
 
         cargoOption.add(0, "--color=always")
+
+        if (!cargoOptionInRun) {
+            runCmd.add(runCmd.size, "--cargo-option=\"--color=always\"")
+        } else {
+            runCmd.add(runCmd.size, "--cargo-option=\"${cargoOption.joinToString(" ")}\"")
+        }
+
         if (!expand) {
             cargoOption.add(1, "--message-format=json-diagnostic-rendered-ansi")
         }
-        runCmd.add(runCmd.size, "--cargo-option=\"--color=always\"")
+
         buildCmd.add(buildCmd.size, "--cargo-option=\"${cargoOption.joinToString(" ")}\"")
         buildCmd2.add(buildCmd2.size, "--cargo-option=\"--color=always --message-format=json-diagnostic-rendered-ansi\"")
 

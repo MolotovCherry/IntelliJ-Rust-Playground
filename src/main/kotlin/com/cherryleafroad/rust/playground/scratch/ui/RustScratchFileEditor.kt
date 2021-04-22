@@ -61,6 +61,7 @@ class RustScratchFileEditor(
             add(ModeTextField(file))
             addSeparator()
             add(CargoOptionTextField(file))
+            add(CargoOptionInRunCheckBoxAction(file))
         }
     }
 }
@@ -297,6 +298,25 @@ class CheckCheckBoxAction(
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
         properties.setValue("check/${file.path}", state)
+    }
+}
+
+class CargoOptionInRunCheckBoxAction(
+    val file: VirtualFile
+) : SmallBorderCheckboxAction("In Run", "Also add Cargo options to run") {
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
+
+    override fun setPreselected(checkbox: JBCheckBox) {
+        val saved = properties.getBoolean("cargorun/${file.path}", false)
+        checkbox.isSelected = saved
+    }
+
+    override fun isSelected(e: AnActionEvent): Boolean {
+        return properties.getBoolean("cargorun/${file.path}")
+    }
+
+    override fun setSelected(e: AnActionEvent, state: Boolean) {
+        properties.setValue("cargorun/${file.path}", state)
     }
 }
 
