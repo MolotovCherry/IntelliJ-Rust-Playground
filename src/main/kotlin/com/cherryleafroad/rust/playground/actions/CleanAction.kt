@@ -6,6 +6,6 @@ import icons.VcsCodeReviewIcons
 
 class CleanAction : DumbAwareAction("Clean", "Rebuild the Cargo project without the cache from previous run", VcsCodeReviewIcons.DeleteHovered) {
     override fun actionPerformed(e: AnActionEvent) {
-        // empty
+        ActionTools.actionPerformed(e, true)
     }
 }

@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground
 
+import com.cherryleafroad.rust.playground.config.Settings
 import com.cherryleafroad.rust.playground.config.SettingsConfigurable
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.NotificationAction
@@ -11,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import org.rust.cargo.toolchain.RustChannel
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.toolchain.tools.cargo
+import kotlin.math.max
 
 object Helpers {
     fun checkCargoPlayInstalled(project: Project): Boolean {
@@ -46,7 +48,7 @@ object Helpers {
         notification.notify(project)
     }
 
-    fun parseOptions(file: VirtualFile) {
+    fun parseOptions(file: VirtualFile): ParserResults {
         val properties = PropertiesComponent.getInstance()
 
         val check = properties.getBoolean("check/${file.path}")
@@ -59,103 +61,127 @@ object Helpers {
         val verbose = properties.getBoolean("verbose/${file.path}")
         val onlyrun = properties.getBoolean("userun/${file.path}")
 
-        val toolchain = RustChannel.fromIndex(properties.getInt("toolchain/${file.path}", RustChannel.DEFAULT.index))
-        val edition = Edition.fromIndex(properties.getInt("edition/${file.path}", 0))
+        val toolchain = RustChannel.fromIndex(properties.getInt("toolchain/${file.path}", Settings.getSelectedToolchain().index))
+        val edition = Edition.fromIndex(properties.getInt("edition/${file.path}", Edition.DEFAULT.index))
 
-        val src = mutableListOf(file.toNioPath().fileName.toString())
+        val src = mutableListOf(file.name)
         src.addAll(properties.getValue("src/${file.path}", "").split(" "))
-        val args = properties.getValue("args/${file.path}", "").split(" ")
+        val args = properties.getValue("args/${file.path}", "").split(" ").toMutableList()
         val mode = properties.getValue("mode/${file.path}", "")
-        val cargoOption = properties.getValue("cargoOptions/${file.path}", "")
+        val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").toMutableList()
+
+        if (args.isNotEmpty()) {
+            args.add(0, "--")
+        }
 
         var runRun = true
         var runBuild = !onlyrun
-        val playArgs = mutableListOf<String>()
-        val buildCmd = mutableListOf<String>()
+        var runBuild2 = false
+        val runCmd = mutableListOf<String>()
+        val buildCmd = mutableListOf("play")
+        val buildCmd2 = mutableListOf("play")
+
+        buildCmd.add("--mode")
+        buildCmd.add("build")
 
         var cleanAndRun = false
         var cleanSingle = false
-        var cleanAndRunCmd = mutableListOf<String>()
+        val cleanCmd = mutableListOf<String>()
         if (check) {
             if (!onlyrun) {
-                buildCmd.add("--check")
+                buildCmd2.add("--check")
                 runRun = false
+                runBuild2 = true
             } else {
-                playArgs.add("--check")
+                runCmd.add("--check")
             }
         }
         if (clean) {
-            cleanAndRun = true
             if (!onlyrun) {
-                buildCmd.add("--clean")
-                runRun = false
+                cleanAndRun = true
+                cleanCmd.add("--mode")
+                cleanCmd.add("clean")
             } else {
-                playArgs.add("--clean")
+                // this will do a clean + run in one go
+                runCmd.add("--clean")
             }
         }
         if (expand) {
-            playArgs.add("--expand")
+            buildCmd.subList(1, buildCmd.size).clear()
+            buildCmd.add("--expand")
+            runCmd.add("--expand")
         }
         if (infer) {
             buildCmd.add("--infer")
-            playArgs.add("--infer")
+            runCmd.add("--infer")
         }
         if (quiet) {
-            buildCmd.add("--quiet")
-            playArgs.add("--quiet")
+            runCmd.add("--quiet")
         }
         if (release) {
             buildCmd.add("--release")
-            playArgs.add("--release")
+            runCmd.add("--release")
         }
         if (test) {
-            playArgs.add("--test")
+            // we don't currently have a special test runner
+            runCmd.add("--test")
             runBuild = false
         }
         if (verbose) {
             buildCmd.add("--verbose")
-            playArgs.add("--verbose")
+            runCmd.add("--verbose")
         }
         if (edition != Edition.DEFAULT) {
             buildCmd.add("--edition")
             buildCmd.add(edition.myName)
-            playArgs.add("--edition")
-            playArgs.add(edition.myName)
+            runCmd.add("--edition")
+            runCmd.add(edition.myName)
         }
         if (mode.isNotEmpty()) {
-            playArgs.add("--mode")
-            playArgs.add(mode)
-
             if (mode == "clean") {
-                cleanSingle = true
+                if (!onlyrun) {
+                    cleanCmd.add("--mode")
+                    cleanCmd.add("clean")
+                    cleanSingle = true
+                    runRun = false
+                } else {
+                    runCmd.add("--mode")
+                    runCmd.add("clean")
+                }
+            } else {
+                runCmd.add("--mode")
+                runCmd.add(mode)
             }
         }
 
-        playArgs.add(0, "--cargo-option=\"--color=always\"")
-        buildCmd.add(0, "--cargo-option=\"--color=always --message-format=json-diagnostic-rendered-ansi\"")
+        cargoOption.add(0, "--color=always")
+        if (!expand) {
+            cargoOption.add(1, "--message-format=json-diagnostic-rendered-ansi")
+        }
+        runCmd.add(runCmd.size, "--cargo-option=\"--color=always\"")
+        buildCmd.add(buildCmd.size, "--cargo-option=\"${cargoOption.joinToString(" ")}\"")
+        buildCmd2.add(buildCmd2.size, "--cargo-option=\"--color=always --message-format=json-diagnostic-rendered-ansi\"")
 
+        val finalBuildCmd = mutableListOf<String>()
+        finalBuildCmd.addAll(buildCmd)
+        finalBuildCmd.addAll(src)
 
-        val parserResults = ParserResults(
-            check,
-            clean,
-            expand,
-            infer,
-            quiet,
-            release,
-            test,
-            verbose,
-            toolchain,
-            cargoOption.split(" ").toMutableList(),
-            edition,
-            mode,
-            src,
-            args,
-            playArgs,
-            runCmd.joinTo,
-            buildCmd,
-            runBuild, runRun
+        val finalBuildCmd2 = mutableListOf<String>()
+        finalBuildCmd2.addAll(buildCmd2)
+        finalBuildCmd2.addAll(src)
 
+        val finalRunCmd = mutableListOf<String>()
+        finalRunCmd.addAll(runCmd)
+        finalRunCmd.addAll(src)
+        finalRunCmd.addAll(args)
 
+        return ParserResults(
+            check, clean, expand, infer,
+            quiet, release, test, verbose, toolchain, onlyrun,
+            cargoOption, edition, mode, src, args,
+            runCmd, buildCmd, buildCmd2, runBuild, runBuild2,
+            runRun, cleanSingle, cleanAndRun, cleanCmd,
+            finalBuildCmd, finalRunCmd, finalBuildCmd2
         )
     }
 }

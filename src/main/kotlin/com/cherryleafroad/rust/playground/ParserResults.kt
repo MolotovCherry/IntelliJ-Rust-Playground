@@ -1,6 +1,5 @@
 package com.cherryleafroad.rust.playground
 
-import com.cherryleafroad.rust.playground.config.Settings
 import org.rust.cargo.toolchain.RustChannel
 
 enum class Edition(val index: Int, val myName: String) {
@@ -14,31 +13,41 @@ enum class Edition(val index: Int, val myName: String) {
 }
 
 data class ParserResults(
-    val check: Boolean = false,
-    val clean: Boolean = false,
-    val expand: Boolean = false,
-    val infer: Boolean = false,
-    val quiet: Boolean = false,
-    val release: Boolean = false,
-    val test: Boolean = false,
-    val verbose: Boolean = false,
-    val toolchain: RustChannel = Settings.getSelectedToolchain(),
+    val check: Boolean,
+    val clean: Boolean,
+    val expand: Boolean,
+    val infer: Boolean,
+    val quiet: Boolean,
+    val release: Boolean,
+    val test: Boolean,
+    val verbose: Boolean,
+    val toolchain: RustChannel,
 
-    val cargoOption: MutableList<String> = mutableListOf(),
-    val edition: Edition = Edition.DEFAULT,
-    val mode: String = "",
+    val onlyRun: Boolean,
 
-    val src: List<String> = listOf(),
-    val args: List<String> = listOf(),
-    val playArgs: List<String> = listOf(),
+    val cargoOption: List<String>,
+    val edition: Edition,
+    val mode: String,
 
-    val runCmd: List<String> = listOf(),
-    val buildCmd: List<String> = listOf(""),
+    // args to pass various parts
+    val src: List<String>,
+    val args: List<String>,
+
+    // build vs run command
+    val runCmd: List<String>,
+    val buildCmd: List<String>,
+    val buildCmd2: List<String>,
 
     // controls whether to use the build screen
-    val runBuild: Boolean = false,
-    val runRun: Boolean = false,
-    val cleanAndRun: Boolean = false,
-    val cleanSingle: Boolean = false,
-    val cleanAndRunCmd: List<String> = listOf("")
+    val runBuild: Boolean,
+    val runBuild2: Boolean,
+    val runRun: Boolean,
+
+    val cleanSingle: Boolean,
+    val cleanAndRun: Boolean,
+    val cleanCmd: List<String>,
+
+    val finalBuildCmd: List<String>,
+    val finalRunCmd: List<String>,
+    val finalBuildCmd2: List<String>
 )

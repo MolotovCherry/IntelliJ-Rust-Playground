@@ -67,7 +67,7 @@ class RustScratchFileEditor(
 
 class ArgsTextField(
     val file: VirtualFile
-) : LabeledTextEditAction("Args", "Aguments to pass along to program") {
+) : LabeledTextEditAction("Args", "Aguments to pass to program") {
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
@@ -83,7 +83,7 @@ class ArgsTextField(
 
 class SrcTextField(
     val file: VirtualFile
-) : LabeledTextEditAction("Src", "Any additional Rust files to include in the build") {
+) : LabeledTextEditAction("Src", "Additional Rust files to include in the build [Spaced]") {
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
@@ -99,7 +99,7 @@ class SrcTextField(
 
 class CargoOptionTextField(
     val file: VirtualFile
-) : LabeledTextEditAction("Cargo Options", "Customize flags passing to Cargo") {
+) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo") {
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
@@ -131,7 +131,7 @@ class ModeTextField(
 
 class OnlyRunCheckBoxAction(
     val file: VirtualFile
-) : SmallBorderCheckboxAction("Only Run Window", "Only use the run window (don't compile in build window)") {
+) : SmallBorderCheckboxAction("Only Run Window", "Only use the run window (don't compile in build window) [Faster]") {
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
 
     override fun isSelected(e: AnActionEvent): Boolean {
@@ -317,8 +317,7 @@ class ToolchainComboBoxAction(
     override var currentSelection: String = defaultSelection.name
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        val selected = RustChannel.values()[index]
-        properties.setValue("toolchain/${file.path}", selected.index, selected.index)
+        properties.setValue("toolchain/${file.path}", index, defaultSelection.index)
         currentSelection = RustChannel.values()[index].name
         updateToolbar()
     }
@@ -340,7 +339,7 @@ class EditionComboBoxAction(
     override var currentSelection: String = Edition.DEFAULT.myName
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        properties.setValue("edition/${file.path}", index, index)
+        properties.setValue("edition/${file.path}", index, Edition.DEFAULT.index)
         currentSelection = itemList[index]
         updateToolbar()
     }

@@ -24,7 +24,6 @@ import org.rust.cargo.runconfig.buildtool.CargoBuildResult
 import org.rust.cargo.runconfig.command.CargoCommandConfiguration
 import org.rust.cargo.runconfig.command.CargoCommandConfigurationType
 import org.rust.lang.core.psi.isRustFile
-import org.rust.openapiext.document
 import org.rust.openapiext.psiFile
 
 object ActionTools {
@@ -56,7 +55,7 @@ object ActionTools {
         return CargoBuildConfiguration(config, environment)
     }
 
-    fun actionPerformed(event: AnActionEvent) {
+    fun actionPerformed(event: AnActionEvent, cleanRun: Boolean = false) {
         val project = event.project!!
 
         val doc = event.dataContext.psiFile?.virtualFile ?: return
@@ -71,25 +70,58 @@ object ActionTools {
 
         val cargoPlayInstalled = Helpers.checkCargoPlayInstalled(project)
         if (cargoPlayInstalled) {
-            val code = doc.document!!.text
             val cargoProject = project.cargoProjects.allProjects.firstOrNull() ?: return
 
             val cwd = doc.toNioPath().parent
             val fileName = doc.name
 
-            Helpers.parseOptions(doc)
-            /*val results = Helpers.parseScratch(fileName, code)
+            val results = Helpers.parseOptions(doc)
+
+            if (cleanRun) {
+                val cleanCmd = mutableListOf(
+                    "play", "--mode", "clean"
+                )
+                cleanCmd.addAll(results.src)
+
+                val cleanCommandLine = CargoCommandLine(
+                    "play",
+                    cwd,
+                    cleanCmd.subList(1, cleanCmd.size),
+                    channel = results.toolchain
+                )
+
+                val cleanBuilder = makeBuilder(
+                    project,
+                    cleanCommandLine,
+                    fileName,
+                    cleanCmd
+                )
+
+                val buildProject = CargoProject(
+                    project = project,
+                    workingDirectory = cwd
+                )
+
+                GlobalScope.launch(Dispatchers.Main) {
+                    if (results.onlyRun) {
+                        cleanCommandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
+                    } else {
+                        val job = GlobalScope.launch(Dispatchers.IO) {
+                            CargoBuildManager.build(buildProject, cleanBuilder).get()
+                        }
+                        job.join()
+                    }
+                }
+                return
+            }
 
             // we need our own to patch a bug in the cmd arg processing # see setCmd
             val commandLine = CargoCommandLine(
                 "play",
                 cwd,
-                results.runCmd,
+                results.finalRunCmd,
                 channel = results.toolchain
             )
-
-            // make a copy of our own to be compatible with default builder
-
 
             val buildProject = CargoProject(
                 project = project,
@@ -100,32 +132,50 @@ object ActionTools {
                 project,
                 commandLine,
                 fileName,
-                results.buildCmd
+                results.finalBuildCmd
+            )
+
+            val builder2 = makeBuilder(
+                project,
+                commandLine,
+                fileName,
+                results.finalBuildCmd2
             )
 
             var cleanRunBuild: CargoBuildConfiguration? = null
-            if (results.cleanAndRun) {
+            if (results.cleanAndRun || results.cleanSingle) {
                 cleanRunBuild = makeBuilder(
                     project,
                     commandLine,
                     fileName,
-                    results.cleanAndRunCmd
+                    results.cleanCmd
                 )
             }
 
             GlobalScope.launch(Dispatchers.Main) {
                 var future: CargoBuildResult? = null
                 if (results.runBuild) {
-                    if (results.cleanAndRun) {
+                    if (results.cleanAndRun || results.cleanSingle) {
                         val job = GlobalScope.launch(Dispatchers.IO) {
                             CargoBuildManager.build(buildProject, cleanRunBuild!!).get()
                         }
                         job.join()
+
+                        if (results.cleanSingle) {
+                            return@launch
+                        }
                     }
 
-                    if (!results.skipBuild) {
+                    if (results.runBuild) {
                         val job = GlobalScope.launch(Dispatchers.IO) {
                             future = CargoBuildManager.build(buildProject, builder).get()
+                        }
+                        job.join()
+                    }
+
+                    if (results.runBuild2) {
+                        val job = GlobalScope.launch(Dispatchers.IO) {
+                            future = CargoBuildManager.build(buildProject, builder2).get()
                         }
                         job.join()
                     }
@@ -133,12 +183,11 @@ object ActionTools {
 
                 if (results.runRun) {
                     // if skipped build, there's no results, but we still want the run
-                    if ((future != null && future!!.succeeded) || results.skipBuild) {
+                    if ((future != null && future!!.succeeded) || !results.runBuild) {
                         commandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
                     }
-                }*/
-
-
+                }
+            }
         } else {
             Helpers.cargoPlayInstallNotification(project)
         }
