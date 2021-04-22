@@ -14,6 +14,7 @@ import com.intellij.execution.impl.RunnerAndConfigurationSettingsImpl
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.runners.ProgramRunner
 import com.intellij.ide.scratch.ScratchUtil
+import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import kotlinx.coroutines.Dispatchers
@@ -79,14 +80,19 @@ object ActionTools {
 
             if (cleanRun) {
                 val cleanCmd = mutableListOf(
-                    "play", "--mode", "clean"
+                    "play", "--mode", "clean", "--cargo-option=\"--color=always\""
                 )
                 cleanCmd.addAll(results.src)
+
+                val cleanRunCmd = mutableListOf(
+                    "--mode", "clean", "--cargo-option=\"--color=always\""
+                )
+                cleanRunCmd.addAll(results.src)
 
                 val cleanCommandLine = CargoCommandLine(
                     "play",
                     cwd,
-                    cleanCmd.subList(1, cleanCmd.size),
+                    cleanRunCmd,
                     channel = results.toolchain
                 )
 
@@ -110,6 +116,52 @@ object ActionTools {
                             CargoBuildManager.build(buildProject, cleanBuilder).get()
                         }
                         job.join()
+                    }
+                }
+                return
+            }
+
+            // used sidebar to execute it
+            if (event.place == ActionPlaces.PROJECT_VIEW_POPUP) {
+                val buildCmd = mutableListOf(
+                    "play", "--mode", "build", "--cargo-option=\"--color=always --message-format=json-diagnostic-rendered-ansi\""
+                )
+                buildCmd.addAll(results.src)
+
+                val runCmd = mutableListOf(
+                    "--cargo-option=\"--color=always\""
+                )
+                runCmd.addAll(results.src)
+
+                val runCommandLine = CargoCommandLine(
+                    "play",
+                    cwd,
+                    runCmd,
+                    channel = results.toolchain
+                )
+
+                val runBuilder = makeBuilder(
+                    project,
+                    runCommandLine,
+                    fileName,
+                    buildCmd
+                )
+
+                val buildProject = CargoProject(
+                    project = project,
+                    workingDirectory = cwd
+                )
+
+                GlobalScope.launch(Dispatchers.Main) {
+                    if (results.onlyRun) {
+                        runCommandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
+                    } else {
+                        val job = GlobalScope.launch(Dispatchers.IO) {
+                            CargoBuildManager.build(buildProject, runBuilder).get()
+                        }
+                        job.join()
+
+                        runCommandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
                     }
                 }
                 return
