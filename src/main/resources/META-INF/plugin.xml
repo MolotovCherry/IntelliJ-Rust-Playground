@@ -7,7 +7,17 @@
     <depends>org.rust.lang</depends>
     <depends>org.toml.lang</depends>
 
-    <description>Use a local Rust playground straight from your IDE!</description>
+    <description>A powerful local Rust playground, straight from your IDE! Inspired by the official Rust playground, but faster to use!</description>
+
+    <change-notes><![CDATA[
+<h3>2.0</h3>
+<ul>
+    <li>New editor toolbar system</li>
+    <li>Using comments for controlling options is now deprecated and now unsupported</li>
+    <li>Tons of bug fixes</li>
+    <li>See a new bug? Please report it!</li>
+</ul>
+    ]]></change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
         <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.scratch.RustScratchCreationHelper"/>
