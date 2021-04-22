@@ -20,7 +20,10 @@ object Settings {
     val DEFAULT_TEXT =
         """
             /*
-             * For more information, check out the cargo-play docs
+             * Specify external dependencies with //# . It uses the same TOML syntax as Cargo.toml
+             *     //# serde_json = "*"
+             *
+             * For more information, check out the cargo-play docs -
              * You can change the default Rust scratch message in Rust settings page
              */
             
