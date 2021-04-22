@@ -84,7 +84,7 @@ class ArgsTextField(
 
 class SrcTextField(
     val file: VirtualFile
-) : LabeledTextEditAction("Src", "Additional Rust files to include in the build [Spaced]") {
+) : LabeledTextEditAction("Src", "List of (spaced) additional Rust files to build. CWD is scratch dir") {
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
