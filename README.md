@@ -2,6 +2,8 @@
 
 An IntelliJ plugin allowing you to use a similar playground experience just like [https://play.rust-lang.org/](https://play.rust-lang.org/), except straight from your IDE!
 
+_**Want to try the new beta? Head over to the release section to get the plugin zip! Report any bugs you find!**_
+
 ### Features
 - Complete integration with official IntelliJ Rust plugin
 - Run playground-like scripts directly from your IDE without having to setup any projects
