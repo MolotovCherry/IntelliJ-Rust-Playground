@@ -1,15 +1,15 @@
 package com.cherryleafroad.rust.playground.scratch.ui
 
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter
+import com.intellij.icons.AllIcons
 import com.intellij.ide.structureView.StructureViewBuilder
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.ActionToolbar
-import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Pair
@@ -32,7 +32,7 @@ import javax.swing.JPanel
  * for different types of actions
  */
 abstract class ToolbarTextEditor(
-    project: Project,
+    val project: Project,
     private val virtualFile: VirtualFile,
     private val doubleToolbar: Boolean = false
 ) : UserDataHolderBase(), TextEditor, FileEditor {
@@ -112,7 +112,7 @@ abstract class ToolbarTextEditor(
             myBottomActionToolbar!!.setReservePlaceAutoPopupIcon(false)
         }
 
-        return EditorToolbar(myTopActionToolbar, myBottomActionToolbar)
+        return EditorToolbar(project, myTopActionToolbar, myBottomActionToolbar)
     }
 
     open fun addTopActions(toolbarGroup: DefaultActionGroup) {
@@ -217,12 +217,13 @@ abstract class ToolbarTextEditor(
 }
 
 private class EditorToolbar(
+    val project: Project,
     myTopToolbar: ActionToolbar,
-    myBottomToolbar: ActionToolbar?
+    val myBottomToolbar: ActionToolbar?
 ) : JPanel(GridBagLayout()), Disposable {
     init {
         val gbc = GridBagConstraints(
-            1, 0, 1, 1, 1.0, 1.0,
+            0, 0, 1, 1, 1.0, 1.0,
             GridBagConstraints.WEST, GridBagConstraints.BOTH, JBUI.emptyInsets(), 0, 0
         )
 
@@ -230,11 +231,24 @@ private class EditorToolbar(
 
         if (myBottomToolbar != null) {
             val gbc2 = GridBagConstraints(
-                1, 1, 1, 1, 1.0, 1.0,
+                1, 0, 1, 1, 0.0, 1.0,
+                GridBagConstraints.PAGE_END, GridBagConstraints.BOTH, JBUI.emptyInsets(), 0, 0
+            )
+
+            val hideGroup = DefaultActionGroup()
+            hideGroup.add(ToggleBottomToolbarAction())
+            val hideButton = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, hideGroup, true)
+            hideButton.setTargetComponent(hideButton.component)
+            hideButton.setReservePlaceAutoPopupIcon(false)
+
+            add(hideButton.component, gbc2)
+
+            val bottomConstants = GridBagConstraints(
+                0, 1, 2, 1, 1.0, 1.0,
                 GridBagConstraints.WEST, GridBagConstraints.BOTH, JBUI.emptyInsets(), 0, 0
             )
 
-            add(myBottomToolbar.component, gbc2)
+            add(myBottomToolbar.component, bottomConstants)
         }
 
         border = BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtil.CONTRAST_BORDER_COLOR)
@@ -243,4 +257,28 @@ private class EditorToolbar(
     }
 
     override fun dispose() {}
+
+    inner class ToggleBottomToolbarAction: DumbAwareAction("Show/Hide Bottom Toolbar", null, AllIcons.General.HideToolWindow) {
+        val properties: PropertiesComponent = PropertiesComponent.getInstance(project)
+        val bottomBarKey = "ToolbarTextEditor/bottomBarShown"
+        var shown = properties.getBoolean(bottomBarKey, true)
+
+        init {
+            if (!shown) {
+                myBottomToolbar!!.component.isVisible = false
+            }
+        }
+
+        override fun actionPerformed(e: AnActionEvent) {
+            shown = !shown
+
+            if (!shown) {
+                myBottomToolbar!!.component.isVisible = false
+                properties.setValue(bottomBarKey, false, true)
+            } else {
+                myBottomToolbar!!.component.isVisible = true
+                properties.setValue(bottomBarKey, true, true)
+            }
+        }
+    }
 }

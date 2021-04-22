@@ -17,7 +17,7 @@ import com.intellij.ui.components.JBCheckBox
 import org.rust.cargo.toolchain.RustChannel
 
 class RustScratchFileEditor(
-    val project: Project,
+    project: Project,
     file: VirtualFile
 ) : ToolbarTextEditor(project, file, true) {
     private val updateToolbar = { refreshToolbar() }
@@ -100,7 +100,7 @@ class SrcTextField(
 
 class CargoOptionTextField(
     val file: VirtualFile
-) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo") {
+) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo [default: build window]") {
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
