@@ -329,6 +329,10 @@ class ToolchainComboBoxAction(
 
     override val itemList = RustChannel.values().map { it.name }
 
+    init {
+        properties.setValue("toolchain/${file.path}", defaultSelection.index, RustChannel.DEFAULT.index)
+    }
+
     override val preselectedItem: Condition<AnAction> = Condition { action ->
         (action as InnerAction).index == defaultSelection.index
     }
@@ -349,6 +353,10 @@ class EditionComboBoxAction(
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
 
     override val itemList = Edition.values().map { it.myName }
+
+    init {
+        properties.unsetValue("edition/${file.path}")
+    }
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
         (action as InnerAction).index == Edition.DEFAULT.index
