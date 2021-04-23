@@ -126,11 +126,19 @@ object ActionTools {
                 val buildCmd = mutableListOf(
                     "play", "--mode", "build", "--cargo-option=\"--color=always --message-format=json-diagnostic-rendered-ansi\""
                 )
+                // just in case, to keep the run cmd working
+                if (results.infer) {
+                    buildCmd.add(3, "--infer")
+                }
                 buildCmd.addAll(results.src)
 
                 val runCmd = mutableListOf(
                     "--cargo-option=\"--color=always\""
                 )
+                // just in case, to keep the run cmd working
+                if (results.infer) {
+                    runCmd.add(0, "--infer")
+                }
                 runCmd.addAll(results.src)
 
                 val runCommandLine = CargoCommandLine(
