@@ -2,11 +2,12 @@
 
 An IntelliJ plugin allowing you to use a similar playground experience just like [https://play.rust-lang.org/](https://play.rust-lang.org/), except straight from your IDE!
 
-_**Want to try the new beta? [Head over](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/releases/tag/2.0.0-beta) to the release section to get the plugin zip! Report any bugs you find!**_
-
 ### Install
-[![market-button](https://user-images.githubusercontent.com/13651622/115764408-5eee6d00-a35a-11eb-916b-b14c32a9803c.png)](https://plugins.jetbrains.com/plugin/16586-rust-playground) [![beta](https://user-images.githubusercontent.com/13651622/115764870-ecca5800-a35a-11eb-86fb-9c47d7a46ca7.png)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/releases/tag/2.0.0-beta)
+[![market-button](https://user-images.githubusercontent.com/13651622/115764408-5eee6d00-a35a-11eb-916b-b14c32a9803c.png)](https://plugins.jetbrains.com/plugin/16586-rust-playground)
 
+### Beta
+_**Want to try the new beta? Follow [instructions here](https://www.jetbrains.com/help/idea/managing-plugins.html#repos) to add the beta channel repo**_  
+`https://plugins.jetbrains.com/plugins/list?channel=beta&pluginId=16586`
 
 ### Features
 - Complete integration with official IntelliJ Rust plugin
