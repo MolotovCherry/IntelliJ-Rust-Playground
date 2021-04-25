@@ -9,6 +9,17 @@
 
     <description>Use a local Rust playground straight from your IDE!</description>
 
+    <change-notes>
+<![CDATA[
+<h3>1.0.2</h3>
+<ul>
+    <li>Fixed bug where toolchain selection didn't change compiler toolchain properly</li>
+    <li>Fixed broken keyboard shortcut</li>
+    <li>Want to try the new beta? It comes with a new editor toolbar and no more comments are required! Visit the market plugin page for instructions~ (Above bug is still unfixed in beta btw)</li>
+</ul>
+    ]]>
+    </change-notes>
+
     <extensions defaultExtensionNs="com.intellij">
         <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.RustScratchCreationHelper"/>
         <fileDocumentManagerListener implementation="com.cherryleafroad.rust.playground.listeners.FileListener"/>

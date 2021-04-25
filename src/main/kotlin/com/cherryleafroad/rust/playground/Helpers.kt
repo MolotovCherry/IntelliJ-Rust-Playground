@@ -91,6 +91,11 @@ object Helpers {
             toolchain = parsePlayArgs(playArgs, src, "")
         }
 
+        // change the toolchain then
+        if (toolchain != RustChannel.DEFAULT) {
+            playArgs.add(0, "+${toolchain.channel!!}")
+        }
+
         val tmpfile = Paths.get(System.getProperty("java.io.tmpdir"), filename).toString()
         val outStream = FileOutputStream(tmpfile)
         IOUtils.write(lines.joinToString(System.lineSeparator()), outStream, Charset.defaultCharset())

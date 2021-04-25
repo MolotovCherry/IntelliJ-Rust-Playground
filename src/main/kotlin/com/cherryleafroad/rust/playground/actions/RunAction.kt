@@ -40,8 +40,7 @@ class RunAction : AnAction() {
             val commandLine = PatchCargoCommandLine(
                 "play",
                 cwd,
-                args,
-                channel = toolchain
+                args
             )
             commandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
         } else {
@@ -57,7 +56,7 @@ class RunAction : AnAction() {
 
         if (project != null) {
             e.dataContext.psiFile?.virtualFile?.let {
-                if (e.place == ActionPlaces.EDITOR_POPUP || e.place == ActionPlaces.MAIN_MENU || e.place == ActionPlaces.PROJECT_VIEW_POPUP) {
+                if (e.place == ActionPlaces.EDITOR_POPUP || e.place == ActionPlaces.MAIN_MENU || e.place == ActionPlaces.PROJECT_VIEW_POPUP || e.place == ActionPlaces.KEYBOARD_SHORTCUT) {
                     val isRust = it.isRustFile
                     val isScratch = ScratchUtil.isScratch(it)
 
