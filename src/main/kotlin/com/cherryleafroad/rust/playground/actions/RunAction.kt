@@ -6,7 +6,6 @@ import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.project.Project
 import org.rust.cargo.project.model.cargoProjects
 import org.rust.lang.core.psi.isRustFile

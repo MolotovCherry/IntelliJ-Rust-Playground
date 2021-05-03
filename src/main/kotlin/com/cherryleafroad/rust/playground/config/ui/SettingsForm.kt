@@ -4,7 +4,13 @@ import com.cherryleafroad.rust.playground.config.Settings
 import org.rust.cargo.toolchain.RustChannel
 import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
-import javax.swing.*
+import javax.swing.JButton
+import javax.swing.JComboBox
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JScrollPane
+import javax.swing.JTextArea
 
 class SettingsForm {
     lateinit var scratchDefault: JTextArea
@@ -46,7 +52,6 @@ class SettingsForm {
             override fun componentHidden(e: ComponentEvent?) {
                 //
             }
-
         })
     }
 
