@@ -38,8 +38,11 @@ object Helpers {
             )
 
         val install = NotificationAction.createSimple("Install") {
-            project.toolchain!!.cargo().installBinaryCrate(project, "cargo-play")
-            notification.hideBalloon()
+            val toolchain = project.toolchain
+            if (toolchain != null) {
+                toolchain!!.cargo().installBinaryCrate(project, "cargo-play")
+                notification.hideBalloon()
+            }
         }
         val settings = NotificationAction.createSimple("Settings") {
             ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)
