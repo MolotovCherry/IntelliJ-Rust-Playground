@@ -1,3 +1,5 @@
+## [1.0.3]
+- Fixed possible NPE when showing install bubble
 ## [1.0.2]
 - Fixed bug where toolchain selection didn't change compiler toolchain properly
 - Fixed broken keyboard shortcut
