@@ -29,8 +29,10 @@ data class PatchCargoCommandLine(
 }
 
 private fun RunManager.createCargoCommandRunConfiguration(cargoCommandLine: PatchCargoCommandLine, name: String?): RunnerAndConfigurationSettings {
-    val runnerAndConfigurationSettings = createConfiguration(name ?: cargoCommandLine.command,
-        CargoCommandConfigurationType.getInstance().factory)
+    val runnerAndConfigurationSettings = createConfiguration(
+        name ?: cargoCommandLine.command,
+        CargoCommandConfigurationType.getInstance().factory
+    )
     val configuration = runnerAndConfigurationSettings.configuration as CargoCommandConfiguration
     configuration.setFromCmd(cargoCommandLine)
     return runnerAndConfigurationSettings

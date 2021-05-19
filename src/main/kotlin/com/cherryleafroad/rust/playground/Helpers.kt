@@ -40,7 +40,7 @@ object Helpers {
         val install = NotificationAction.createSimple("Install") {
             val toolchain = project.toolchain
             if (toolchain != null) {
-                toolchain!!.cargo().installBinaryCrate(project, "cargo-play")
+                toolchain.cargo().installBinaryCrate(project, "cargo-play")
                 notification.hideBalloon()
             }
         }
@@ -195,8 +195,8 @@ object Helpers {
         optList: List<String>,
         options: List<String>,
         shortOpts: List<String>,
-        toolchains: List<String>): RustChannel
-    {
+        toolchains: List<String>
+    ): RustChannel {
         val builder = StringBuilder()
 
         var toolchain = Settings.getSelectedToolchain()
