@@ -1,3 +1,5 @@
+## [1.0.4]
+- Fixed cargo install notification on non-Rust projects
 ## [1.0.3]
 - Fixed possible NPE when showing install bubble
 ## [1.0.2]

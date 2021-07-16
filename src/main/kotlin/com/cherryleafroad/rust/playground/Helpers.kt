@@ -9,6 +9,7 @@ import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import org.apache.commons.io.IOUtils
 import org.rust.cargo.project.settings.toolchain
+import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.cargo.toolchain.RustChannel
 import org.rust.cargo.toolchain.tools.cargo
 import java.io.FileOutputStream
@@ -17,6 +18,12 @@ import java.nio.file.Paths
 
 object Helpers {
     fun checkCargoPlayInstalled(project: Project): Boolean {
+        // ignore for non-Rust projects
+        val hasCargoProject = project.hasCargoProject
+        if (!hasCargoProject) {
+            return true
+        }
+
         return project.toolchain?.hasCargoExecutable("cargo-play") ?: false
     }
 
