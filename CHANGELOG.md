@@ -1,3 +1,5 @@
+## [1.0.5]
+- Compatibility with Jetbrains 2021.2
 ## [1.0.4]
 - Fixed cargo install notification on non-Rust projects
 ## [1.0.3]
