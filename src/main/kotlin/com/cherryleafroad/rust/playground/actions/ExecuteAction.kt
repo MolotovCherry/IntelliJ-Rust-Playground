@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
 
@@ -20,6 +21,10 @@ class ExecuteAction : DumbAwareAction() {
         e.presentation.isEnabled = false
 
         if (project != null) {
+            if (!project.hasCargoProject) {
+                return
+            }
+
             e.dataContext.psiFile?.virtualFile?.let {
                 if (e.place == ActionPlaces.EDITOR_POPUP || e.place == ActionPlaces.MAIN_MENU || e.place == ActionPlaces.PROJECT_VIEW_POPUP || e.place == ActionPlaces.KEYBOARD_SHORTCUT) {
                     val isRust = it.isRustFile

@@ -10,15 +10,14 @@ import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.runconfig.hasCargoProject
-import org.rust.cargo.toolchain.tools.cargo
 import org.rust.lang.core.psi.isRustFile
 
-class CargoPlayNotInstalledNotificationProvider(
+class CargoPlayNotCargoProjectNotificationProvider(
     private val project: Project
 ) : EditorNotifications.Provider<EditorNotificationPanel>() {
 
     companion object {
-        const val KEY_VAL = "CargoPlayNotInstalled"
+        const val KEY_VAL = "CargoPlayNotCargoProjectNotification"
     }
 
     @Suppress("PrivatePropertyName")
@@ -43,34 +42,19 @@ class CargoPlayNotInstalledNotificationProvider(
     ): EditorNotificationPanel? {
         val isRust = file.isRustFile
         val isScratch = ScratchUtil.isScratch(file)
-        val toolchainExists = project.toolchain != null
         val hasCargoProject = project.hasCargoProject
 
-        if (!isRust || !isScratch || !toolchainExists || !hasCargoProject) {
+        if (!isRust || !isScratch) {
+            return null
+        }
+        if (hasCargoProject) {
             return null
         }
 
-        if (!isNotificationDisabled(file)) {
-            val isCargoPlayInstalled = project.toolchain?.hasCargoExecutable("cargo-play") ?: false
-            if (!isCargoPlayInstalled) {
-                val panel = EditorNotificationPanel()
-                panel.text = "Cargo-play binary crate needs to be installed to run scratches in Playground"
+        val panel = EditorNotificationPanel()
+        panel.text = "Rust Scratches can only be run in Rust projects due to Rust plugin limitation"
 
-                panel.createActionLabel("Install") {
-                    panel.isVisible = false
-                    disableNotification(file)
-                    project.toolchain!!.cargo().installBinaryCrate(project, "cargo-play")
-                }
-                panel.createActionLabel("Dismiss") {
-                    panel.isVisible = false
-                    disableNotification(file)
-                }
-
-                return panel
-            }
-        }
-
-        return null
+        return panel
     }
 
     override fun getKey(): Key<EditorNotificationPanel> {

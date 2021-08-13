@@ -11,25 +11,16 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.rust.cargo.toolchain.RustChannel
 import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.cargo.toolchain.tools.cargo
 
 object Helpers {
     fun checkCargoPlayInstalled(project: Project): Boolean {
-        // ignore for non-Rust projects
-        val hasCargoProject = project.hasCargoProject
-        if (!hasCargoProject) {
-            return true
-        }
-
-        return project.toolchain?.hasCargoExecutable("cargo-play") ?: false
+        return project.toolchain!!.hasCargoExecutable("cargo-play")
     }
 
     fun checkAndNotifyCargoPlayInstallation(project: Project) {
-        checkCargoPlayInstalled(project).let {
-            if (!it) {
-                cargoPlayInstallNotification(project)
-            }
+        if (!checkCargoPlayInstalled(project)) {
+            cargoPlayInstallNotification(project)
         }
     }
 
@@ -43,11 +34,9 @@ object Helpers {
             )
 
         val install = NotificationAction.createSimple("Install") {
-            val toolchain = project.toolchain
-            if (toolchain != null) {
-                toolchain.cargo().installBinaryCrate(project, "cargo-play")
-                notification.hideBalloon()
-            }
+            val toolchain = project.toolchain!!
+            toolchain.cargo().installBinaryCrate(project, "cargo-play")
+            notification.hideBalloon()
         }
         val settings = NotificationAction.createSimple("Settings") {
             ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)
@@ -77,9 +66,9 @@ object Helpers {
         val args = properties.getValue("args/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
         val mode = properties.getValue("mode/${file.path}", "")
         val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
+        val cargoOptionNoDefault = properties.getBoolean("cargoOptionsNoDefault/${file.path}")
 
         val runCmd = mutableListOf<String>()
-        cargoOption.add(0, "--color=always")
 
         // change the toolchain
         if (toolchain != RustChannel.DEFAULT) {
@@ -128,7 +117,14 @@ object Helpers {
                 runCmd.add(mode)
             }
 
-            runCmd.add(runCmd.size, "--cargo-option=\"${cargoOption.joinToString(" ")}\"")
+            // this option could interfere with other cargo options
+            if (!cargoOptionNoDefault) {
+                cargoOption.add(0, "--color=always")
+            }
+
+            if (cargoOption.isNotEmpty()) {
+                runCmd.add("--cargo-option=\"${cargoOption.joinToString(" ")}\"")
+            }
         }
 
         val finalCmd = runCmd + src + args

@@ -59,6 +59,7 @@ class RustScratchFileEditor(
             add(ModeTextField(file))
             addSeparator()
             add(CargoOptionTextField(file))
+            add(CargoOptionNoDefaultCheckBoxAction(file))
         }
     }
 }
@@ -276,6 +277,25 @@ class CheckCheckBoxAction(
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
         properties.setValue("check/${file.path}", state)
+    }
+}
+
+class CargoOptionNoDefaultCheckBoxAction(
+    val file: VirtualFile
+) : SmallBorderCheckboxAction("No Defaults", "Remove default cargo options") {
+    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
+
+    override fun setPreselected(checkbox: JBCheckBox) {
+        val saved = properties.getBoolean("cargoOptionsNoDefault/${file.path}", false)
+        checkbox.isSelected = saved
+    }
+
+    override fun isSelected(e: AnActionEvent): Boolean {
+        return properties.getBoolean("cargoOptionsNoDefault/${file.path}")
+    }
+
+    override fun setSelected(e: AnActionEvent, state: Boolean) {
+        properties.setValue("cargoOptionsNoDefault/${file.path}", state)
     }
 }
 
