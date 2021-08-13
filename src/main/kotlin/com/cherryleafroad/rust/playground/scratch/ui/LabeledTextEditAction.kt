@@ -25,11 +25,7 @@ abstract class LabeledTextEditAction(
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {
         textfield.addKeyListener(object : KeyListener {
             override fun keyTyped(e: KeyEvent) {
-                val printable = e.keyChar != '\uFFFF' && e.keyCode != KeyEvent.VK_DELETE
-                if (!printable) return
-
-                val text = textfield.text + e.keyChar
-                textChanged(text)
+                // nothing
             }
 
             override fun keyPressed(e: KeyEvent) {
@@ -37,9 +33,7 @@ abstract class LabeledTextEditAction(
             }
 
             override fun keyReleased(e: KeyEvent) {
-                if (e.keyCode == KeyEvent.VK_BACK_SPACE) {
-                    textChanged(textfield.text)
-                }
+                textChanged(textfield.text)
             }
         })
 
