@@ -6,7 +6,6 @@ import com.cherryleafroad.rust.playground.Edition
 import com.cherryleafroad.rust.playground.actions.CleanAction
 import com.cherryleafroad.rust.playground.actions.ToolbarExecuteAction
 import com.cherryleafroad.rust.playground.config.Settings
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -21,6 +20,8 @@ class RustScratchFileEditor(
     file: VirtualFile
 ) : ToolbarTextEditor(project, file, true) {
     private val updateToolbar = { refreshToolbar() }
+    
+    private val settings = ScratchSettings(file)
 
     override fun addTopActions(toolbarGroup: DefaultActionGroup) {
         toolbarGroup.apply {
@@ -28,288 +29,265 @@ class RustScratchFileEditor(
             addSeparator()
             add(CleanAction())
             addSeparator()
-            add(CheckCheckBoxAction(file))
+            add(CheckCheckBoxAction(settings.CHECK))
             addSeparator()
-            add(CleanCheckBoxAction(file))
+            add(CleanCheckBoxAction(settings.CLEAN))
             addSeparator()
-            add(ExpandCheckBoxAction(file))
+            add(ExpandCheckBoxAction(settings.EXPAND))
             addSeparator()
-            add(InferCheckBoxAction(file))
+            add(InferCheckBoxAction(settings.INFER))
             addSeparator()
-            add(QuietCheckBoxAction(file))
+            add(QuietCheckBoxAction(settings.QUIET))
             addSeparator()
-            add(ReleaseCheckBoxAction(file))
+            add(ReleaseCheckBoxAction(settings.RELEASE))
             addSeparator()
-            add(TestCheckBoxAction(file))
+            add(TestCheckBoxAction(settings.TEST))
             addSeparator()
-            add(VerboseCheckBoxAction(file))
+            add(VerboseCheckBoxAction(settings.VERBOSE))
         }
     }
 
     override fun addBottomActions(toolbarGroup: DefaultActionGroup) {
         toolbarGroup.apply {
-            add(ToolchainComboBoxAction(file, updateToolbar))
+            add(ToolchainComboBoxAction(settings.TOOLCHAIN, updateToolbar))
             addSeparator()
-            add(EditionComboBoxAction(file, updateToolbar))
+            add(EditionComboBoxAction(settings.EDITION, updateToolbar))
             addSeparator()
-            add(SrcTextField(file))
+            add(SrcTextField(settings.SRC))
             addSeparator()
-            add(ArgsTextField(file))
+            add(ArgsTextField(settings.ARGS))
             addSeparator()
-            add(ModeTextField(file))
+            add(ModeTextField(settings.MODE))
             addSeparator()
-            add(CargoOptionTextField(file))
-            add(CargoOptionNoDefaultCheckBoxAction(file))
+            add(CargoOptionTextField(settings.CARGO_OPTIONS))
+            add(CargoOptionNoDefaultCheckBoxAction(settings.CARGO_OPTIONS_NO_DEFAULTS))
         }
     }
 }
 
 class ArgsTextField(
-    val file: VirtualFile
+    private val ARGS: Setting
 ) : LabeledTextEditAction("Args", "Aguments to pass to program") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
     init {
-        val saved = properties.getValue("args/${file.path}", "")
+        val saved = ARGS.getValue()
         textfield.text = saved
     }
 
     override fun textChanged(text: String) {
-        properties.setValue("args/${file.path}", text)
+        ARGS.setValue(text)
     }
 }
 
 class SrcTextField(
-    val file: VirtualFile
+    private val SRC: Setting
 ) : LabeledTextEditAction("Src", "List of (spaced) additional Rust files to build. CWD is scratch dir") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
     init {
-        val saved = properties.getValue("src/${file.path}", "")
+        val saved = SRC.getValue()
         textfield.text = saved
     }
 
     override fun textChanged(text: String) {
-        properties.setValue("src/${file.path}", text)
+        SRC.setValue(text)
     }
 }
 
 class CargoOptionTextField(
-    val file: VirtualFile
+    private val CARGO_OPTION: Setting
 ) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
     init {
-        val saved = properties.getValue("cargoOptions/${file.path}", "")
+        val saved = CARGO_OPTION.getValue()
         textfield.text = saved
     }
 
     override fun textChanged(text: String) {
-        properties.setValue("cargoOptions/${file.path}", text)
+        CARGO_OPTION.setValue(text)
     }
 }
 
 class ModeTextField(
-    val file: VirtualFile
+    private val MODE: Setting
 ) : LabeledTextEditAction("Mode", "Specify subcommand to use when calling Cargo [default: run]") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  65
 
     init {
-        val saved = properties.getValue("mode/${file.path}", "")
+        val saved = MODE.getValue()
         textfield.text = saved
     }
 
     override fun textChanged(text: String) {
-        properties.setValue("mode/${file.path}", text)
+        MODE.setValue(text)
     }
 }
 
 class ExpandCheckBoxAction(
-    val file: VirtualFile
+    private val EXPAND: Setting
 ) : SmallBorderCheckboxAction("Expand", "Expand macros in your code") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("expand/${file.path}", false)
+        val saved = EXPAND.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("expand/${file.path}")
+        return EXPAND.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("expand/${file.path}", state)
+        EXPAND.setValue(state)
     }
 }
 
 class VerboseCheckBoxAction(
-    val file: VirtualFile
+    private val VERBOSE: Setting
 ) : SmallBorderCheckboxAction("Verbose", "Set Cargo verbose level") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("verbose/${file.path}", false)
+        val saved = VERBOSE.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("verbose/${file.path}")
+        return VERBOSE.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("verbose/${file.path}", state)
+        VERBOSE.setValue(state)
     }
 }
 
 class TestCheckBoxAction(
-    val file: VirtualFile
+    private val TEST: Setting
 ) : SmallBorderCheckboxAction("Test", "Run test code") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("test/${file.path}", false)
+        val saved = TEST.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("test/${file.path}")
+        return TEST.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("test/${file.path}", state)
+        TEST.setValue(state)
     }
 }
 
 class ReleaseCheckBoxAction(
-    val file: VirtualFile
+    private val RELEASE: Setting
 ) : SmallBorderCheckboxAction("Release", "Build program in release mode") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("release/${file.path}", false)
+        val saved = RELEASE.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("release/${file.path}")
+        return RELEASE.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("release/${file.path}", state)
+        RELEASE.setValue(state)
     }
 }
 
 class QuietCheckBoxAction(
-    val file: VirtualFile
+    private val QUIET: Setting
 ) : SmallBorderCheckboxAction("Quiet", "Disable output from Cargo") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("quiet/${file.path}", false)
+        val saved = QUIET.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("quiet/${file.path}")
+        return QUIET.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("quiet/${file.path}", state)
+        QUIET.setValue(state)
     }
 }
 
 class InferCheckBoxAction(
-    val file: VirtualFile
+    private val INFER: Setting
 ) : SmallBorderCheckboxAction("Infer", "[Experimental] Automatically infers crate dependencies") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("infer/${file.path}", false)
+        val saved = INFER.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("infer/${file.path}")
+        return INFER.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("infer/${file.path}", state)
+        INFER.setValue(state)
     }
 }
 
 class CleanCheckBoxAction(
-    val file: VirtualFile
+    private val CLEAN: Setting
 ) : SmallBorderCheckboxAction("Clean", "Rebuild the Cargo project without the cache from previous run") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("clean/${file.path}", false)
+        val saved = CLEAN.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("clean/${file.path}")
+        return CLEAN.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("clean/${file.path}", state)
+        CLEAN.setValue(state)
     }
 }
 
 class CheckCheckBoxAction(
-    val file: VirtualFile
+    private val CHECK: Setting
 ) : SmallBorderCheckboxAction("Check", "Check for errors in your code") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("check/${file.path}", false)
+        val saved = CHECK.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("check/${file.path}")
+        return CHECK.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("check/${file.path}", state)
+        CHECK.setValue(state)
     }
 }
 
 class CargoOptionNoDefaultCheckBoxAction(
-    val file: VirtualFile
+    private val CARGO_OPTION_NO_DEFAULT: Setting
 ) : SmallBorderCheckboxAction("No Defaults", "Remove default cargo options") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("cargoOptionsNoDefault/${file.path}", false)
+        val saved = CARGO_OPTION_NO_DEFAULT.getBoolean()
         checkbox.isSelected = saved
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("cargoOptionsNoDefault/${file.path}")
+        return CARGO_OPTION_NO_DEFAULT.getBoolean()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("cargoOptionsNoDefault/${file.path}", state)
+        CARGO_OPTION_NO_DEFAULT.setValue(state)
     }
 }
 
 class ToolchainComboBoxAction(
-    val file: VirtualFile,
+    private val TOOLCHAIN: Setting,
     val updateToolbar: () -> Unit
 ) : ComboBoxAction("Toolchain") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     private val defaultSelection = Settings.getSelectedToolchain()
 
     override val itemList = RustChannel.values().map { it.name }
 
     init {
-        properties.setValue("toolchain/${file.path}", defaultSelection.index, RustChannel.DEFAULT.index)
+        TOOLCHAIN.setValue(defaultSelection.index, RustChannel.DEFAULT.index)
     }
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
@@ -319,22 +297,20 @@ class ToolchainComboBoxAction(
     override var currentSelection: String = defaultSelection.name
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        properties.setValue("toolchain/${file.path}", index, defaultSelection.index)
+        TOOLCHAIN.setValue(index, defaultSelection.index)
         currentSelection = RustChannel.values()[index].name
         updateToolbar()
     }
 }
 
 class EditionComboBoxAction(
-    val file: VirtualFile,
+    private val EDITION: Setting,
     val updateToolbar: () -> Unit
 ) : ComboBoxAction("Edition") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
     override val itemList = Edition.values().map { it.myName }
 
     init {
-        properties.unsetValue("edition/${file.path}")
+        EDITION.unsetValue()
     }
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
@@ -344,7 +320,7 @@ class EditionComboBoxAction(
     override var currentSelection: String = Edition.DEFAULT.myName
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        properties.setValue("edition/${file.path}", index, Edition.DEFAULT.index)
+        EDITION.setValue(index, Edition.DEFAULT.index)
         currentSelection = itemList[index]
         updateToolbar()
     }

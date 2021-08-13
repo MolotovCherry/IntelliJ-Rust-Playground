@@ -2,6 +2,7 @@ package com.cherryleafroad.rust.playground
 
 import com.cherryleafroad.rust.playground.config.Settings
 import com.cherryleafroad.rust.playground.config.SettingsConfigurable
+import com.cherryleafroad.rust.playground.scratch.ui.ScratchSettings
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
@@ -47,26 +48,26 @@ object Helpers {
     }
 
     fun parseOptions(file: VirtualFile, clean: Boolean): ParserResults {
-        val properties = PropertiesComponent.getInstance()
+        val settings = ScratchSettings(file)
 
-        val check = properties.getBoolean("check/${file.path}")
-        val cleanProp = properties.getBoolean("clean/${file.path}")
-        val expand = properties.getBoolean("expand/${file.path}")
-        val infer = properties.getBoolean("infer/${file.path}")
-        val quiet = properties.getBoolean("quiet/${file.path}")
-        val release = properties.getBoolean("release/${file.path}")
-        val test = properties.getBoolean("test/${file.path}")
-        val verbose = properties.getBoolean("verbose/${file.path}")
+        val check = settings.CHECK.getBoolean()
+        val cleanProp = settings.CLEAN.getBoolean()
+        val expand = settings.EXPAND.getBoolean()
+        val infer = settings.INFER.getBoolean()
+        val quiet = settings.QUIET.getBoolean()
+        val release = settings.RELEASE.getBoolean()
+        val test = settings.TEST.getBoolean()
+        val verbose = settings.VERBOSE.getBoolean()
 
-        val toolchain = RustChannel.fromIndex(properties.getInt("toolchain/${file.path}", Settings.getSelectedToolchain().index))
-        val edition = Edition.fromIndex(properties.getInt("edition/${file.path}", Edition.DEFAULT.index))
+        val toolchain = RustChannel.fromIndex(settings.TOOLCHAIN.getInt(Settings.getSelectedToolchain().index))
+        val edition = Edition.fromIndex(settings.EDITION.getInt(Edition.DEFAULT.index))
 
         val src = mutableListOf(file.name)
-        src.addAll(properties.getValue("src/${file.path}", "").split(" ").filter { it.isNotEmpty() })
-        val args = properties.getValue("args/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
-        val mode = properties.getValue("mode/${file.path}", "")
-        val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
-        val cargoOptionNoDefault = properties.getBoolean("cargoOptionsNoDefault/${file.path}")
+        src.addAll(settings.SRC.getValue().split(" ").filter { it.isNotEmpty() })
+        val args = settings.ARGS.getValue().split(" ").filter { it.isNotEmpty() }.toMutableList()
+        val mode = settings.MODE.getValue()
+        val cargoOption = settings.CARGO_OPTIONS.getValue().split(" ").filter { it.isNotEmpty() }.toMutableList()
+        val cargoOptionNoDefault = settings.CARGO_OPTIONS_NO_DEFAULTS.getBoolean()
 
         val runCmd = mutableListOf<String>()
 
