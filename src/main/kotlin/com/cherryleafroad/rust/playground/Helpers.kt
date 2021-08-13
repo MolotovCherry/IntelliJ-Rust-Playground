@@ -11,10 +11,17 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.rust.cargo.toolchain.RustChannel
 import org.rust.cargo.project.settings.toolchain
+import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.cargo.toolchain.tools.cargo
 
 object Helpers {
     fun checkCargoPlayInstalled(project: Project): Boolean {
+        // ignore for non-Rust projects
+        val hasCargoProject = project.hasCargoProject
+        if (!hasCargoProject) {
+            return true
+        }
+
         return project.toolchain?.hasCargoExecutable("cargo-play") ?: false
     }
 
@@ -36,8 +43,11 @@ object Helpers {
             )
 
         val install = NotificationAction.createSimple("Install") {
-            project.toolchain!!.cargo().installBinaryCrate(project, "cargo-play")
-            notification.hideBalloon()
+            val toolchain = project.toolchain
+            if (toolchain != null) {
+                toolchain.cargo().installBinaryCrate(project, "cargo-play")
+                notification.hideBalloon()
+            }
         }
         val settings = NotificationAction.createSimple("Settings") {
             ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)

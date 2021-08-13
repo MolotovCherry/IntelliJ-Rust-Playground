@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import org.rust.cargo.project.settings.toolchain
+import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.cargo.toolchain.tools.cargo
 import org.rust.lang.core.psi.isRustFile
 
@@ -42,11 +43,13 @@ class CargoPlayNotInstalledNotificationProvider(
     ): EditorNotificationPanel? {
         val isRust = file.isRustFile
         val isScratch = ScratchUtil.isScratch(file)
-        if (!isRust || !isScratch) {
+        val hasCargoProject = project.hasCargoProject
+
+        if (!isRust || !isScratch || !hasCargoProject) {
             return null
         }
 
-        if (isRust && isScratch && !isNotificationDisabled(file)) {
+        if (!isNotificationDisabled(file)) {
             val isCargoPlayInstalled = project.toolchain?.hasCargoExecutable("cargo-play") ?: false
             if (!isCargoPlayInstalled) {
                 val panel = EditorNotificationPanel()
