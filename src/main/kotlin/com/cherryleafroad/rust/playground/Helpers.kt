@@ -19,6 +19,28 @@ object Helpers {
         return project.toolchain!!.hasCargoExecutable("cargo-play")
     }
 
+    private fun checkAndNotifyCargoExpandInstalled(project: Project): Boolean {
+        val installed = project.toolchain!!.hasCargoExecutable("cargo-expand")
+        if (!installed) {
+            val notification = NotificationGroupManager.getInstance().getNotificationGroup("Rust Playground")
+                .createNotification(
+                    "Rust Playground",
+                    "cargo-expand is required to use the expand feature",
+                    NotificationType.INFORMATION
+                )
+
+            val install = NotificationAction.createSimple("Install") {
+                val toolchain = project.toolchain!!
+                toolchain.cargo().installBinaryCrate(project, "cargo-expand")
+                notification.hideBalloon()
+            }
+            notification.addAction(install)
+            notification.notify(project)
+        }
+
+        return installed
+    }
+
     fun checkAndNotifyCargoPlayInstallation(project: Project) {
         if (!checkCargoPlayInstalled(project)) {
             cargoPlayInstallNotification(project)
@@ -47,7 +69,7 @@ object Helpers {
         notification.notify(project)
     }
 
-    fun parseOptions(file: VirtualFile, clean: Boolean): ParserResults {
+    fun parseOptions(project: Project, file: VirtualFile, clean: Boolean): ParserResults? {
         val settings = ScratchSettings(file)
 
         val check = settings.CHECK.getBoolean()
@@ -70,6 +92,14 @@ object Helpers {
         val cargoOptionNoDefault = settings.CARGO_OPTIONS_NO_DEFAULTS.getBoolean()
 
         val runCmd = mutableListOf<String>()
+
+        // check for cargo-expand installation
+        if (expand) {
+            val installed = checkAndNotifyCargoExpandInstalled(project)
+            if (!installed) {
+                return null
+            }
+        }
 
         // change the toolchain
         if (toolchain != RustChannel.DEFAULT) {

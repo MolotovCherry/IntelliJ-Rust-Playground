@@ -31,7 +31,7 @@ object ActionTools {
             val cwd = doc.toNioPath().parent
             val fileName = doc.name
 
-            val results = Helpers.parseOptions(doc, clean)
+            val results = Helpers.parseOptions(project, doc, clean) ?: return
 
             val commandLine = PatchCargoCommandLine(
                 "play",
