@@ -43,8 +43,6 @@ class RustScratchFileEditor(
             add(TestCheckBoxAction(file))
             addSeparator()
             add(VerboseCheckBoxAction(file))
-            addSeparator()
-            add(OnlyRunCheckBoxAction(file))
         }
     }
 
@@ -61,7 +59,6 @@ class RustScratchFileEditor(
             add(ModeTextField(file))
             addSeparator()
             add(CargoOptionTextField(file))
-            add(CargoOptionInRunCheckBoxAction(file))
         }
     }
 }
@@ -127,25 +124,6 @@ class ModeTextField(
 
     override fun textChanged(text: String) {
         properties.setValue("mode/${file.path}", text)
-    }
-}
-
-class OnlyRunCheckBoxAction(
-    val file: VirtualFile
-) : SmallBorderCheckboxAction("Only Run Window", "Only use the run window (don't compile in build window) [Faster]") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
-    override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("userun/${file.path}")
-    }
-
-    override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("userun/${file.path}", state)
-    }
-
-    override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("userun/${file.path}", false)
-        checkbox.isSelected = saved
     }
 }
 
@@ -298,25 +276,6 @@ class CheckCheckBoxAction(
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
         properties.setValue("check/${file.path}", state)
-    }
-}
-
-class CargoOptionInRunCheckBoxAction(
-    val file: VirtualFile
-) : SmallBorderCheckboxAction("In Run", "Also add Cargo options to run") {
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-
-    override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = properties.getBoolean("cargorun/${file.path}", false)
-        checkbox.isSelected = saved
-    }
-
-    override fun isSelected(e: AnActionEvent): Boolean {
-        return properties.getBoolean("cargorun/${file.path}")
-    }
-
-    override fun setSelected(e: AnActionEvent, state: Boolean) {
-        properties.setValue("cargorun/${file.path}", state)
     }
 }
 

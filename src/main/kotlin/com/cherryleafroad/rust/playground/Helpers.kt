@@ -68,7 +68,6 @@ object Helpers {
         val release = properties.getBoolean("release/${file.path}")
         val test = properties.getBoolean("test/${file.path}")
         val verbose = properties.getBoolean("verbose/${file.path}")
-        val onlyrun = properties.getBoolean("userun/${file.path}")
 
         val toolchain = RustChannel.fromIndex(properties.getInt("toolchain/${file.path}", Settings.getSelectedToolchain().index))
         val edition = Edition.fromIndex(properties.getInt("edition/${file.path}", Edition.DEFAULT.index))
@@ -78,21 +77,12 @@ object Helpers {
         val args = properties.getValue("args/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
         val mode = properties.getValue("mode/${file.path}", "")
         val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
-        val cargoOptionInRun =  properties.getBoolean("cargorun/${file.path}", false)
 
         if (args.isNotEmpty()) {
             args.add(0, "--")
         }
 
-        var runRun = true
-        var runBuild = !onlyrun
-        var runBuild2 = false
-        val runCmd = mutableListOf<String>()
-        val buildCmd = mutableListOf("play")
-        val buildCmd2 = mutableListOf("play")
-
-        buildCmd.add("--mode")
-        buildCmd.add("build")
+        val runCmd = mutableListOf("play")
 
         var cleanAndRun = false
         var cleanSingle = false
@@ -203,11 +193,9 @@ object Helpers {
 
         return ParserResults(
             check, clean, expand, infer,
-            quiet, release, test, verbose, toolchain, onlyrun,
+            quiet, release, test, verbose, toolchain,
             cargoOption, edition, mode, src, args,
-            runCmd, buildCmd, buildCmd2, runBuild, runBuild2,
-            runRun, cleanSingle, cleanAndRun, cleanCmd,
-            finalBuildCmd, finalRunCmd, finalBuildCmd2
+            runCmd
         )
     }
 }
