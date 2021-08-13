@@ -5,21 +5,24 @@ An IntelliJ plugin allowing you to use a similar playground experience just like
 ### Install
 [![market-button](https://user-images.githubusercontent.com/13651622/115764408-5eee6d00-a35a-11eb-916b-b14c32a9803c.png)](https://plugins.jetbrains.com/plugin/16586-rust-playground)
 
-### Beta
-_**Want to try the new beta? Follow [instructions here](https://www.jetbrains.com/help/idea/managing-plugins.html#repos) to add the beta channel repo**_  
-`https://plugins.jetbrains.com/plugins/list?channel=beta&pluginId=16586`
-
 ### Features
 - Complete integration with official IntelliJ Rust plugin
 - Run playground-like scripts directly from your IDE without having to setup any projects
 - Supports naming build-dependencies, different toolchains, and all `cargo-play` flags straight from the top of your file (specified in comments)
 - Ability to change the Rust default scratch file template to your own
 
-#### Upcoming Beta Features
-- New editor toolbar to change options. No more comments needed (except for deps as that's cargo-play's requirement)!
-- Makes use of build window as well for better information viewing
-- - Which means that all that verbose build info will be in the build window instead of cluttering up your main run window!
+### Beta
+_**Want to try the new beta? Follow [instructions here](https://www.jetbrains.com/help/idea/managing-plugins.html#repos) to add the beta channel repo**_  
+`https://plugins.jetbrains.com/plugins/list?channel=beta&pluginId=16586`
 
+We need testers to report beta bugs so we can release it into stable as soon as possible. Please test it out!
+
+- New editor toolbar system
+- Comments are no longer required! All options can be controlled straight from the toolbar~
+
+![QQ截图20210813124830](https://user-images.githubusercontent.com/13651622/129411302-c91c205a-e3ef-4c09-a021-fff94c7b1733.png)
+
+## Stable
 
 ### Usage
 - Make or open a cargo project
