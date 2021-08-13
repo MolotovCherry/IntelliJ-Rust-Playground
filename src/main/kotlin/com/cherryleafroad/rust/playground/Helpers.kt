@@ -57,11 +57,11 @@ object Helpers {
         notification.notify(project)
     }
 
-    fun parseOptions(file: VirtualFile): ParserResults {
+    fun parseOptions(file: VirtualFile, clean: Boolean): ParserResults {
         val properties = PropertiesComponent.getInstance()
 
         val check = properties.getBoolean("check/${file.path}")
-        val clean = properties.getBoolean("clean/${file.path}")
+        val cleanProp = properties.getBoolean("clean/${file.path}")
         val expand = properties.getBoolean("expand/${file.path}")
         val infer = properties.getBoolean("infer/${file.path}")
         val quiet = properties.getBoolean("quiet/${file.path}")
@@ -78,124 +78,61 @@ object Helpers {
         val mode = properties.getValue("mode/${file.path}", "")
         val cargoOption = properties.getValue("cargoOptions/${file.path}", "").split(" ").filter { it.isNotEmpty() }.toMutableList()
 
-        if (args.isNotEmpty()) {
-            args.add(0, "--")
-        }
+        val runCmd = mutableListOf<String>()
+        cargoOption.add(0, "--color=always")
 
-        val runCmd = mutableListOf("play")
+        if (clean) {
+            // one time clean and exit
+            runCmd.add("--mode")
+            runCmd.add("clean")
+        } else {
+            if (args.isNotEmpty()) {
+                args.add(0, "--")
+            }
 
-        var cleanAndRun = false
-        var cleanSingle = false
-        val cleanCmd = mutableListOf("play")
-        if (check) {
-            if (!onlyrun) {
-                buildCmd2.add("--check")
-                runRun = false
-                runBuild = false
-                runBuild2 = true
-            } else {
+            if (check) {
                 runCmd.add("--check")
             }
-        }
-        if (clean) {
-            if (!onlyrun) {
-                cleanAndRun = true
-                cleanCmd.add("--mode")
-                cleanCmd.add("clean")
-                cleanCmd.addAll(src.toList())
-            } else {
-                // this will do a clean + run in one go
+            if (cleanProp) {
                 runCmd.add("--clean")
             }
-        }
-        if (expand) {
-            buildCmd.subList(1, buildCmd.size).clear()
-            buildCmd.add("--expand")
-            buildCmd2.add("--expand")
-            runCmd.add("--expand")
-        }
-        if (infer) {
-            buildCmd.add("--infer")
-            buildCmd2.add("--infer")
-            runCmd.add("--infer")
-        }
-        if (quiet) {
-            runCmd.add("--quiet")
-        }
-        if (release) {
-            buildCmd.add("--release")
-            buildCmd2.add("--release")
-            runCmd.add("--release")
-        }
-        if (test) {
-            // we don't currently have a special test runner
-            runCmd.add("--test")
-            runBuild = false
-        }
-        if (verbose) {
-            buildCmd.add("--verbose")
-            buildCmd2.add("--verbose")
-            runCmd.add("--verbose")
-        }
-        if (edition != Edition.DEFAULT) {
-            buildCmd.add("--edition")
-            buildCmd.add(edition.myName)
-            buildCmd2.add("--edition")
-            buildCmd2.add(edition.myName)
-            runCmd.add("--edition")
-            runCmd.add(edition.myName)
-        }
-        if (mode.isNotEmpty()) {
-            if (mode == "clean") {
-                if (!onlyrun) {
-                    cleanCmd.add("--mode")
-                    cleanCmd.add("clean")
-                    cleanCmd.addAll(src.toList())
-                    cleanSingle = true
-                    runRun = false
-                } else {
-                    runCmd.add("--mode")
-                    runCmd.add("clean")
-                }
-            } else {
+            if (expand) {
+                runCmd.add("--expand")
+            }
+            if (infer) {
+                runCmd.add("--infer")
+            }
+            if (quiet) {
+                runCmd.add("--quiet")
+            }
+            if (release) {
+                runCmd.add("--release")
+            }
+            if (test) {
+                runCmd.add("--test")
+            }
+            if (verbose) {
+                runCmd.add("--verbose")
+            }
+            if (edition != Edition.DEFAULT) {
+                runCmd.add("--edition")
+                runCmd.add(edition.myName)
+            }
+            if (mode.isNotEmpty()) {
                 runCmd.add("--mode")
                 runCmd.add(mode)
             }
-        }
 
-        cargoOption.add(0, "--color=always")
-
-        if (!cargoOptionInRun) {
-            runCmd.add(runCmd.size, "--cargo-option=\"--color=always\"")
-        } else {
             runCmd.add(runCmd.size, "--cargo-option=\"${cargoOption.joinToString(" ")}\"")
         }
 
-        if (!expand) {
-            cargoOption.add(1, "--message-format=json-diagnostic-rendered-ansi")
-        }
-
-        buildCmd.add(buildCmd.size, "--cargo-option=\"${cargoOption.joinToString(" ")}\"")
-        buildCmd2.add(buildCmd2.size, "--cargo-option=\"--color=always --message-format=json-diagnostic-rendered-ansi\"")
-
-        val finalBuildCmd = mutableListOf<String>()
-        finalBuildCmd.addAll(buildCmd)
-        finalBuildCmd.addAll(src)
-
-        val finalBuildCmd2 = mutableListOf<String>()
-        finalBuildCmd2.addAll(buildCmd2)
-        finalBuildCmd2.addAll(src)
-
-        val finalRunCmd = mutableListOf<String>()
-        finalRunCmd.addAll(runCmd)
-        finalRunCmd.addAll(src)
-        finalRunCmd.addAll(args)
+        val finalCmd = runCmd + src + args
 
         return ParserResults(
-            check, clean, expand, infer,
+            check, cleanProp, expand, infer,
             quiet, release, test, verbose, toolchain,
             cargoOption, edition, mode, src, args,
-            runCmd
+            runCmd, finalCmd
         )
     }
 }

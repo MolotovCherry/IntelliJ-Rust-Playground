@@ -5,8 +5,8 @@ import org.rust.cargo.toolchain.RustChannel
 enum class Edition(val index: Int, val myName: String) {
     DEFAULT(0, "DEFAULT"),
     EDITION_2015(1, "2015"),
-    EDITION_2018(2, "2018"),
-    EDITION_2021(3, "2021");
+    EDITION_2018(2, "2018");
+    //EDITION_2021(3, "2021"); -> not yet released
 
     companion object {
         fun fromIndex(index: Int): Edition = values().find { it.index == index } ?: DEFAULT
@@ -33,10 +33,5 @@ data class ParserResults(
     val args: List<String>,
 
     val runCmd: List<String>,
-
-    val cleanSingle: Boolean,
-    val cleanAndRun: Boolean,
-    val cleanCmd: List<String>,
-
-    val finalRunCmd: List<String>
+    val finalCmd: List<String>
 )

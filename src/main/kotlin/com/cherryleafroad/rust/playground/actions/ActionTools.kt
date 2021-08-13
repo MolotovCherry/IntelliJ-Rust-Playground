@@ -3,16 +3,13 @@ package com.cherryleafroad.rust.playground.actions
 import com.cherryleafroad.rust.playground.Helpers
 import com.cherryleafroad.rust.playground.PatchCargoCommandLine
 import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.openapi.actionSystem.ActionPlaces
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.project.Project
 import org.rust.cargo.project.model.cargoProjects
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
 
-class RunAction : AnAction() {
-    override fun actionPerformed(event: AnActionEvent) {
+object ActionTools {
+    fun actionPerformed(event: AnActionEvent, clean: Boolean = false) {
         val project = event.project!!
 
         val doc = event.dataContext.psiFile?.virtualFile ?: return
@@ -32,38 +29,16 @@ class RunAction : AnAction() {
             val cwd = doc.toNioPath().parent
             val fileName = doc.name
 
-            val results = Helpers.parseOptions(doc)
+            val results = Helpers.parseOptions(doc, clean)
 
             val commandLine = PatchCargoCommandLine(
                 "play",
                 cwd,
-                results.args
+                results.finalCmd
             )
             commandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
         } else {
             Helpers.cargoPlayInstallNotification(project)
-        }
-    }
-
-    override fun update(e: AnActionEvent) {
-        // Set the availability based on whether a project is open
-        val project: Project? = e.project
-        e.presentation.isVisible = e.place == ActionPlaces.MAIN_MENU
-        e.presentation.isEnabled = false
-
-        if (project != null) {
-            e.dataContext.psiFile?.virtualFile?.let {
-                if (e.place == ActionPlaces.EDITOR_POPUP || e.place == ActionPlaces.MAIN_MENU || e.place == ActionPlaces.PROJECT_VIEW_POPUP || e.place == ActionPlaces.KEYBOARD_SHORTCUT) {
-                    val isRust = it.isRustFile
-                    val isScratch = ScratchUtil.isScratch(it)
-
-                    e.presentation.isEnabledAndVisible = isRust && isScratch
-
-                    if (e.place == ActionPlaces.MAIN_MENU && !(isRust && isScratch)) {
-                        e.presentation.isVisible = true
-                    }
-                }
-            }
         }
     }
 }
