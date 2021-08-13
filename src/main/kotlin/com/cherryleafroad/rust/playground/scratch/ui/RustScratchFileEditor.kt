@@ -97,7 +97,7 @@ class SrcTextField(
 
 class CargoOptionTextField(
     val file: VirtualFile
-) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo [default: build window]") {
+) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo") {
     private val properties: PropertiesComponent = PropertiesComponent.getInstance()
     override val textfieldLength: Int =  100
 
