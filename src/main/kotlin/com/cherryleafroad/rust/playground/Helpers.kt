@@ -81,6 +81,11 @@ object Helpers {
         val runCmd = mutableListOf<String>()
         cargoOption.add(0, "--color=always")
 
+        // change the toolchain
+        if (toolchain != RustChannel.DEFAULT) {
+            runCmd.add("+${toolchain.channel!!}")
+        }
+
         if (clean) {
             // one time clean and exit
             runCmd.add("--mode")
