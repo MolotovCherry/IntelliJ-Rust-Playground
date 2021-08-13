@@ -1,4 +1,4 @@
-package com.cherryleafroad.rust.playground
+package com.cherryleafroad.rust.playground.utils
 
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunManagerEx

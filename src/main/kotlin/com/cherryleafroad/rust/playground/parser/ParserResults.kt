@@ -1,4 +1,4 @@
-package com.cherryleafroad.rust.playground
+package com.cherryleafroad.rust.playground.parser
 
 import org.rust.cargo.toolchain.RustChannel
 

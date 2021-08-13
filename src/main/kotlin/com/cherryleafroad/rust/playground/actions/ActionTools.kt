@@ -1,7 +1,8 @@
 package com.cherryleafroad.rust.playground.actions
 
-import com.cherryleafroad.rust.playground.Helpers
-import com.cherryleafroad.rust.playground.PatchCargoCommandLine
+import com.cherryleafroad.rust.playground.utils.Helpers
+import com.cherryleafroad.rust.playground.parser.Parser
+import com.cherryleafroad.rust.playground.utils.PatchCargoCommandLine
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import org.rust.cargo.project.model.cargoProjects
@@ -31,7 +32,7 @@ object ActionTools {
             val cwd = doc.toNioPath().parent
             val fileName = doc.name
 
-            val results = Helpers.parseOptions(project, doc, clean) ?: return
+            val results = Parser.parseOptions(project, doc, clean) ?: return
 
             val commandLine = PatchCargoCommandLine(
                 "play",
