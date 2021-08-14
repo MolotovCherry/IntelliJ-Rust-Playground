@@ -25,7 +25,7 @@ jobs:
         IS_CI: "True"
 
     - name: Build
-      run: ./gradlew build
+      run: ./gradlew buildPlugin
       env:
         IS_CI: "True"
 
