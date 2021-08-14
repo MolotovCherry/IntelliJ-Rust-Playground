@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
+import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
@@ -16,25 +17,21 @@ class ExecuteAction : DumbAwareAction() {
 
     override fun update(e: AnActionEvent) {
         // Set the availability based on whether a project is open
-        val project: Project? = e.project
-        e.presentation.isVisible = e.place == ActionPlaces.MAIN_MENU
-        e.presentation.isEnabled = false
+        val project: Project = e.project ?: return
+        e.presentation.isEnabledAndVisible = false
 
-        if (project != null) {
-            if (!project.hasCargoProject) {
-                return
-            }
-
+        if (project.toolchain != null) {
             e.dataContext.psiFile?.virtualFile?.let {
-                if (e.place == ActionPlaces.EDITOR_POPUP || e.place == ActionPlaces.MAIN_MENU || e.place == ActionPlaces.PROJECT_VIEW_POPUP || e.place == ActionPlaces.KEYBOARD_SHORTCUT) {
+                if (e.place == ActionPlaces.EDITOR_POPUP ||
+                    e.place == ActionPlaces.MAIN_MENU ||
+                    e.place == ActionPlaces.PROJECT_VIEW_POPUP ||
+                    e.place == ActionPlaces.KEYBOARD_SHORTCUT ||
+                    e.place == ActionPlaces.EDITOR_TAB_POPUP) {
+
                     val isRust = it.isRustFile
                     val isScratch = ScratchUtil.isScratch(it)
 
                     e.presentation.isEnabledAndVisible = isRust && isScratch
-
-                    if (e.place == ActionPlaces.MAIN_MENU && !(isRust && isScratch)) {
-                        e.presentation.isVisible = true
-                    }
                 }
             }
         }

@@ -18,19 +18,15 @@ class EditorTabsMenuGroup : DefaultActionGroup("Explore to Cargo Play...", true)
         e.presentation.isEnabledAndVisible = false
 
         val project: Project = e.project ?: return
-        val hasCargoProject = project.hasCargoProject
 
-        if (!hasCargoProject || project.toolchain == null) {
-            return
-        }
+        project.toolchain ?: return
 
         e.dataContext.psiFile?.virtualFile?.let { file ->
             val isRust = file.isRustFile
             val isScratch = ScratchUtil.isScratch(file)
 
             if (isRust && isScratch) {
-                e.presentation.isEnabled = true
-                e.presentation.isVisible = true
+                e.presentation.isEnabledAndVisible = true
 
                 val service = project.service<CargoPlayProjectService>()
 
