@@ -73,6 +73,7 @@
             <reference id="Rust.Playground.OpenReleaseBinary"/>
             <add-to-group group-id="EditorTabPopupMenu" anchor="before" relative-to-action="Rust.Tools"/>
             <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="Rust.Tools"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="Rust.Tools"/>
         </group>
     </actions>
 </idea-plugin>
