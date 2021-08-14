@@ -23,6 +23,8 @@
         <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.scratch.RustScratchCreationHelper"/>
         <fileDocumentManagerListener implementation="com.cherryleafroad.rust.playground.listeners.FileListener"/>
 
+        <projectService serviceImplementation="com.cherryleafroad.rust.playground.services.CargoPlayProjectService"/>
+
         <projectConfigurable instance="com.cherryleafroad.rust.playground.config.SettingsConfigurable" id="Rust.Playground.Settings"
                              displayName="Playground" nonDefaultProject="true" groupId="language" parentId="language.rust"/>
 
@@ -51,6 +53,29 @@
             <reference id="Rust.Playground.Run"/>
             <add-to-group group-id="RunMenu" anchor="before" relative-to-action="ChooseRunConfiguration"/>
             <separator/>
+        </group>
+
+        <action id="Rust.Playground.OpenCargoPlayFolder" class="com.cherryleafroad.rust.playground.actions.OpenCargoPlayFolderAction"
+                text="Project Folder" description="Open Cargo Play project folder in explorer"
+                icon="AllIcons.Nodes.Folder">
+        </action>
+        <action id="Rust.Playground.OpenDebugBinary" class="com.cherryleafroad.rust.playground.actions.OpenCargoPlayDebugBinaryAction"
+                text="Debug Binary" description="Open Cargo Play debug binary in explorer"
+                icon="AllIcons.FileTypes.Any_type">
+        </action>
+        <action id="Rust.Playground.OpenReleaseBinary" class="com.cherryleafroad.rust.playground.actions.OpenCargoPlayReleaseBinaryAction"
+                text="Release Binary" description="Open Cargo Play release binary in explorer"
+                icon="AllIcons.FileTypes.Any_type">
+        </action>
+
+        <group id="Rust.Playground.OpenFolder" class="com.cherryleafroad.rust.playground.actions.EditorTabsMenuGroup"
+               icon="AllIcons.Nodes.Folder"
+               popup="true">
+            <reference id="Rust.Playground.OpenCargoPlayFolder"/>
+            <reference id="Rust.Playground.OpenDebugBinary"/>
+            <reference id="Rust.Playground.OpenReleaseBinary"/>
+            <add-to-group group-id="EditorTabPopupMenu" anchor="before" relative-to-action="Rust.Tools"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="Rust.Tools"/>
         </group>
     </actions>
 </idea-plugin>
