@@ -2,6 +2,9 @@ name: IntelliJ Platform Plugin Compatibility
 
 on:
   push:
+  pull_request:
+  schedule:
+    - cron:  '30 5 1/4 * *'
 
 jobs:
   compatibility:
