@@ -1,11 +1,10 @@
 # IntelliJ Rust Playground
 
+[![Marketplace Download](https://img.shields.io/badge/Marketplace-Download-orange?style=plastic)](https://plugins.jetbrains.com/plugin/16586-rust-playground) [![Latest Version](https://img.shields.io/jetbrains/plugin/v/16586?style=plastic&label=Latest%20Version)](https://plugins.jetbrains.com/plugin/16586-rust-playground/versions) ![Downloads](https://img.shields.io/jetbrains/plugin/d/16586?label=Downloads&style=plastic&color=blue)
+
 [![Build](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml) [![IntelliJ Platform Plugin Compatibility](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml)
 
 An IntelliJ plugin allowing you to use a similar playground experience just like [https://play.rust-lang.org/](https://play.rust-lang.org/), except straight from your IDE!
-
-### Install
-[![market-button](https://user-images.githubusercontent.com/13651622/115764408-5eee6d00-a35a-11eb-916b-b14c32a9803c.png)](https://plugins.jetbrains.com/plugin/16586-rust-playground)
 
 ### Features
 - Complete integration with official IntelliJ Rust plugin
@@ -13,7 +12,7 @@ An IntelliJ plugin allowing you to use a similar playground experience just like
 - Supports naming build-dependencies, different toolchains, and all `cargo-play` flags straight from the top of your file (specified in comments)
 - Ability to change the Rust default scratch file template to your own
 
-### Beta
+## Beta
 _**Want to try the new beta? Follow [instructions here](https://www.jetbrains.com/help/idea/managing-plugins.html#repos) to add the beta channel repo**_  
 `https://plugins.jetbrains.com/plugins/list?channel=beta&pluginId=16586`
 
@@ -21,6 +20,7 @@ We need testers to report beta bugs so we can release it into stable as soon as 
 
 - New editor toolbar system
 - Comments are no longer required! All options can be controlled straight from the toolbar~
+- Upcoming: Open Cargo Play folder from right click menu
 
 ![QQ截图20210813124830](https://user-images.githubusercontent.com/13651622/129411302-c91c205a-e3ef-4c09-a021-fff94c7b1733.png)
 
