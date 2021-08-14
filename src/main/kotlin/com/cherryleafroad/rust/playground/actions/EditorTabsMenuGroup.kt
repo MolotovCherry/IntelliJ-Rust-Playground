@@ -3,7 +3,6 @@ package com.cherryleafroad.rust.playground.actions
 import com.cherryleafroad.rust.playground.scratch.ui.ScratchSettings
 import com.cherryleafroad.rust.playground.services.CargoPlayProjectService
 import com.intellij.ide.scratch.ScratchUtil
-import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.components.service

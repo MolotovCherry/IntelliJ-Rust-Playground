@@ -1,8 +1,8 @@
 package com.cherryleafroad.rust.playground.parser
 
-import com.cherryleafroad.rust.playground.utils.Helpers
 import com.cherryleafroad.rust.playground.config.Settings
 import com.cherryleafroad.rust.playground.scratch.ui.ScratchSettings
+import com.cherryleafroad.rust.playground.utils.Helpers
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import org.rust.cargo.toolchain.RustChannel

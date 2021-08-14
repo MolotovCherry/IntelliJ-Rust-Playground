@@ -1,11 +1,10 @@
 package com.cherryleafroad.rust.playground.actions
 
-import com.cherryleafroad.rust.playground.utils.Helpers
 import com.cherryleafroad.rust.playground.parser.Parser
+import com.cherryleafroad.rust.playground.utils.Helpers
 import com.cherryleafroad.rust.playground.utils.PatchCargoCommandLine
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
-import org.rust.cargo.project.model.cargoProjects
 import org.rust.cargo.project.settings.toolchain
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
