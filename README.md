@@ -1,6 +1,6 @@
 # IntelliJ Rust Playground
 
-[![Marketplace Download](https://img.shields.io/badge/Marketplace-Download-orange?style=plastic)](https://plugins.jetbrains.com/plugin/16586-rust-playground) [![Latest Version](https://img.shields.io/jetbrains/plugin/v/16586?style=plastic&label=Latest%20Version)](https://plugins.jetbrains.com/plugin/16586-rust-playground/versions) ![Downloads](https://img.shields.io/jetbrains/plugin/d/16586?label=Downloads&style=plastic&color=blue)
+[![Marketplace](https://img.shields.io/jetbrains/plugin/v/16586?style=plastic&label=Marketplace&color=orange)](https://plugins.jetbrains.com/plugin/16586-rust-playground) ![Downloads](https://img.shields.io/jetbrains/plugin/d/16586?label=Downloads&style=plastic&color=blue)
 
 [![Build](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml) [![IntelliJ Platform Plugin Compatibility](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml)
 
