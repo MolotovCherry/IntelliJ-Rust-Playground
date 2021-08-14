@@ -47,7 +47,13 @@ class Setting(prefix: String, filePath: String, private val properties: Properti
         properties.setValue(setting, value)
     }
 
-    fun setValue(value: Int, defaultValue: Int = 0) {
+    fun setValue(value: Int) {
+        // this is needed to avoid "unset if value equals default" feature
+        // basically, always save the setting as it should be, don't do any unset nonsense
+        var defaultValue = 0
+        if (value == defaultValue) {
+            defaultValue++
+        }
         properties.setValue(setting, value, defaultValue)
     }
 

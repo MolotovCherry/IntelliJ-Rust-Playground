@@ -1,6 +1,7 @@
 package com.cherryleafroad.rust.playground.config.ui
 
 import com.cherryleafroad.rust.playground.config.Settings
+import com.cherryleafroad.rust.playground.parser.Edition
 import org.rust.cargo.toolchain.RustChannel
 import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
@@ -12,6 +13,7 @@ class SettingsForm {
     lateinit var resetBtn: JButton
     lateinit var cargoPlayInstalled: JLabel
     lateinit var selectedToolchain: JComboBox<String>
+    lateinit var selectedEdition: JComboBox<String>
     lateinit var scrollPane: JScrollPane
 
     var scrollPaneShowing = false
@@ -23,6 +25,10 @@ class SettingsForm {
 
         for (c in RustChannel.values()) {
             selectedToolchain.addItem(c.name)
+        }
+
+        for (c in Edition.values()) {
+            selectedEdition.addItem(c.myName)
         }
 
         scratchDefault.text = Settings.getScratchDefault()

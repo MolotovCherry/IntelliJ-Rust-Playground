@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground.config
 
+import com.cherryleafroad.rust.playground.parser.Edition
 import com.intellij.ide.util.PropertiesComponent
 import org.rust.cargo.toolchain.RustChannel
 
@@ -11,11 +12,16 @@ object Settings {
     }
 
     fun getSelectedToolchain(): RustChannel {
-        return RustChannel.fromIndex(properties.getInt(TOOLCHAIN, RustChannel.DEFAULT.index))
+        return RustChannel.fromIndex(properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index))
     }
 
-    const val TOOLCHAIN: String = "rust_toolchain"
+    fun getSelectedEdition(): Edition {
+        return Edition.fromIndex(properties.getInt(EDITION_KEY, Edition.DEFAULT.index))
+    }
+
+    const val TOOLCHAIN_KEY: String = "rust_toolchain"
     const val SCRATCH_KEY: String = "scratch_default"
+    const val EDITION_KEY: String = "rust_edition"
 
     val DEFAULT_TEXT =
         """

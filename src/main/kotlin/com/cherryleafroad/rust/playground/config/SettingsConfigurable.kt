@@ -1,8 +1,10 @@
 package com.cherryleafroad.rust.playground.config
 
+import com.cherryleafroad.rust.playground.config.Settings.EDITION_KEY
 import com.cherryleafroad.rust.playground.config.Settings.SCRATCH_KEY
-import com.cherryleafroad.rust.playground.config.Settings.TOOLCHAIN
+import com.cherryleafroad.rust.playground.config.Settings.TOOLCHAIN_KEY
 import com.cherryleafroad.rust.playground.config.ui.SettingsForm
+import com.cherryleafroad.rust.playground.parser.Edition
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SearchableConfigurable
@@ -24,13 +26,15 @@ class SettingsConfigurable(private val project: Project) : SearchableConfigurabl
 
     override fun isModified(): Boolean {
         val scratch = mySettings!!.getScratch().hashCode() != origHash
-        val toolchain = mySettings!!.selectedToolchain.selectedIndex != properties.getInt(TOOLCHAIN, RustChannel.DEFAULT.index)
-        return scratch || toolchain
+        val toolchain = mySettings!!.selectedToolchain.selectedIndex != properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index)
+        val edition = mySettings!!.selectedEdition.selectedIndex != properties.getInt(EDITION_KEY, Edition.DEFAULT.index)
+        return scratch || toolchain || edition
     }
 
     override fun apply() {
         properties.setValue(SCRATCH_KEY, mySettings!!.getScratch())
-        properties.setValue(TOOLCHAIN, mySettings!!.selectedToolchain.selectedIndex, RustChannel.DEFAULT.index)
+        properties.setValue(TOOLCHAIN_KEY, mySettings!!.selectedToolchain.selectedIndex, RustChannel.DEFAULT.index)
+        properties.setValue(EDITION_KEY, mySettings!!.selectedEdition.selectedIndex, Edition.DEFAULT.index)
     }
 
     override fun reset() {
@@ -38,7 +42,8 @@ class SettingsConfigurable(private val project: Project) : SearchableConfigurabl
             mySettings!!.cargoPlayInstalled.isEnabled = it
         }
 
-        mySettings!!.selectedToolchain.selectedIndex = properties.getInt(TOOLCHAIN, RustChannel.DEFAULT.index)
+        mySettings!!.selectedToolchain.selectedIndex = properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index)
+        mySettings!!.selectedEdition.selectedIndex = properties.getInt(EDITION_KEY, Edition.DEFAULT.index)
     }
 
     override fun getDisplayName(): String {

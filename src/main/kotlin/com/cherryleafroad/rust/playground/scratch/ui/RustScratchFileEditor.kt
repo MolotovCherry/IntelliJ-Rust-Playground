@@ -287,17 +287,17 @@ class ToolchainComboBoxAction(
     override val itemList = RustChannel.values().map { it.name }
 
     init {
-        TOOLCHAIN.setValue(defaultSelection.index, RustChannel.DEFAULT.index)
+        TOOLCHAIN.setValue(defaultSelection.index)
     }
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
-        (action as InnerAction).index == defaultSelection.index
+        (action as InnerAction).index == TOOLCHAIN.getInt(defaultSelection.index)
     }
 
     override var currentSelection: String = defaultSelection.name
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        TOOLCHAIN.setValue(index, defaultSelection.index)
+        TOOLCHAIN.setValue(index)
         currentSelection = RustChannel.values()[index].name
         updateToolbar()
     }
@@ -307,21 +307,23 @@ class EditionComboBoxAction(
     private val EDITION: Setting,
     val updateToolbar: () -> Unit
 ) : ComboBoxAction("Edition") {
+    private val defaultSelection = Settings.getSelectedEdition()
+
     override val itemList = Edition.values().map { it.myName }
 
     init {
-        EDITION.unsetValue()
+        EDITION.setValue(defaultSelection.index)
     }
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
-        (action as InnerAction).index == Edition.DEFAULT.index
+        (action as InnerAction).index == EDITION.getInt(defaultSelection.index)
     }
 
-    override var currentSelection: String = Edition.DEFAULT.myName
+    override var currentSelection: String = defaultSelection.myName
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        EDITION.setValue(index, Edition.DEFAULT.index)
-        currentSelection = itemList[index]
+        EDITION.setValue(index)
+        currentSelection = Edition.values()[index].myName
         updateToolbar()
     }
 }
