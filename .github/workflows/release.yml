@@ -23,13 +23,10 @@ jobs:
 
       - name: Verify Plugin
         run: ./gradlew verifyPlugin
-        env:
-          IS_CI: "True"
 
       - name: Build
         run: ./gradlew publishPlugin
         env:
-          IS_CI: "True"
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
 
       - name: Upload the artifacts
