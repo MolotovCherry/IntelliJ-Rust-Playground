@@ -28,7 +28,6 @@
         <notificationGroup id="Rust Playground" displayType="BALLOON"/>
         <editorNotificationProvider implementation="com.cherryleafroad.rust.playground.notifications.CargoPlayNotInstalledNotificationProvider"/>
         <editorNotificationProvider implementation="com.cherryleafroad.rust.playground.notifications.CargoPlayToolchainMissingNotificationProvider"/>
-        <editorNotificationProvider implementation="com.cherryleafroad.rust.playground.notifications.CargoPlayNotCargoProjectNotificationProvider"/>
 
         <fileEditorProvider implementation="com.cherryleafroad.rust.playground.scratch.ui.RustScratchFileEditorProvider"/>
     </extensions>

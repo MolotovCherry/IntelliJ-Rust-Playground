@@ -25,10 +25,8 @@ object ActionTools {
             return
         }
 
-        val cargoPlayInstalled = Helpers.checkCargoPlayInstalled(project)
-        if (cargoPlayInstalled) {
-            val cargoProject = project.cargoProjects.allProjects.firstOrNull() ?: return
-
+        val cargoPlayInstalled = Helpers.checkAndNotifyCargoPlayInstallation(project)
+        if (project.toolchain != null && cargoPlayInstalled) {
             val cwd = doc.toNioPath().parent
             val fileName = doc.name
 
@@ -39,9 +37,7 @@ object ActionTools {
                 cwd,
                 results.finalCmd
             )
-            commandLine.run(cargoProject, "Play $fileName", saveConfiguration = false)
-        } else {
-            Helpers.cargoPlayInstallNotification(project)
+            commandLine.run(project, "Play $fileName")
         }
     }
 }

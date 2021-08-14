@@ -1,16 +1,34 @@
 package com.cherryleafroad.rust.playground.utils
 
+import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunManagerEx
 import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesData
+import com.intellij.execution.executors.DefaultRunExecutor
+import com.intellij.openapi.project.Project
 import org.rust.cargo.runconfig.command.CargoCommandConfiguration
 import org.rust.cargo.runconfig.command.CargoCommandConfigurationType
 import org.rust.cargo.toolchain.BacktraceMode
-import org.rust.cargo.toolchain.RsCommandLineBase
 import org.rust.cargo.toolchain.RustChannel
 import java.io.File
 import java.nio.file.Path
+
+abstract class RsPatchCommandLineBase {
+    abstract val command: String
+    abstract val workingDirectory: Path
+    abstract val redirectInputFrom: File?
+    abstract val additionalArguments: List<String>
+
+    protected abstract fun createRunConfiguration(runManager: RunManagerEx, name: String? = null): RunnerAndConfigurationSettings
+
+    fun run(project: Project, presentableName: String = command) {
+        val runManager = RunManagerEx.getInstanceEx(project)
+        val configuration = createRunConfiguration(runManager, presentableName)
+        val executor = DefaultRunExecutor.getRunExecutorInstance()
+        ProgramRunnerUtil.executeConfiguration(configuration, executor)
+    }
+}
 
 data class PatchCargoCommandLine(
     override val command: String, // Can't be `enum` because of custom subcommands
@@ -23,7 +41,7 @@ data class PatchCargoCommandLine(
     val requiredFeatures: Boolean = true,
     val allFeatures: Boolean = false,
     val emulateTerminal: Boolean = false
-) : RsCommandLineBase() {
+) : RsPatchCommandLineBase() {
     override fun createRunConfiguration(runManager: RunManagerEx, name: String?): RunnerAndConfigurationSettings =
         runManager.createCargoCommandRunConfiguration(this, name)
 }

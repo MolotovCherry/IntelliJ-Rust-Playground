@@ -8,9 +8,6 @@ import org.rust.cargo.runconfig.hasCargoProject
 
 internal class ProjectManagerListener : ProjectManagerListener {
     override fun projectOpened(project: Project) {
-        // ignore if toolchain missing or non-Rust project; missing toolchain happens in unconfigurated projects
-        if (project.toolchain != null && project.hasCargoProject) {
-            Helpers.checkAndNotifyCargoPlayInstallation(project)
-        }
+        Helpers.checkAndNotifyCargoPlayInstallation(project)
     }
 }
