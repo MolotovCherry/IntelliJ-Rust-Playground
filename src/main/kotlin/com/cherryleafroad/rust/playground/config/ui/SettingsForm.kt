@@ -12,6 +12,7 @@ class SettingsForm {
     lateinit var myPanel: JPanel
     lateinit var resetBtn: JButton
     lateinit var cargoPlayInstalled: JLabel
+    lateinit var cargoExpandInstalled: JLabel
     lateinit var selectedToolchain: JComboBox<String>
     lateinit var selectedEdition: JComboBox<String>
     lateinit var scrollPane: JScrollPane

@@ -41,6 +41,9 @@ class SettingsConfigurable(private val project: Project) : SearchableConfigurabl
         project.toolchain?.hasCargoExecutable("cargo-play")?.let {
             mySettings!!.cargoPlayInstalled.isEnabled = it
         }
+        project.toolchain?.hasCargoExecutable("cargo-expand")?.let {
+            mySettings!!.cargoExpandInstalled.isEnabled = it
+        }
 
         mySettings!!.selectedToolchain.selectedIndex = properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index)
         mySettings!!.selectedEdition.selectedIndex = properties.getInt(EDITION_KEY, Edition.DEFAULT.index)
