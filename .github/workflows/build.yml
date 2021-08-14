@@ -21,13 +21,9 @@ jobs:
 
     - name: Verify Plugin
       run: ./gradlew verifyPlugin
-      env:
-        IS_CI: "True"
 
     - name: Build
       run: ./gradlew buildPlugin
-      env:
-        IS_CI: "True"
 
     - name: Upload Artifact
       if: github.event_name != 'pull_request'
