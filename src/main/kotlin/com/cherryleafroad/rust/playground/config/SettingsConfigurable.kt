@@ -47,6 +47,7 @@ class SettingsConfigurable(private val project: Project) : SearchableConfigurabl
 
         mySettings!!.selectedToolchain.selectedIndex = properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index)
         mySettings!!.selectedEdition.selectedIndex = properties.getInt(EDITION_KEY, Edition.DEFAULT.index)
+        mySettings!!.setScratch(Settings.getScratchDefault())
     }
 
     override fun getDisplayName(): String {

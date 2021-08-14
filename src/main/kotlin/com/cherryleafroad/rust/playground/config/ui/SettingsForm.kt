@@ -64,4 +64,8 @@ class SettingsForm {
     fun getScratch(): String {
         return scratchDefault.text
     }
+
+    fun setScratch(value: String) {
+        scratchDefault.text = value
+    }
 }
