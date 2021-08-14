@@ -17,6 +17,9 @@ jobs:
           java-version: 11
           distribution: 'zulu'
 
+    - name: chmod build script
+      run: chmod +x gradlew
+
     - name: Verify Plugin
       run: ./gradlew verifyPlugin
       env:
