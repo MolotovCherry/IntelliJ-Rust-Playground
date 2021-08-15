@@ -21,9 +21,6 @@ jobs:
       - name: chmod build script
         run: chmod +x gradlew
 
-      - name: Verify Plugin
-        run: ./gradlew verifyPlugin
-
       - name: Build
         run: ./gradlew publishPlugin
         env:
