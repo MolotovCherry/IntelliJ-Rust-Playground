@@ -5,7 +5,9 @@ import com.cherryleafroad.rust.playground.utils.Helpers
 import com.cherryleafroad.rust.playground.utils.PatchCargoCommandLine
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationInfo
 import org.rust.cargo.project.settings.toolchain
+import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
 
@@ -21,6 +23,12 @@ object ActionTools {
         val toolchainExists = project.toolchain != null
         // this COULD trigger if you do a shortcut for example
         if (!isRust || !isScratch || !toolchainExists) {
+            return
+        }
+
+        // don't execute on unsupported IDE
+        val IDE = ApplicationInfo.getInstance().build.productCode
+        if (IDE == "CL" && !project.hasCargoProject) {
             return
         }
 

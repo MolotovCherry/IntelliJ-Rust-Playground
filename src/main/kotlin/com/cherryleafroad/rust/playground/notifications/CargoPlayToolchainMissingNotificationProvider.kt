@@ -53,7 +53,7 @@ class CargoPlayToolchainMissingNotificationProvider(
         }
 
         val panel = EditorNotificationPanel()
-        panel.text = "Rust Scratches disabled : Toolchain missing or misconfigured"
+        panel.text = "Rust Scratches disabled : Toolchain seems to be misconfigured"
 
         return panel
     }

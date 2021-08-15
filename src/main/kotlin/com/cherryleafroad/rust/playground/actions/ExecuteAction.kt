@@ -3,6 +3,7 @@ package com.cherryleafroad.rust.playground.actions
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import org.rust.cargo.project.settings.toolchain
@@ -19,6 +20,12 @@ class ExecuteAction : DumbAwareAction() {
         // Set the availability based on whether a project is open
         val project: Project = e.project ?: return
         e.presentation.isEnabledAndVisible = false
+
+        // don't execute on unsupported IDE
+        val IDE = ApplicationInfo.getInstance().build.productCode
+        if (IDE == "CL" && !project.hasCargoProject) {
+            return
+        }
 
         if (project.toolchain != null) {
             e.dataContext.psiFile?.virtualFile?.let {
