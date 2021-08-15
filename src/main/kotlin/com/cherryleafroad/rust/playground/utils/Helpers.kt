@@ -6,11 +6,20 @@ import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
+import com.intellij.util.PlatformUtils
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.cargo.toolchain.tools.cargo
 
 object Helpers {
+    fun executionUnsupported(project: Project): Boolean {
+        if (PlatformUtils.isCLion() && !project.hasCargoProject) {
+            return true
+        }
+
+        return false
+    }
+
     fun checkAndNotifyCargoExpandInstalled(project: Project): Boolean {
         val installed = project.toolchain?.hasCargoExecutable("cargo-expand") ?: false
 

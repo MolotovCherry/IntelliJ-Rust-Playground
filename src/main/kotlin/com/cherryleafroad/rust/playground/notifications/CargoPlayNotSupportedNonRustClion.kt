@@ -1,16 +1,14 @@
 package com.cherryleafroad.rust.playground.notifications
 
-import com.intellij.execution.Platform
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
-import org.rust.cargo.project.settings.toolchain
+import com.intellij.util.PlatformUtils
 import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.lang.core.psi.isRustFile
 
@@ -46,8 +44,7 @@ class CargoPlayNotSupportedNonRustClionNotificationProvider(
             val isScratch = ScratchUtil.isScratch(file)
             val hasCargoProject = project.hasCargoProject
 
-            val IDE = ApplicationInfo.getInstance().build.productCode
-            if (!hasCargoProject && IDE == "CL") {
+            if (!hasCargoProject && PlatformUtils.isCLion()) {
                 if (isRust && isScratch) {
                     val panel = EditorNotificationPanel()
                     panel.text = "Clion doesn't support Rust scratches in non-Cargo projects"

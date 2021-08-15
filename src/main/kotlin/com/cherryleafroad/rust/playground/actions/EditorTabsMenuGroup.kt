@@ -9,7 +9,6 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
 

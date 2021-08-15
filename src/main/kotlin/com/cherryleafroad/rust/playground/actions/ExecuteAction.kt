@@ -1,13 +1,12 @@
 package com.cherryleafroad.rust.playground.actions
 
+import com.cherryleafroad.rust.playground.utils.Helpers
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.lang.core.psi.isRustFile
 import org.rust.openapiext.psiFile
 
@@ -22,8 +21,7 @@ class ExecuteAction : DumbAwareAction() {
         e.presentation.isEnabledAndVisible = false
 
         // don't execute on unsupported IDE
-        val IDE = ApplicationInfo.getInstance().build.productCode
-        if (IDE == "CL" && !project.hasCargoProject) {
+        if (Helpers.executionUnsupported(project)) {
             return
         }
 
