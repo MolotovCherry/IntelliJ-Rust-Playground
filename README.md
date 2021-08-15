@@ -20,7 +20,10 @@ We need testers to report beta bugs so we can release it into stable as soon as 
 
 - New editor toolbar system
 - Comments are no longer required! All options can be controlled straight from the toolbar~
-- Upcoming: Open Cargo Play folder from right click menu
+- Open Cargo Play folder from right click menu
+- Edition selector in settings
+- Properly checks for cargo-expand installation (also indicator in settings)
+- Can be run in non-Cargo projects!
 
 ![QQ截图20210813124830](https://user-images.githubusercontent.com/13651622/129411302-c91c205a-e3ef-4c09-a021-fff94c7b1733.png)
 
