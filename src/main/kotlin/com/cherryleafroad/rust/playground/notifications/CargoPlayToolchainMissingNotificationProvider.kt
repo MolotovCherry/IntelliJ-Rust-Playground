@@ -45,10 +45,7 @@ class CargoPlayToolchainMissingNotificationProvider(
         val toolchainExists = project.toolchain != null
         val hasCargoProject = project.hasCargoProject
 
-        if (!isRust || !isScratch || !hasCargoProject) {
-            return null
-        }
-        if (toolchainExists) {
+        if (!isRust || !isScratch || toolchainExists) {
             return null
         }
 
