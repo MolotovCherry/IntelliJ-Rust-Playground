@@ -7,11 +7,12 @@ package com.cherryleafroad.rust.playground.scratch.ui
 
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.actionSystem.ex.CheckboxAction
+import com.intellij.openapi.project.DumbAware
 import com.intellij.ui.components.JBCheckBox
 import com.intellij.util.ui.JBUI
 import javax.swing.JComponent
 
-abstract class SmallBorderCheckboxAction(text: String, description: String? = null) : CheckboxAction(text, description, null) {
+abstract class SmallBorderCheckboxAction(text: String, description: String? = null) : CheckboxAction(text, description, null), DumbAware {
     lateinit var checkbox: JBCheckBox
 
     override fun createCustomComponent(presentation: Presentation, place: String): JComponent {

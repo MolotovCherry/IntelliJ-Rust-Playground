@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.actionSystem.Presentation
+import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.util.Condition
 import com.intellij.openapi.vcs.changes.committed.LabeledComboBoxAction
@@ -17,7 +18,7 @@ import javax.swing.JComponent
 
 abstract class ComboBoxAction(
     label: String
-) : LabeledComboBoxAction(label) {
+) : LabeledComboBoxAction(label), DumbAware {
     abstract val itemList: List<String>
     abstract val preselectedItem: Condition<AnAction>
     abstract var currentSelection: String
