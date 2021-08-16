@@ -67,7 +67,7 @@ class RustScratchFileEditor(
 
 class ArgsTextField(
     private val ARGS: Setting
-) : LabeledTextEditAction("Args", "Aguments to pass to program") {
+) : LabeledTextEditAction("Args", "Arguments to pass to program") {
     override val textfieldLength: Int =  100
 
     init {
