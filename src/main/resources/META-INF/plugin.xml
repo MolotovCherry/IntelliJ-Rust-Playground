@@ -10,14 +10,15 @@
     <description>A powerful local Rust playground, straight from your IDE! Inspired by the official Rust playground, but more convenient to use!</description>
 
     <change-notes><![CDATA[
-<h3>2.0.0-beta4</h3>
+<h3>2.0.0</h3>
 <ul>
+    <li>New toolbar to control cargo-play (no more comments!)</li>
     <li>Open Cargo Play folder in right click menu</li>
     <li>Edition setting in Playground Settings</li>
     <li>Cargo-expand installed indicator in Playground Settings</li>
     <li>Prompt to install cargo-expand if not installed (if you try to use the feature)</li>
     <li>Reset rust scratch textarea to last save in settings if you click reset link</li>
-    <li>Rust scratches can now be used in non-Rust projects (clion has no support for this however)</li>
+    <li>Rust scratches can now be used in non-Cargo projects (clion has no support for this however)</li>
 </ul>
     ]]></change-notes>
 
