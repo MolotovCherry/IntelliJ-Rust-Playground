@@ -52,6 +52,7 @@ fun installBinaryCrate(project: Project, crateName: String) {
     project.toolchain?.let {
         val commandLine = RustScratchCommandLine(
             listOf("install", "--force", crateName),
+            isPlayRun = false
         )
         commandLine.run(project, "Install $crateName")
     }
