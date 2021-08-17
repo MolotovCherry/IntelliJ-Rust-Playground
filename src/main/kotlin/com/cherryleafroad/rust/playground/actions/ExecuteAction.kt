@@ -20,11 +20,6 @@ class ExecuteAction : DumbAwareAction() {
         val project: Project = e.project ?: return
         e.presentation.isEnabledAndVisible = false
 
-        // don't execute on unsupported IDE
-        if (Helpers.executionUnsupported(project)) {
-            return
-        }
-
         if (project.toolchain != null) {
             e.dataContext.psiFile?.virtualFile?.let {
                 if (e.place == ActionPlaces.EDITOR_POPUP ||
