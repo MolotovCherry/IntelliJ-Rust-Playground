@@ -17,6 +17,7 @@ import com.intellij.ide.scratch.ScratchRootType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.search.GlobalSearchScopes
+import java.io.File
 import java.nio.file.Paths
 
 class RustScratchRunState(
@@ -34,11 +35,22 @@ class RustScratchRunState(
 
     fun createFilters(project: Project): List<Filter> {
         val list = mutableListOf<Filter>()
-        val cargoPlay = CargoPlayPath(runConfiguration.parserResults.src, runConfiguration.workingDirectory.toString())
-        val cargoPlayDir = VirtualFileManager.getInstance().findFileByNioPath(cargoPlay.cargoPlayDir) ?:
-        VirtualFileManager.getInstance().findFileByNioPath(
-            Paths.get(ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance()))
-        )!!
+
+        val cargoPlayDir = if (runConfiguration.parserResults.isPlayRun) {
+            // if this is a first run, then command hasn't run and the directory doesn't exist yet
+            // in order to get a non-null result and therefore link files, it needs to exist first
+            val cargoPlay = CargoPlayPath(runConfiguration.parserResults.src, runConfiguration.workingDirectory.toString())
+            val f = File(cargoPlay.cargoPlayDir.toString())
+            if (!f.exists()) {
+                f.mkdir()
+            }
+
+            VirtualFileManager.getInstance().findFileByNioPath(cargoPlay.cargoPlayDir)!!
+        } else {
+            VirtualFileManager.getInstance().findFileByNioPath(
+                Paths.get(ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance()))
+            )!!
+        }
 
         list.apply {
             add(RsExplainFilter())

@@ -67,6 +67,7 @@ data class ParserResults(
     var runCmd: List<String> = listOf(),
     var finalCmd: List<String> = listOf(),
 
+    var isPlayRun: Boolean = true,
     // scratch root directory
     var workingDirectory: Path = Paths.get(ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())),
     var backtraceMode: BacktraceMode = BacktraceMode.SHORT

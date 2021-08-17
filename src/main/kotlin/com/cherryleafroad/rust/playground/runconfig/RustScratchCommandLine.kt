@@ -17,9 +17,11 @@ data class RustScratchCommandLine(
 
     constructor(
         command: List<String>,
+        isPlayRun: Boolean = false,
         environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
     ) : this(ParserResults(
-        finalCmd = command
+        finalCmd = command,
+        isPlayRun = isPlayRun,
     ), environmentVariables)
 
     fun run(project: Project, presentableName: String) {

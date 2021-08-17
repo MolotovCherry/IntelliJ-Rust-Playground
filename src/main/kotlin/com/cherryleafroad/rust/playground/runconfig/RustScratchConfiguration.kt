@@ -28,6 +28,7 @@ class RustScratchConfiguration(
     var workingDirectory: Path = Paths.get(ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance()))
     var env: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
     lateinit var parserResults: ParserResults
+    var isPlayRun: Boolean = false
 
     override fun suggestedName(): String = command.joinToString(" ").substringBefore(" ").capitalize()
 
@@ -48,6 +49,7 @@ class RustScratchConfiguration(
         env = cmd.environmentVariables
         parserResults = cmd.parserResults
         workingDirectory = cmd.parserResults.workingDirectory
+        isPlayRun = cmd.parserResults.isPlayRun
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
