@@ -7,12 +7,17 @@ import com.intellij.execution.RunnerAndConfigurationSettings
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.openapi.project.Project
+import org.rust.cargo.project.model.cargoProjects
+import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.runconfig.command.CargoCommandConfiguration
 import org.rust.cargo.runconfig.command.CargoCommandConfigurationType
+import org.rust.cargo.runconfig.hasCargoProject
 import org.rust.cargo.toolchain.BacktraceMode
 import org.rust.cargo.toolchain.RustChannel
+import org.rust.cargo.toolchain.tools.cargo
 import java.io.File
 import java.nio.file.Path
+import java.nio.file.Paths
 
 abstract class RsPatchCommandLineBase {
     abstract val command: String
@@ -27,6 +32,20 @@ abstract class RsPatchCommandLineBase {
         val configuration = createRunConfiguration(runManager, presentableName)
         val executor = DefaultRunExecutor.getRunExecutorInstance()
         ProgramRunnerUtil.executeConfiguration(configuration, executor)
+    }
+}
+
+
+fun installBinaryCrate(project: Project, crateName: String) {
+    project.toolchain?.let {
+        val cwd = it.cargo().executable.parent
+
+        val commandLine = PatchCargoCommandLine(
+            "install",
+            workingDirectory = cwd,
+            additionalArguments = listOf("--force", crateName),
+        )
+        commandLine.run(project, "Install $crateName")
     }
 }
 

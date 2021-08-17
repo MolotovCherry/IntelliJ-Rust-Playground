@@ -43,7 +43,6 @@ class CargoPlayToolchainMissingNotificationProvider(
         val isRust = file.isRustFile
         val isScratch = ScratchUtil.isScratch(file)
         val toolchainExists = project.toolchain != null
-        val hasCargoProject = project.hasCargoProject
 
         if (!isRust || !isScratch || toolchainExists) {
             return null

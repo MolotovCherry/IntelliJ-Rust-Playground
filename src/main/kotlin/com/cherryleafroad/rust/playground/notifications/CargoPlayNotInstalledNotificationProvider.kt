@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground.notifications
 
+import com.cherryleafroad.rust.playground.utils.installBinaryCrate
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.fileEditor.FileEditor
@@ -9,8 +10,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotifications
 import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.runconfig.hasCargoProject
-import org.rust.cargo.toolchain.tools.cargo
 import org.rust.lang.core.psi.isRustFile
 
 class CargoPlayNotInstalledNotificationProvider(
@@ -44,22 +43,20 @@ class CargoPlayNotInstalledNotificationProvider(
         val isRust = file.isRustFile
         val isScratch = ScratchUtil.isScratch(file)
         val toolchainExists = project.toolchain != null
-        val hasCargoProject = project.hasCargoProject
 
-        if (!isRust || !isScratch || !toolchainExists || !hasCargoProject) {
+        if (!isRust || !isScratch || !toolchainExists) {
             return null
         }
 
         if (!isNotificationDisabled(file)) {
-            val isCargoPlayInstalled = project.toolchain?.hasCargoExecutable("cargo-play") ?: false
+            val isCargoPlayInstalled = project.toolchain!!.hasCargoExecutable("cargo-play")
             if (!isCargoPlayInstalled) {
                 val panel = EditorNotificationPanel()
                 panel.text = "Cargo-play binary crate needs to be installed to run scratches in Playground"
 
                 panel.createActionLabel("Install") {
                     panel.isVisible = false
-                    disableNotification(file)
-                    project.toolchain!!.cargo().installBinaryCrate(project, "cargo-play")
+                    installBinaryCrate(project, "cargo-play")
                 }
                 panel.createActionLabel("Dismiss") {
                     panel.isVisible = false
