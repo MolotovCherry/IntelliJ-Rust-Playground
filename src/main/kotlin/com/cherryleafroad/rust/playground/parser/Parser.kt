@@ -5,7 +5,6 @@ import com.cherryleafroad.rust.playground.scratch.ui.ScratchSettings
 import com.cherryleafroad.rust.playground.utils.Helpers
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import org.rust.cargo.toolchain.RustChannel
 
 object Parser {
     fun parseOptions(project: Project, file: VirtualFile, clean: Boolean): ParserResults? {
@@ -97,6 +96,7 @@ object Parser {
             }
         }
 
+        runCmd.add(0, "play")
         val finalCmd = runCmd + src + args
 
         return ParserResults(

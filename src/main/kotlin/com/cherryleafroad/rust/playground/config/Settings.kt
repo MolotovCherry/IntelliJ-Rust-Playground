@@ -1,8 +1,8 @@
 package com.cherryleafroad.rust.playground.config
 
 import com.cherryleafroad.rust.playground.parser.Edition
+import com.cherryleafroad.rust.playground.parser.RustChannel
 import com.intellij.ide.util.PropertiesComponent
-import org.rust.cargo.toolchain.RustChannel
 
 object Settings {
     private val properties = PropertiesComponent.getInstance()

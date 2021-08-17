@@ -5,12 +5,12 @@ import com.cherryleafroad.rust.playground.config.Settings.SCRATCH_KEY
 import com.cherryleafroad.rust.playground.config.Settings.TOOLCHAIN_KEY
 import com.cherryleafroad.rust.playground.config.ui.SettingsForm
 import com.cherryleafroad.rust.playground.parser.Edition
+import com.cherryleafroad.rust.playground.parser.RustChannel
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
 import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.toolchain.RustChannel
 import javax.swing.JComponent
 
 class SettingsConfigurable(private val project: Project) : SearchableConfigurable, Disposable {

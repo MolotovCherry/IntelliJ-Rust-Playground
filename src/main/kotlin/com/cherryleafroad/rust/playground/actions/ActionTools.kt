@@ -1,8 +1,8 @@
 package com.cherryleafroad.rust.playground.actions
 
 import com.cherryleafroad.rust.playground.parser.Parser
+import com.cherryleafroad.rust.playground.runconfig.RustScratchCommandLine
 import com.cherryleafroad.rust.playground.utils.Helpers
-import com.cherryleafroad.rust.playground.utils.PatchCargoCommandLine
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import org.rust.cargo.project.settings.toolchain
@@ -31,16 +31,11 @@ object ActionTools {
 
         val cargoPlayInstalled = Helpers.checkAndNotifyCargoPlayInstallation(project)
         if (project.toolchain != null && cargoPlayInstalled) {
-            val cwd = doc.toNioPath().parent
             val fileName = doc.name
 
             val results = Parser.parseOptions(project, doc, clean) ?: return
 
-            val commandLine = PatchCargoCommandLine(
-                "play",
-                cwd,
-                results.finalCmd
-            )
+            val commandLine = RustScratchCommandLine(results)
             commandLine.run(project, "Play $fileName")
         }
     }
