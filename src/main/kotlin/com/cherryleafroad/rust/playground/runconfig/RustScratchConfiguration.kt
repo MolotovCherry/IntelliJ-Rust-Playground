@@ -4,8 +4,6 @@ import com.cherryleafroad.rust.playground.runconfig.constants.CargoConstants
 import com.cherryleafroad.rust.playground.runconfig.runtime.CommandConfiguration
 import com.cherryleafroad.rust.playground.runconfig.runtime.PlayConfiguration
 import com.cherryleafroad.rust.playground.runconfig.toolchain.BacktraceMode
-import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
-import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.runconfig.ui.RustScratchConfigurationEditor
 import com.cherryleafroad.rust.playground.utils.*
 import com.intellij.execution.Executor
@@ -49,8 +47,6 @@ class RustScratchConfiguration(
 
         element.writeBool("isPlayRun", commandConfiguration.isPlayRun)
         element.writeEnum("backtraceMode", commandConfiguration.backtraceMode)
-        element.writeEnum("edition", commandConfiguration.edition)
-        element.writeEnum("channel", commandConfiguration.channel)
 
         commandConfiguration.env.writeExternal(element)
 
@@ -70,8 +66,6 @@ class RustScratchConfiguration(
 
         element.readBool("isPlayRun")?.let { commandConfiguration.isPlayRun = it }
         element.readEnum<BacktraceMode>("backtraceMode")?.let { commandConfiguration.backtraceMode = it }
-        element.readEnum<Edition>("edition")?.let { commandConfiguration.edition = it }
-        element.readEnum<RustChannel>("channel")?.let { commandConfiguration.channel = it }
         commandConfiguration.env = EnvironmentVariablesData.readExternal(element)
 
         element.readPath("workingDirectory")?.let { commandConfiguration.workingDirectory = it }

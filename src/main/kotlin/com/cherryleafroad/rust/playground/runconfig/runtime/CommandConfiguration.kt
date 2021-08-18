@@ -2,8 +2,6 @@ package com.cherryleafroad.rust.playground.runconfig.runtime
 
 import com.cherryleafroad.rust.playground.runconfig.RustScratchCommandLine
 import com.cherryleafroad.rust.playground.runconfig.toolchain.BacktraceMode
-import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
-import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.ide.scratch.ScratchFileService
 import com.intellij.ide.scratch.ScratchRootType
@@ -23,8 +21,6 @@ data class CommandConfiguration(
         var processColors: Boolean = true,
         var backtraceMode: BacktraceMode = BacktraceMode.SHORT,
         var env: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT,
-        var edition: Edition = Edition.DEFAULT,
-        var channel: RustChannel = RustChannel.DEFAULT,
 
         // only for runtime configuration, don't touch these
         var isFromRun: Boolean = false,
