@@ -92,7 +92,7 @@ object Parser {
             }
 
             if (cargoOption.isNotEmpty()) {
-                runCmd.add("--cargo-option=\"${cargoOption.joinToString(" ")}\"")
+                runCmd.add("--cargo-option=${cargoOption.joinToString(" ")}")
             }
         }
 

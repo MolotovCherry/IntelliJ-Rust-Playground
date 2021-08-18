@@ -5,7 +5,6 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
-import com.cherryleafroad.rust.playground.runconfig.filters.RegexpFileLinkFilter
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 

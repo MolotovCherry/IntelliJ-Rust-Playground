@@ -10,7 +10,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.io.systemIndependentPath
 import org.jdom.Element
 import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.toolchain.tools.cargo
 import org.rust.cargo.toolchain.tools.rustc
 import java.nio.file.Path
 import java.nio.file.Paths

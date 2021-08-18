@@ -1,6 +1,5 @@
 package com.cherryleafroad.rust.playground.actions
 
-import com.cherryleafroad.rust.playground.utils.Helpers
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.AnActionEvent
