@@ -97,11 +97,15 @@ open class RegexpFileLinkFilter(
         if (isPlayRun) {
             // main.rs == sourceScratch
             // src/main.rs, strip path first
-            val f = File(path).name
-            path = if (f == MAIN_RS_FILE) {
-                sourceScratch
-            } else {
-                f
+            val split = path.split("/")
+            val name = File(path).name
+
+            if (split.size == 2 && split[0] == "src") {
+                if (name == MAIN_RS_FILE) {
+                    path = sourceScratch
+                } else if (name.startsWith("scratch")) {
+                    path = name
+                }
             }
         }
 
