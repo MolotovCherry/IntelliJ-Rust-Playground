@@ -24,6 +24,11 @@ object ActionTools {
             return
         }
 
+        // don't execute on unsupported IDE
+        if (Helpers.executionUnsupported(project)) {
+            return
+        }
+
         val cargoPlayInstalled = Helpers.checkAndNotifyCargoPlayInstallation(project)
         if (project.toolchain != null && cargoPlayInstalled) {
             val fileName = doc.name
