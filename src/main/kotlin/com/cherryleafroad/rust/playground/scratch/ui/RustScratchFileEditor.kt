@@ -5,8 +5,8 @@ package com.cherryleafroad.rust.playground.scratch.ui
 import com.cherryleafroad.rust.playground.actions.CleanAction
 import com.cherryleafroad.rust.playground.actions.ToolbarExecuteAction
 import com.cherryleafroad.rust.playground.config.Settings
-import com.cherryleafroad.rust.playground.parser.Edition
-import com.cherryleafroad.rust.playground.parser.RustChannel
+import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
+import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup

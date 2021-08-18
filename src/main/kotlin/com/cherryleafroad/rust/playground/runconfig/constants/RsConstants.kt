@@ -1,4 +1,4 @@
-package com.cherryleafroad.rust.playground.runconfig
+package com.cherryleafroad.rust.playground.runconfig.constants
 
 object RsConstants {
     const val MOD_RS_FILE = "mod.rs"

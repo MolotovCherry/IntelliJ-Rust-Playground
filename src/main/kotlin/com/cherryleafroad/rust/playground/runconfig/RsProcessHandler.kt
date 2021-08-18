@@ -14,16 +14,17 @@ import com.intellij.openapi.util.Key
  * Same as [com.intellij.execution.process.KillableColoredProcessHandler], but uses [RsAnsiEscapeDecoder].
  */
 class RsProcessHandler(
-    commandLine: GeneralCommandLine
+    commandLine: GeneralCommandLine,
+    processColors: Boolean = true
 ) : KillableProcessHandler(commandLine), AnsiEscapeDecoder.ColoredTextAcceptor {
-    private val decoder: AnsiEscapeDecoder = RsAnsiEscapeDecoder()
+    private val decoder: AnsiEscapeDecoder? = if (processColors) RsAnsiEscapeDecoder() else null
 
     init {
         setShouldDestroyProcessRecursively(true)
     }
 
     override fun notifyTextAvailable(text: String, outputType: Key<*>) {
-        decoder.escapeText(text, outputType, this)
+        decoder?.escapeText(text, outputType, this) ?: super.notifyTextAvailable(text, outputType)
     }
 
     override fun coloredTextAvailable(text: String, attributes: Key<*>) {

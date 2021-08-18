@@ -1,7 +1,6 @@
 package com.cherryleafroad.rust.playground.actions
 
-import com.cherryleafroad.rust.playground.parser.Parser
-import com.cherryleafroad.rust.playground.runconfig.RustScratchCommandLine
+import com.cherryleafroad.rust.playground.runconfig.runtime.PlayProcessor
 import com.cherryleafroad.rust.playground.utils.Helpers
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -33,9 +32,7 @@ object ActionTools {
         if (project.toolchain != null && cargoPlayInstalled) {
             val fileName = doc.name
 
-            val results = Parser.parseOptions(project, doc, clean) ?: return
-
-            val commandLine = RustScratchCommandLine(results)
+            val commandLine = PlayProcessor.processPlayOptions(project, doc, clean) ?: return
             commandLine.run(project, "Play $fileName")
         }
     }

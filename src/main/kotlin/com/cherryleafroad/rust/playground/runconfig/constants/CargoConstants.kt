@@ -1,4 +1,4 @@
-package com.cherryleafroad.rust.playground.runconfig
+package com.cherryleafroad.rust.playground.runconfig.constants
 
 object CargoConstants {
 

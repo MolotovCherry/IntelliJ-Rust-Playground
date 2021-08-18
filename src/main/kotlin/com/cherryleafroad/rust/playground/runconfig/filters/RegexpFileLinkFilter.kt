@@ -5,7 +5,7 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
-import com.cherryleafroad.rust.playground.runconfig.RsConstants.MAIN_RS_FILE
+import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants.MAIN_RS_FILE
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.OpenFileHyperlinkInfo
 import com.intellij.openapi.project.DumbAware

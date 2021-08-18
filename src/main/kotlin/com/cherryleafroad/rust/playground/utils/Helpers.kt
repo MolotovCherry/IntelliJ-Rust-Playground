@@ -19,6 +19,7 @@ object Helpers {
         return false
     }
 
+    @Suppress("DialogTitleCapitalization")
     fun checkAndNotifyCargoExpandInstalled(project: Project): Boolean {
         val installed = project.toolchain?.hasCargoExecutable("cargo-expand") ?: false
 

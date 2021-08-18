@@ -1,28 +1,32 @@
 package com.cherryleafroad.rust.playground.runconfig
 
-import com.cherryleafroad.rust.playground.parser.ParserResults
+import com.cherryleafroad.rust.playground.runconfig.runtime.CommandConfiguration
+import com.cherryleafroad.rust.playground.runconfig.runtime.PlayConfiguration
 import com.intellij.execution.ProgramRunnerUtil
 import com.intellij.execution.RunManager
 import com.intellij.execution.RunManagerEx
 import com.intellij.execution.RunnerAndConfigurationSettings
-import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.executors.DefaultRunExecutor
+import com.intellij.ide.scratch.ScratchFileService
+import com.intellij.ide.scratch.ScratchRootType
 import com.intellij.openapi.project.Project
-
+import java.nio.file.Paths
 
 data class RustScratchCommandLine(
-    val parserResults: ParserResults,
-    val environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
+    val commandConfiguration: CommandConfiguration,
+    val playConfiguration: PlayConfiguration?
 ) {
-
-    constructor(
-        command: List<String>,
-        isPlayRun: Boolean = false,
-        environmentVariables: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
-    ) : this(ParserResults(
-        finalCmd = command,
-        isPlayRun = isPlayRun,
-    ), environmentVariables)
+    constructor(commandConfiguration: CommandConfiguration) : this(commandConfiguration, null)
+    constructor(playConfiguration: PlayConfiguration) : this(
+        CommandConfiguration(
+            command = "play",
+            args = playConfiguration.args,
+            isPlayRun = true,
+            workingDirectory = Paths.get(ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())),
+            processColors = true
+        ),
+        playConfiguration
+    )
 
     fun run(project: Project, presentableName: String) {
         val runManager = RunManagerEx.getInstanceEx(project)

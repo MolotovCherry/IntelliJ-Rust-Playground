@@ -1,8 +1,8 @@
 package com.cherryleafroad.rust.playground.config.ui
 
 import com.cherryleafroad.rust.playground.config.Settings
-import com.cherryleafroad.rust.playground.parser.Edition
-import com.cherryleafroad.rust.playground.parser.RustChannel
+import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
+import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
 import javax.swing.*

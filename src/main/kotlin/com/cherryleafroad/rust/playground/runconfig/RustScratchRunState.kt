@@ -5,7 +5,6 @@ import com.cherryleafroad.rust.playground.runconfig.console.RustScratchConsoleBu
 import com.cherryleafroad.rust.playground.runconfig.filters.RsConsoleFilter
 import com.cherryleafroad.rust.playground.runconfig.filters.RsExplainFilter
 import com.cherryleafroad.rust.playground.runconfig.filters.RsPanicFilter
-import com.cherryleafroad.rust.playground.utils.createGeneralCommandLine
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.process.ProcessHandler
@@ -28,24 +27,24 @@ class RustScratchRunState(
     }
 
     private fun createFilters(project: Project): List<Filter> {
-        val rootDir = VirtualFileManager.getInstance().findFileByNioPath(runConfiguration.workingDirectory)!!
-        val sourceScratch = if (runConfiguration.isPlayRun) {
-            runConfiguration.parserResults.src[0]
+        val rootDir = VirtualFileManager.getInstance().findFileByNioPath(runConfiguration.commandConfiguration.workingDirectory)!!
+        val sourceScratch = if (runConfiguration.commandConfiguration.isPlayRun) {
+            runConfiguration.playConfiguration!!.src[0]
         } else {
             ""
         }
 
         return mutableListOf<Filter>().apply {
             add(RsExplainFilter())
-            add(RsConsoleFilter(project, rootDir, runConfiguration.isPlayRun, sourceScratch))
-            add(RsPanicFilter(project, rootDir, runConfiguration.isPlayRun, sourceScratch))
+            add(RsConsoleFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratch))
+            add(RsPanicFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratch))
             //add(RsBacktraceFilter(project, cargoPlayDir))
         }
     }
 
     override fun startProcess(): ProcessHandler {
-        val commandLine = createGeneralCommandLine(project, runConfiguration)!!
-        val handler = RsProcessHandler(commandLine)
+        val commandLine = runConfiguration.toGeneralCommandLine(project)!!
+        val handler = RsProcessHandler(commandLine, runConfiguration.commandConfiguration.processColors)
         ProcessTerminatedListener.attach(handler)
         return handler
     }

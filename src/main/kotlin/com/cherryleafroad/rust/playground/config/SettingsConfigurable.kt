@@ -4,8 +4,8 @@ import com.cherryleafroad.rust.playground.config.Settings.EDITION_KEY
 import com.cherryleafroad.rust.playground.config.Settings.SCRATCH_KEY
 import com.cherryleafroad.rust.playground.config.Settings.TOOLCHAIN_KEY
 import com.cherryleafroad.rust.playground.config.ui.SettingsForm
-import com.cherryleafroad.rust.playground.parser.Edition
-import com.cherryleafroad.rust.playground.parser.RustChannel
+import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
+import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SearchableConfigurable

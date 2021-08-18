@@ -6,7 +6,6 @@
 package com.cherryleafroad.rust.playground.runconfig
 
 import com.intellij.execution.process.AnsiEscapeDecoder
-import com.intellij.execution.process.ProcessOutputTypes
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.util.text.StringUtil
@@ -15,13 +14,6 @@ import java.awt.Color
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-fun AnsiEscapeDecoder.removeEscapeSequences(text: String): String {
-    val chunks = mutableListOf<String>()
-    escapeText(text, ProcessOutputTypes.STDOUT) { chunk, _ ->
-        chunks.add(chunk)
-    }
-    return chunks.joinToString("")
-}
 
 /**
  * Currently IntelliJ Platform supports only 16 ANSI colors (standard colors and high intensity colors). The base

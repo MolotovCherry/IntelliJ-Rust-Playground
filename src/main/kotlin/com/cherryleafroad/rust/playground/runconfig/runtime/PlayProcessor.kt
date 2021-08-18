@@ -1,13 +1,16 @@
-package com.cherryleafroad.rust.playground.parser
+package com.cherryleafroad.rust.playground.runconfig.runtime
 
 import com.cherryleafroad.rust.playground.config.Settings
+import com.cherryleafroad.rust.playground.runconfig.RustScratchCommandLine
+import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
+import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.scratch.ui.ScratchSettings
 import com.cherryleafroad.rust.playground.utils.Helpers
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
-object Parser {
-    fun parseOptions(project: Project, file: VirtualFile, clean: Boolean): ParserResults? {
+object PlayProcessor {
+    fun processPlayOptions(project: Project, file: VirtualFile, clean: Boolean): RustScratchCommandLine? {
         val settings = ScratchSettings(file)
 
         val check = settings.CHECK.getBoolean()
@@ -96,14 +99,12 @@ object Parser {
             }
         }
 
-        runCmd.add(0, "play")
-        val finalCmd = runCmd + src + args
+        val finalArgs = runCmd + src + args
 
-        return ParserResults(
+        return PlayConfiguration(
             check, cleanProp, expand, infer,
             quiet, release, test, verbose, toolchain,
-            cargoOption, edition, mode, src, args,
-            runCmd, finalCmd
-        )
+            cargoOption, edition, mode, src, finalArgs
+        ).toRustScratchCommandLine()
     }
 }

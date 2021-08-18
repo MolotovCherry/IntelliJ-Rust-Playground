@@ -11,11 +11,12 @@ class RustScratchConfigurationEditor(): SettingsEditor<RustScratchConfiguration>
     private val command: JTextField = JTextField()
 
     override fun resetEditorFrom(configuration: RustScratchConfiguration) {
-        command.text = configuration.command.joinToString(" ")
+        command.text = configuration.commandConfiguration.command + configuration.commandConfiguration.args.joinToString(" ")
     }
 
     override fun applyEditorTo(configuration: RustScratchConfiguration) {
-        configuration.command = command.text.split(" ")
+        configuration.commandConfiguration.command = command.text.substringBefore(" ")
+        configuration.commandConfiguration.args = command.text.substringAfter(" ").split(" ")
     }
 
     override fun createEditor(): JComponent = panel {
