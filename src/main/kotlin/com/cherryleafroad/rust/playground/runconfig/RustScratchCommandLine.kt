@@ -14,9 +14,9 @@ import java.nio.file.Paths
 
 data class RustScratchCommandLine(
     val commandConfiguration: CommandConfiguration,
-    val playConfiguration: PlayConfiguration?
+    val playConfiguration: PlayConfiguration
 ) {
-    constructor(commandConfiguration: CommandConfiguration) : this(commandConfiguration, null)
+    constructor(commandConfiguration: CommandConfiguration) : this(commandConfiguration, PlayConfiguration())
     constructor(playConfiguration: PlayConfiguration) : this(
         CommandConfiguration(
             command = "play",

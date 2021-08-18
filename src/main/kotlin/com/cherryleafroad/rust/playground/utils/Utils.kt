@@ -5,6 +5,7 @@ import com.intellij.execution.ExternalizablePath
 import com.intellij.openapi.project.Project
 import org.jdom.Element
 import org.rust.cargo.project.settings.toolchain
+import org.rust.cargo.runconfig.readString
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -51,4 +52,13 @@ fun Element.writePath(name: String, value: Path?) {
 
 fun Element.readPath(name: String): Path? {
     return readString(name)?.let { Paths.get(ExternalizablePath.localPathValue(it)) }
+}
+
+inline fun <reified E : Enum<E>> Element.readEnum(name: String): E? {
+    val variantName = readString(name) ?: return null
+    return try {
+        java.lang.Enum.valueOf(E::class.java, variantName)
+    } catch (_: IllegalArgumentException) {
+        null
+    }
 }
