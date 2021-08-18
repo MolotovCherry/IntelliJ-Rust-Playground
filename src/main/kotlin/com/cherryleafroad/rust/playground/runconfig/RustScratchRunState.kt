@@ -5,26 +5,20 @@ import com.cherryleafroad.rust.playground.runconfig.console.RustScratchConsoleBu
 import com.cherryleafroad.rust.playground.runconfig.filters.RsConsoleFilter
 import com.cherryleafroad.rust.playground.runconfig.filters.RsExplainFilter
 import com.cherryleafroad.rust.playground.runconfig.filters.RsPanicFilter
-import com.cherryleafroad.rust.playground.utils.CargoPlayPath
 import com.cherryleafroad.rust.playground.utils.createGeneralCommandLine
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
-import com.intellij.ide.scratch.ScratchFileService
-import com.intellij.ide.scratch.ScratchRootType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.psi.search.GlobalSearchScopes
-import java.io.File
-import java.nio.file.Paths
 
 class RustScratchRunState(
     environment: ExecutionEnvironment,
-    val runConfiguration: RustScratchConfiguration
+    private val runConfiguration: RustScratchConfiguration
 ) : CommandLineState(environment) {
-    val command = runConfiguration.command
     val project = environment.project
 
     init {
@@ -33,33 +27,20 @@ class RustScratchRunState(
         createFilters(environment.project).forEach { consoleBuilder.addFilter(it) }
     }
 
-    fun createFilters(project: Project): List<Filter> {
-        val list = mutableListOf<Filter>()
-
-        val cargoPlayDir = if (runConfiguration.parserResults.isPlayRun) {
-            // if this is a first run, then command hasn't run and the directory doesn't exist yet
-            // in order to get a non-null result and therefore link files, it needs to exist first
-            val cargoPlay = CargoPlayPath(runConfiguration.parserResults.src, runConfiguration.workingDirectory.toString())
-            val f = File(cargoPlay.cargoPlayDir.toString())
-            if (!f.exists()) {
-                f.mkdir()
-            }
-
-            VirtualFileManager.getInstance().findFileByNioPath(cargoPlay.cargoPlayDir)!!
+    private fun createFilters(project: Project): List<Filter> {
+        val rootDir = VirtualFileManager.getInstance().findFileByNioPath(runConfiguration.workingDirectory)!!
+        val sourceScratch = if (runConfiguration.isPlayRun) {
+            runConfiguration.parserResults.src[0]
         } else {
-            VirtualFileManager.getInstance().findFileByNioPath(
-                Paths.get(ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance()))
-            )!!
+            ""
         }
 
-        list.apply {
+        return mutableListOf<Filter>().apply {
             add(RsExplainFilter())
-            add(RsConsoleFilter(project, cargoPlayDir))
-            add(RsPanicFilter(project, cargoPlayDir))
+            add(RsConsoleFilter(project, rootDir, runConfiguration.isPlayRun, sourceScratch))
+            add(RsPanicFilter(project, rootDir, runConfiguration.isPlayRun, sourceScratch))
             //add(RsBacktraceFilter(project, cargoPlayDir))
         }
-
-        return list
     }
 
     override fun startProcess(): ProcessHandler {

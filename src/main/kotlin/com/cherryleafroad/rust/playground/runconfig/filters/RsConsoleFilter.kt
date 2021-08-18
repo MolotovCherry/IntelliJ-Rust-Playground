@@ -13,9 +13,13 @@ import com.intellij.openapi.vfs.VirtualFile
  */
 class RsConsoleFilter(
     project: Project,
-    cargoProjectDir: VirtualFile
+    cargoProjectDir: VirtualFile,
+    isPlayRun: Boolean,
+    sourceScratch: String
 ) : RegexpFileLinkFilter(
     project,
     cargoProjectDir,
+    isPlayRun,
+    sourceScratch,
     "(?:\\s+--> )?${FILE_POSITION_RE}.*"
 )

@@ -25,7 +25,7 @@ class RustScratchConfiguration(
     factory: ConfigurationFactory
 ) : LocatableConfigurationBase<RunProfileState>(project, factory, name) {
     var command: List<String> = listOf()
-    // the scratch root directory is always the working directory
+    // the scratch root directory is always the default working directory
     var workingDirectory: Path = Paths.get(ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance()))
     var env: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT
     lateinit var parserResults: ParserResults

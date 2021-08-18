@@ -5,6 +5,7 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
+import com.cherryleafroad.rust.playground.runconfig.RsConstants.MAIN_RS_FILE
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.OpenFileHyperlinkInfo
 import com.intellij.openapi.project.DumbAware
@@ -12,8 +13,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.intellij.lang.annotations.Language
-import org.rust.cargo.project.model.cargoProjects
 import org.rust.cargo.project.settings.rustSettings
+import org.rust.cargo.project.settings.toolchain
+import org.rust.cargo.toolchain.tools.rustc
+import java.io.File
 import java.nio.file.Paths
 import kotlin.math.max
 
@@ -27,6 +30,8 @@ import kotlin.math.max
 open class RegexpFileLinkFilter(
     private val project: Project,
     private val cargoProjectDirectory: VirtualFile,
+    private val isPlayRun: Boolean,
+    private val sourceScratch: String,
     lineRegExp: String
 ) : Filter, DumbAware {
 
@@ -86,7 +91,20 @@ open class RegexpFileLinkFilter(
     }
 
     private fun resolveFilePath(fileName: String): ResolvedPath? {
-        val path = FileUtil.toSystemIndependentName(fileName)
+        var path = FileUtil.toSystemIndependentName(fileName)
+
+        // rewrite main.rs to correct local scratch file if isPlayRun
+        if (isPlayRun) {
+            // main.rs == sourceScratch
+            // src/main.rs, strip path first
+            val f = File(path).name
+            path = if (f == MAIN_RS_FILE) {
+                sourceScratch
+            } else {
+                f
+            }
+        }
+
         val file = cargoProjectDirectory.findFileByRelativePath(path)
         if (file != null) return ResolvedPath.Workspace(file)
 
@@ -116,7 +134,7 @@ open class RegexpFileLinkFilter(
         return match.groupValues[1]
     }
 
-    private fun getSysroot(): String? = project.cargoProjects.allProjects.firstOrNull()?.rustcInfo?.sysroot
+    private fun getSysroot(): String? = project.toolchain?.rustc()?.getSysroot(cargoProjectDirectory.toNioPath())
     private fun getCargoRoot(): String = project.rustSettings.toolchain?.location?.parent.toString()
 
     sealed class ResolvedPath(val file: VirtualFile) {

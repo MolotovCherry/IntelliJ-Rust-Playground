@@ -5,10 +5,10 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
+import com.cherryleafroad.rust.playground.runconfig.RsConstants
 import com.intellij.execution.filters.BrowserHyperlinkInfo
 import com.intellij.execution.filters.Filter
 import com.intellij.openapi.project.DumbAware
-import org.rust.lang.RsConstants
 import java.util.regex.Pattern
 
 
