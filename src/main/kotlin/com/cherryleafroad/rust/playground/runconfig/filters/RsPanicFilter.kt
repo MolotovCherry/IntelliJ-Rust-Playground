@@ -15,11 +15,11 @@ class RsPanicFilter(
     project: Project,
     cargoProjectDir: VirtualFile,
     isPlayRun: Boolean,
-    sourceScratch: String
+    sourceScratches: List<String>
 ) : RegexpFileLinkFilter(
     project,
     cargoProjectDir,
     isPlayRun,
-    sourceScratch,
+    sourceScratches,
     "\\s*thread '.+' panicked at '.+', $FILE_POSITION_RE"
 )

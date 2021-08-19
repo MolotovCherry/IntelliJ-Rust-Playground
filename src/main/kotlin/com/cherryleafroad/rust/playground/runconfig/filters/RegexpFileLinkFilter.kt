@@ -5,7 +5,7 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
-import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants.MAIN_RS_FILE
+import com.cherryleafroad.rust.playground.runconfig.filters.FilterUtils.rewriteCargoPlayPaths
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.OpenFileHyperlinkInfo
 import com.intellij.openapi.project.DumbAware
@@ -16,7 +16,6 @@ import org.intellij.lang.annotations.Language
 import org.rust.cargo.project.settings.rustSettings
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.toolchain.tools.rustc
-import java.io.File
 import java.nio.file.Paths
 import kotlin.math.max
 
@@ -31,7 +30,7 @@ open class RegexpFileLinkFilter(
     private val project: Project,
     private val cargoProjectDirectory: VirtualFile,
     private val isPlayRun: Boolean,
-    private val sourceScratch: String,
+    private val sourceScratches: List<String>,
     lineRegExp: String
 ) : Filter, DumbAware {
 
@@ -91,25 +90,15 @@ open class RegexpFileLinkFilter(
     }
 
     private fun resolveFilePath(fileName: String): ResolvedPath? {
-        var path = FileUtil.toSystemIndependentName(fileName)
+        val (path, searchDir) = rewriteCargoPlayPaths(
+            project,
+            FileUtil.toSystemIndependentName(fileName),
+            sourceScratches,
+            isPlayRun,
+            cargoProjectDirectory
+        )
 
-        // rewrite main.rs to correct local scratch file if isPlayRun
-        if (isPlayRun) {
-            // main.rs == sourceScratch
-            // src/main.rs, strip path first
-            val split = path.split("/")
-            val name = File(path).name
-
-            if (split.size == 2 && split[0] == "src") {
-                if (name == MAIN_RS_FILE) {
-                    path = sourceScratch
-                } else if (name.startsWith("scratch")) {
-                    path = name
-                }
-            }
-        }
-
-        val file = cargoProjectDirectory.findFileByRelativePath(path)
+        val file = searchDir.findFileByRelativePath(path)
         if (file != null) return ResolvedPath.Workspace(file)
 
         val externalPath = resolveStdlibPath(fileName) ?: resolveCargoPath(fileName)

@@ -15,11 +15,11 @@ class RsConsoleFilter(
     project: Project,
     cargoProjectDir: VirtualFile,
     isPlayRun: Boolean,
-    sourceScratch: String
+    sourceScratches: List<String>
 ) : RegexpFileLinkFilter(
     project,
     cargoProjectDir,
     isPlayRun,
-    sourceScratch,
+    sourceScratches,
     "(?:\\s+--> )?${FILE_POSITION_RE}.*"
 )

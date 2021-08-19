@@ -28,19 +28,19 @@ class RustScratchRunState(
 
     private fun createFilters(project: Project): List<Filter> {
         val rootDir = VirtualFileManager.getInstance().findFileByNioPath(runConfiguration.commandConfiguration.workingDirectory)!!
-        val sourceScratch = if (runConfiguration.commandConfiguration.isPlayRun && !runConfiguration.commandConfiguration.isFromRun) {
-            runConfiguration.playConfiguration.src.getOrElse(0) { "" }
+        val sourceScratches = if (runConfiguration.commandConfiguration.isPlayRun && !runConfiguration.commandConfiguration.isFromRun) {
+            runConfiguration.playConfiguration.src
         } else if (runConfiguration.commandConfiguration.isFromRun) {
-            runConfiguration.commandConfiguration.runtime.sources.getOrElse(0) { "" }
+            runConfiguration.commandConfiguration.runtime.sources
         } else {
-            ""
+            listOf()
         }
 
         return mutableListOf<Filter>().apply {
             add(RsExplainFilter())
-            add(RsConsoleFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratch))
-            add(RsPanicFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratch))
-            //add(RsBacktraceFilter(project, cargoPlayDir))
+            add(RsConsoleFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
+            add(RsPanicFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
+            //add(RsBacktraceFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
         }
     }
 

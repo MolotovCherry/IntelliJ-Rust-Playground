@@ -5,6 +5,17 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
+import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants
+import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
+import org.rust.openapiext.findFileByMaybeRelativePath
+import java.io.File
+import java.nio.file.Paths
+
 object FilterUtils {
     /**
      * Normalizes function path:
@@ -54,5 +65,55 @@ object FilterUtils {
             }
         }
         return null
+    }
+
+    fun rewriteCargoPlayPaths(project: Project, path: String, sourceScratches: List<String>, isPlayRun: Boolean, cargoProjectDir: VirtualFile): Pair<String, VirtualFile> {
+        var nPath = path
+        var vfile: VirtualFile = cargoProjectDir
+        var matched = false
+
+        // rewrite main.rs to correct local scratch file if isPlayRun
+        if (isPlayRun) {
+            // main.rs == sourceScratch
+            // src/main.rs, strip path first
+            val split = path.split("/")
+            val name = File(path).name
+
+            // most likely it's the actual src cargo dir
+            if (split.size == 2 && split[0] == "src") {
+                if (name == RsConstants.MAIN_RS_FILE) {
+                    // get the directory for the file, try absolute first then relative
+                    File(sourceScratches[0]).parent?.let {
+                        vfile = cargoProjectDir.findFileByMaybeRelativePath(it) ?: cargoProjectDir
+                    }
+                    nPath = File(sourceScratches[0]).name
+                    matched = true
+                } else {
+                    // skip the main.rs file
+                    for (i in 1 until sourceScratches.size) {
+                        val fname = File(sourceScratches[i])
+                        if (fname.name == name) {
+                            fname.parent?.let {
+                                vfile = cargoProjectDir.findFileByMaybeRelativePath(it) ?: cargoProjectDir
+                            }
+                            matched = true
+                            break
+                        }
+                    }
+
+                    nPath = name
+                }
+
+                if (matched) {
+                    // hide that "not part of a cargo project" notification
+                    val fullPath = vfile.findFileByRelativePath(nPath)?.path
+                    val key = "org.rust.hideNoCargoProjectNotifications$fullPath"
+                    // hide no cargo project notification for opened files
+                    PropertiesComponent.getInstance(project).setValue(key, true)
+                }
+            }
+        }
+
+        return Pair(nPath, vfile)
     }
 }

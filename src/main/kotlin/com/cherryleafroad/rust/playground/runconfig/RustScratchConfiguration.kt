@@ -17,6 +17,7 @@ import com.intellij.util.io.systemIndependentPath
 import org.jdom.Element
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.toolchain.tools.rustc
+import java.io.File
 import java.nio.file.Path
 
 class RustScratchConfiguration(
@@ -33,7 +34,7 @@ class RustScratchConfiguration(
     var commandConfiguration: CommandConfiguration = CommandConfiguration()
 
     override fun suggestedName(): String =
-        "${commandConfiguration.command.capitalize()} ${commandConfiguration.runtime.sources.joinToString(" ").substringBefore(" ")}"
+        "${commandConfiguration.command.capitalize()} ${File(commandConfiguration.runtime.sources.joinToString(" ").substringBefore(" ")).name}"
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
