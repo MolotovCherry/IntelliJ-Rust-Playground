@@ -20,7 +20,7 @@
         <configurationType implementation="com.cherryleafroad.rust.playground.runconfig.RustScratchConfigurationType"/>
 
         <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.scratch.RustScratchCreationHelper"/>
-        <fileDocumentManagerListener implementation="com.cherryleafroad.rust.playground.listeners.FileListener"/>
+        <editorFactoryListener implementation="com.cherryleafroad.rust.playground.listeners.EditorCreatedListener"/>
 
         <projectService serviceImplementation="com.cherryleafroad.rust.playground.services.CargoPlayProjectService"/>
 
