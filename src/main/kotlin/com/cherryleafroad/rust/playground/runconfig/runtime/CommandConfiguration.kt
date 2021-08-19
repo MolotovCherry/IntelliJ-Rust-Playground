@@ -27,7 +27,23 @@ data class CommandConfiguration(
         var runtime: RuntimeConfiguration = RuntimeConfiguration(),
         var withSudo: Boolean = false
     ) {
+
     fun toRustScratchCommandLine(): RustScratchCommandLine {
         return RustScratchCommandLine(this)
+    }
+
+    fun copyTo(other: CommandConfiguration) {
+        other.command = this.command
+        other.args = this.args
+        other.isPlayRun = this.isPlayRun
+        other.workingDirectory = this.workingDirectory
+        other.processColors = this.processColors
+        other.backtraceMode = this.backtraceMode
+        other.env = this.env
+        other.isFromRun = this.isFromRun
+        other.runtime.options = this.runtime.options
+        other.runtime.sources = this.runtime.sources
+        other.runtime.args = this.runtime.args
+        other.withSudo = this.withSudo
     }
 }

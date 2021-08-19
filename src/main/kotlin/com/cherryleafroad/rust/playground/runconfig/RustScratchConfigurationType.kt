@@ -35,4 +35,13 @@ class RustScratchRunConfigurationFactory(type: RustScratchConfigurationType) : C
     companion object {
         const val ID: String = "Rust Scratch"
     }
+
+    override fun createConfiguration(name: String?, template: RunConfiguration): RunConfiguration {
+        val rustConfig = template as RustScratchConfiguration
+
+        val config = RustScratchConfiguration(template.project, null, this)
+        rustConfig.commandConfiguration.copyTo(config.commandConfiguration)
+
+        return config
+    }
 }

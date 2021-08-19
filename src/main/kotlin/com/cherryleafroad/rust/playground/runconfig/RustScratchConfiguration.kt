@@ -21,7 +21,7 @@ import java.nio.file.Path
 
 class RustScratchConfiguration(
     project: Project,
-    name: String,
+    name: String?,
     factory: ConfigurationFactory
 ) : LocatableConfigurationBase<RunProfileState>(project, factory, name) {
     private val COLOR_ACCEPTING_COMMANDS: List<String> = listOf(
