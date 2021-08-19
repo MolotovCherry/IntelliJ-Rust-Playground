@@ -6,16 +6,16 @@
 package com.cherryleafroad.rust.playground.runconfig.filters
 
 import com.cherryleafroad.rust.playground.runconfig.filters.FilterUtils.rewriteCargoPlayPaths
+import com.cherryleafroad.rust.playground.services.CargoPlayProjectService
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.OpenFileHyperlinkInfo
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import org.intellij.lang.annotations.Language
 import org.rust.cargo.project.settings.rustSettings
-import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.toolchain.tools.rustc
 import java.nio.file.Paths
 import kotlin.math.max
 
@@ -127,7 +127,8 @@ open class RegexpFileLinkFilter(
         return match.groupValues[1]
     }
 
-    private fun getSysroot(): String? = project.toolchain?.rustc()?.getSysroot(cargoProjectDirectory.toNioPath())
+    private fun getSysroot(): String? = project.service<CargoPlayProjectService>().sysroot
+
     private fun getCargoRoot(): String = project.rustSettings.toolchain?.location?.parent.toString()
 
     sealed class ResolvedPath(val file: VirtualFile) {

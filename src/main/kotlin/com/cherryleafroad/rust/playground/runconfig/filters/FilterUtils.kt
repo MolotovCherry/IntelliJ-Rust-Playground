@@ -8,13 +8,9 @@ package com.cherryleafroad.rust.playground.runconfig.filters
 import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
 import org.rust.openapiext.findFileByMaybeRelativePath
 import java.io.File
-import java.nio.file.Paths
 
 object FilterUtils {
     /**
