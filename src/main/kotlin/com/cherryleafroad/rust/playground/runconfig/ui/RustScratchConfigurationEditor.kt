@@ -69,9 +69,9 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
         }
         val combinedArgs = (options.text.split(" ") + sources.text.split(" ") + pArgs).filter { it.isNotEmpty() }
         configuration.commandConfiguration.args = combinedArgs
-        configuration.commandConfiguration.runtime.sources = sources.text.split(" ")
-        configuration.commandConfiguration.runtime.options = options.text.split(" ")
-        configuration.commandConfiguration.runtime.args = args.text.split(" ")
+        configuration.commandConfiguration.runtime.sources = sources.text.split(" ").filter { it.isNotEmpty() }
+        configuration.commandConfiguration.runtime.options = options.text.split(" ").filter { it.isNotEmpty() }
+        configuration.commandConfiguration.runtime.args = args.text.split(" ").filter { it.isNotEmpty() }
 
         configuration.commandConfiguration.workingDirectory = Paths.get(workingDirectory.component.text)
 
