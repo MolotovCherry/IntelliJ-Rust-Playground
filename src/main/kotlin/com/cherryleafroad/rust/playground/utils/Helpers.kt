@@ -23,7 +23,7 @@ object Helpers {
     fun checkAndNotifyCargoExpandInstalled(project: Project): Boolean {
         val installed = project.toolchain?.hasCargoExecutable("cargo-expand") ?: false
 
-        if (project.toolchain != null && !installed) {
+        if (project.toolchain != null && !installed && !executionUnsupported(project)) {
             val notification = NotificationGroupManager.getInstance().getNotificationGroup("Rust Playground")
                 .createNotification(
                     "Rust Playground",
@@ -50,7 +50,7 @@ object Helpers {
     fun checkAndNotifyCargoPlayInstallation(project: Project): Boolean {
         val installed = project.toolchain?.hasCargoExecutable("cargo-play") ?: false
 
-        if (project.toolchain != null && !installed) {
+        if (project.toolchain != null && !installed && !executionUnsupported(project)) {
             val notification = NotificationGroupManager.getInstance().getNotificationGroup("Rust Playground")
                 .createNotification(
                     "Rust Playground",

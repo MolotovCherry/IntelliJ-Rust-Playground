@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground.notifications
 
+import com.cherryleafroad.rust.playground.utils.Helpers
 import com.cherryleafroad.rust.playground.utils.installBinaryCrate
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.ide.util.PropertiesComponent
@@ -44,7 +45,7 @@ class CargoPlayNotInstalledNotificationProvider(
         val isScratch = ScratchUtil.isScratch(file)
         val toolchainExists = project.toolchain != null
 
-        if (!isRust || !isScratch || !toolchainExists) {
+        if (!isRust || !isScratch || !toolchainExists || Helpers.executionUnsupported(project)) {
             return null
         }
 
