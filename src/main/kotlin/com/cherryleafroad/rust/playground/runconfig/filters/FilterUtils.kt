@@ -9,6 +9,16 @@ import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapiext.isUnitTestMode
+import org.rust.cargo.project.workspace.CargoWorkspace
+import org.rust.lang.core.psi.RsCodeFragmentFactory
+import org.rust.lang.core.psi.RsFile
+import org.rust.lang.core.psi.ext.RsNamedElement
+import org.rust.lang.core.resolve.indexes.RsLangItemIndex
+import org.rust.lang.core.resolve.splitAbsolutePath
+import org.rust.lang.core.resolve2.defMapService
+import org.rust.lang.core.resolve2.getOrUpdateIfNeeded
+import org.rust.lang.core.resolve2.isNewResolveEnabled
 import org.rust.openapiext.findFileByMaybeRelativePath
 import java.io.File
 
@@ -112,4 +122,31 @@ object FilterUtils {
 
         return Pair(nPath, vfile)
     }
+}
+
+fun resolveStringPath(path: String, workspace: CargoWorkspace, project: Project): Pair<RsNamedElement, CargoWorkspace.Package>? {
+    val (pkgName, crateRelativePath) = splitAbsolutePath(path) ?: return null
+    val pkg = workspace.findPackageByName(pkgName) ?: run {
+        return if (isUnitTestMode) {
+            // Allows to set a fake path for some item in tests via
+            // lang attribute, e.g. `#[lang = "std::iter::Iterator"]`
+            RsLangItemIndex.findLangItem(project, path)?.let { it to workspace.packages.first() }
+        } else {
+            null
+        }
+    }
+
+    val el = pkg.targets.asSequence()
+        .mapNotNull { RsCodeFragmentFactory(project).createCrateRelativePath(crateRelativePath, it) }
+        .filter {
+            if (!project.isNewResolveEnabled) return@filter true
+            val crateRoot = it.containingFile.context as RsFile
+            val crateId = crateRoot.containingCrate?.id ?: return@filter false
+            // ignore e.g. test/bench non-workspace crates
+            project.defMapService.getOrUpdateIfNeeded(crateId) != null
+        }
+        .mapNotNull { it.reference?.resolve() }
+        .filterIsInstance<RsNamedElement>()
+        .firstOrNull() ?: return null
+    return el to pkg
 }
