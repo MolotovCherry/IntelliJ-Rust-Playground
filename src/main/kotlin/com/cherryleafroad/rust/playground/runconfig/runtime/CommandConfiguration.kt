@@ -32,7 +32,8 @@ data class CommandConfiguration(
         return RustScratchCommandLine(this)
     }
 
-    fun copyTo(other: CommandConfiguration) {
+    fun clone(): CommandConfiguration {
+        val other = CommandConfiguration()
         other.command = this.command
         other.args = this.args
         other.isPlayRun = this.isPlayRun
@@ -45,5 +46,6 @@ data class CommandConfiguration(
         other.runtime.sources = this.runtime.sources
         other.runtime.args = this.runtime.args
         other.withSudo = this.withSudo
+        return other
     }
 }

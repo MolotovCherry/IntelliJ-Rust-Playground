@@ -37,11 +37,8 @@ class RustScratchRunConfigurationFactory(type: RustScratchConfigurationType) : C
     }
 
     override fun createConfiguration(name: String?, template: RunConfiguration): RunConfiguration {
-        val rustConfig = template as RustScratchConfiguration
-
-        val config = RustScratchConfiguration(template.project, name, this)
-        rustConfig.commandConfiguration.copyTo(config.commandConfiguration)
-
+        val config = super.createConfiguration(name, template) as RustScratchConfiguration
+        config.commandConfiguration = config.commandConfiguration.clone()
         return config
     }
 }
