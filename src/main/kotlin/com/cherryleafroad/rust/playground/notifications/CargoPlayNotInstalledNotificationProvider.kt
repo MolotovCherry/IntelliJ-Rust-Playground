@@ -60,7 +60,6 @@ class CargoPlayNotInstalledNotificationProvider(
                 }
                 panel.createActionLabel("Dismiss") {
                     panel.isVisible = false
-                    disableNotification(file)
                 }
 
                 return panel
