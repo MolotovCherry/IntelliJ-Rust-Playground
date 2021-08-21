@@ -43,12 +43,14 @@ class RustScratchConfiguration(
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)
+
         element.writeString("command", commandConfiguration.command)
-        element.writeString("args", commandConfiguration.args.joinToString(" "))
+        // file paths in args will be ruined
+        //element.writeString("args", commandConfiguration.args.joinToString(" "))
 
         element.writeBool("isFromRun", commandConfiguration.isFromRun)
         element.writeString("options", commandConfiguration.runtime.options.joinToString(" "))
-        element.writeString("sources", commandConfiguration.runtime.sources.joinToString(" "))
+        element.writePaths("sources", commandConfiguration.runtime.sources)
         element.writeString("runtimeArgs", commandConfiguration.runtime.args.joinToString(" "))
 
         element.writeBool("isPlayRun", commandConfiguration.isPlayRun)
@@ -62,13 +64,20 @@ class RustScratchConfiguration(
 
     override fun readExternal(element: Element) {
         super.readExternal(element)
+
         element.readString("command")?.let { commandConfiguration.command = it }
-        element.readString("args")?.let { commandConfiguration.args = it.split(" ") }
+        // file paths get ruined
+        //element.readString("args")?.let { commandConfiguration.args = it.split(" ") }
 
         element.readBool("isFromRun")?.let { commandConfiguration.isFromRun = it }
-        element.readString("options")?.let { commandConfiguration.runtime.options = it.split(" ") }
-        element.readString("sources")?.let { commandConfiguration.runtime.sources = it.split(" ") }
-        element.readString("runtimeArgs")?.let { commandConfiguration.runtime.args = it.split(" ") }
+        element.readString("options")?.let { out -> commandConfiguration.runtime.options = out.split(" ").filterNot { it.isEmpty() } }
+        element.readPaths("sources")?.let { commandConfiguration.runtime.sources = it }
+        element.readString("runtimeArgs")?.let { arg -> commandConfiguration.runtime.args = arg.split(" ").filterNot { it.isEmpty() } }
+
+        // rebuild args from sources to fix the paths
+        commandConfiguration.runtime.apply {
+            commandConfiguration.args = options + sources + args
+        }
 
         element.readBool("isPlayRun")?.let { commandConfiguration.isPlayRun = it }
         element.readEnum<BacktraceMode>("backtraceMode")?.let { commandConfiguration.backtraceMode = it }

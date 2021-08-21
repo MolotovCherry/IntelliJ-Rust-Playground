@@ -54,9 +54,7 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
             }
 
             command.text = "${options.joinToString(" ")} ${quotedSources.joinToString(" ")}".trim()
-            if (args.isNotEmpty()) {
-                command.text += " ${args.joinToString(" ")}"
-            }
+            command.text += " ${args.joinToString(" ")}".trimEnd()
         }
 
         workingDirectory.component.text = configuration.commandConfiguration.workingDirectory.toString()
