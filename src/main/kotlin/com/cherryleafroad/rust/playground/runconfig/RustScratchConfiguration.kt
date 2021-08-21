@@ -33,8 +33,13 @@ class RustScratchConfiguration(
     var playConfiguration: PlayConfiguration = PlayConfiguration()
     var commandConfiguration: CommandConfiguration = CommandConfiguration()
 
-    override fun suggestedName(): String =
-        "Play ${File(commandConfiguration.runtime.sources.joinToString(" ").substringBefore(" ")).name}"
+    override fun suggestedName(): String {
+        var name = ""
+        commandConfiguration.runtime.sources.getOrNull(0)?.let {
+            name = File(it).name
+        }
+        return "Play $name"
+    }
 
     override fun writeExternal(element: Element) {
         super.writeExternal(element)

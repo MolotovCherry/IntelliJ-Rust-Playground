@@ -45,7 +45,18 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
         environmentVariables.envData = configuration.commandConfiguration.env
 
         configuration.commandConfiguration.runtime.apply {
-            command.text = "${options.joinToString(" ")} ${sources.joinToString(" ")} ${args.joinToString(" ")}".trim()
+            val quotedSources = sources.map {
+                if (it.contains(" ")) {
+                    "\"$it\""
+                } else {
+                    it
+                }
+            }
+
+            command.text = "${options.joinToString(" ")} ${quotedSources.joinToString(" ")}".trim()
+            if (args.isNotEmpty()) {
+                command.text += " ${args.joinToString(" ")}"
+            }
         }
 
         workingDirectory.component.text = configuration.commandConfiguration.workingDirectory.toString()
@@ -110,6 +121,11 @@ private class WorkingDirectoryComponent : LabeledComponent<TextFieldWithBrowseBu
     }
 }
 
+fun argSwitchInside(value: String): Boolean {
+    val s = value.split(" ")
+    return s.contains("--")
+}
+
 fun splitPlayCommand(command: String): Triple<List<String>, List<String>, List<String>> {
     val options = mutableListOf<String>()
     val sources = mutableListOf<String>()
@@ -122,28 +138,21 @@ fun splitPlayCommand(command: String): Triple<List<String>, List<String>, List<S
 
     val r = Regex("[^\\s\"']+|\"[^\"]*\"|'[^']*'")
     run beg@ {
-        r.findAll(command).forEach {
-            if ((it.value.startsWith("--") ||
-                it.value.startsWith("-") ||
-                it.value.startsWith("\"-") ||
-                it.value.startsWith("'-")) &&
-                !argSwitch && it.value != "--"
+        r.findAll(command).forEach { match ->
+            if ((match.value.startsWith("--") ||
+                match.value.startsWith("-")) &&
+                !argSwitch && !argSwitchInside(match.value)
             ) {
-                // regex will split a last --foobar="balah" into separate options
-                // so recombine them
-                val lastIndex = options.lastIndex
-                if (lastIndex != -1 && options[lastIndex].endsWith("=") &&
-                    ((it.value.startsWith("\"") && it.value.endsWith("\"")) ||
-                    (it.value.startsWith("'") && it.value.endsWith("'")))
-                ) {
-                    options[lastIndex] += it.value
-                } else {
-                    options.add(it.value)
-                }
-            } else if (it.value == "--") {
+                options.add(match.value)
+            } else if (argSwitchInside(match.value)) {
                 return@beg
+            } else if (options.lastIndex != -1 && options[options.lastIndex].endsWith("=")) {
+                // anything ending in = means the last option should be tied with it
+                // also solves --foobar="foo" where "foo" got split separately
+                // so recombine them
+                options[options.lastIndex] += match.value
             } else {
-                sources.add(it.value)
+                sources.add(match.value.removeSurrounding("\"").removeSurrounding("\'"))
             }
         }
     }
