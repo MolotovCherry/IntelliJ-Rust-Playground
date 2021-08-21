@@ -23,16 +23,14 @@ import javax.swing.JComponent
 import javax.swing.JTextField
 
 class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustScratchConfiguration>() {
-    private val options: JTextField = JTextField()
-    private val sources: JTextField = JTextField()
-    private val args: JTextField = JTextField()
+    private val command: JTextField = JTextField()
 
     private val withSudo = CheckBox(
         if (SystemInfo.isWindows) "Run with Administrator privileges" else "Run with root privileges",
         false
     )
 
-    protected val workingDirectory: LabeledComponent<TextFieldWithBrowseButton> = WorkingDirectoryComponent()
+    private val workingDirectory: LabeledComponent<TextFieldWithBrowseButton> = WorkingDirectoryComponent()
 
     private val backtraceMode = ComboBox<BacktraceMode>().apply {
         BacktraceMode.values()
@@ -46,9 +44,9 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
         backtraceMode.selectedIndex = configuration.commandConfiguration.backtraceMode.index
         environmentVariables.envData = configuration.commandConfiguration.env
 
-        args.text = configuration.commandConfiguration.runtime.args.joinToString(" ")
-        sources.text = configuration.commandConfiguration.runtime.sources.joinToString(" ")
-        options.text = configuration.commandConfiguration.runtime.options.joinToString(" ")
+        configuration.commandConfiguration.runtime.apply {
+            command.text = "${options.joinToString(" ")} ${sources.joinToString(" ")} ${args.joinToString(" ")}".trim()
+        }
 
         workingDirectory.component.text = configuration.commandConfiguration.workingDirectory.toString()
 
@@ -63,15 +61,12 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
         configuration.commandConfiguration.isPlayRun = true
         configuration.commandConfiguration.command = "play"
         configuration.commandConfiguration.isFromRun = true
-        val pArgs = args.text.split(" ").filter { it.isNotEmpty() }.toMutableList()
-        if (pArgs.isNotEmpty()) {
-            pArgs.add(0, "--")
-        }
-        val combinedArgs = (options.text.split(" ") + sources.text.split(" ") + pArgs).filter { it.isNotEmpty() }
-        configuration.commandConfiguration.args = combinedArgs
-        configuration.commandConfiguration.runtime.sources = sources.text.split(" ").filter { it.isNotEmpty() }
-        configuration.commandConfiguration.runtime.options = options.text.split(" ").filter { it.isNotEmpty() }
-        configuration.commandConfiguration.runtime.args = args.text.split(" ").filter { it.isNotEmpty() }
+
+        val (options, sources, args) = splitPlayCommand(command.text)
+        configuration.commandConfiguration.runtime.options = options
+        configuration.commandConfiguration.runtime.sources = sources
+        configuration.commandConfiguration.runtime.args = args
+        configuration.commandConfiguration.args = options + sources + args
 
         configuration.commandConfiguration.workingDirectory = Paths.get(workingDirectory.component.text)
 
@@ -79,16 +74,8 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
     }
 
     override fun createEditor(): JComponent = panel {
-        labeledRow("Play &Options:", options) {
-            options(CCFlags.pushX, CCFlags.growX)
-        }
-
-        labeledRow("Play &Sources:", sources) {
-            sources(CCFlags.pushX, CCFlags.growX)
-        }
-
-        labeledRow("Prog &Args:", args) {
-            args(CCFlags.pushX, CCFlags.growX)
+        labeledRow("Play &Command:", command) {
+            command(CCFlags.pushX, CCFlags.growX)
         }
 
         row(workingDirectory.label) {
@@ -121,4 +108,56 @@ private class WorkingDirectoryComponent : LabeledComponent<TextFieldWithBrowseBu
         }
         text = ExecutionBundle.message("run.configuration.working.directory.label")
     }
+}
+
+fun splitPlayCommand(command: String): Triple<List<String>, List<String>, List<String>> {
+    val options = mutableListOf<String>()
+    val sources = mutableListOf<String>()
+    val args = mutableListOf<String>()
+
+    var argSwitch = false
+
+    // don't do any regex parsing on actual args since it may remove chars
+    val unparsedArgs = command.split(" ")
+
+    val r = Regex("[^\\s\"']+|\"[^\"]*\"|'[^']*'")
+    run beg@ {
+        r.findAll(command).forEach {
+            if ((it.value.startsWith("--") ||
+                it.value.startsWith("-") ||
+                it.value.startsWith("\"-") ||
+                it.value.startsWith("'-")) &&
+                !argSwitch && it.value != "--"
+            ) {
+                // regex will split a last --foobar="balah" into separate options
+                // so recombine them
+                val lastIndex = options.lastIndex
+                if (lastIndex != -1 && options[lastIndex].endsWith("=") &&
+                    ((it.value.startsWith("\"") && it.value.endsWith("\"")) ||
+                    (it.value.startsWith("'") && it.value.endsWith("'")))
+                ) {
+                    options[lastIndex] += it.value
+                } else {
+                    options.add(it.value)
+                }
+            } else if (it.value == "--") {
+                return@beg
+            } else {
+                sources.add(it.value)
+            }
+        }
+    }
+
+    // add unparsed args
+    unparsedArgs.forEach {
+        if (it == "--") {
+            argSwitch = true
+        }
+
+        if (argSwitch || it == "--") {
+            args.add(it)
+        }
+    }
+
+    return Triple(options, sources, args)
 }
