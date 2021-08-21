@@ -10,15 +10,11 @@
     <description>A powerful local Rust playground, straight from your IDE! Inspired by the official Rust playground, but more convenient to use!</description>
 
     <change-notes><![CDATA[
-<h3>2.1.0</h3>
+<h3>2.1.1</h3>
 <ul>
-    <li>Massive refactoring of internal system from the ground up (faster + more stable)</li>
-    <li>Fix typo on editor bar</li>
-    <li>Always use cargo, and ignore xargo (previously caused problems)</li>
-    <li>Basic filters in output to link to file positions!</li>
-    <li>Allow installation of binaries from non-Cargo projects (restriction gone)</li>
-    <li>Custom manual run configurations (for advanced usage - set env vars, backtrace mode, and more)</li>
-    <li>Improved handling to correctly remove those "this file isn't part of cargo" editor notifications</li>
+    <li>Fix suggested title of manual run configuration</li>
+    <li>Manual runs squashed to just one command field for clarity</li>
+    <li>Manual runs now quote and space aware (like they should be)</li>
 </ul>
     ]]></change-notes>
 
