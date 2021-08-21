@@ -54,6 +54,26 @@ fun Element.readPath(name: String): Path? {
     return readString(name)?.let { Paths.get(ExternalizablePath.localPathValue(it)) }
 }
 
+fun Element.writePaths(name: String, value: List<String>) {
+    val s = value.map {
+        ExternalizablePath.urlValue(it)
+    }
+    // why //// ? Because / is forbidden in a file name, but one / is used in a filepath
+    // two // is used for the special file url file://, and 3 could be used if the path was Linux dir file:///usr/
+    writeString(name, s.joinToString("////"))
+}
+
+fun Element.readPaths(name: String): List<String>? {
+    readString(name)?.let { str ->
+        val paths = str.split("////").map {
+            ExternalizablePath.localPathValue(it)
+        }
+        return paths
+    }
+
+    return null
+}
+
 inline fun <reified E : Enum<E>> Element.readEnum(name: String): E? {
     val variantName = readString(name) ?: return null
     return try {
