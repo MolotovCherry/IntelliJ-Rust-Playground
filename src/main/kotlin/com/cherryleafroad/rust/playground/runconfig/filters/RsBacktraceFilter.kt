@@ -5,9 +5,9 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
+import com.cherryleafroad.rust.playground.cargoplay.CargoPlayPath
 import com.cherryleafroad.rust.playground.runconfig.constants.CargoConstants.MANIFEST_FILE
 import com.cherryleafroad.rust.playground.runconfig.filters.RegexpFileLinkFilter.Companion.FILE_POSITION_RE
-import com.cherryleafroad.rust.playground.utils.CargoPlayPath
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.OpenFileHyperlinkInfo
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -19,11 +19,9 @@ import com.intellij.psi.PsiDocumentManager
 import org.rust.cargo.project.model.cargoProjects
 import org.rust.cargo.project.model.impl.CargoProjectImpl
 import org.rust.cargo.project.model.impl.CargoProjectsServiceImpl
-import org.rust.cargo.project.workspace.CargoWorkspace
 import org.rust.cargo.project.workspace.PackageOrigin
 import org.rust.lang.core.resolve.resolveStringPath
 import java.nio.file.Paths
-import java.util.*
 import java.util.regex.Pattern
 
 /**

@@ -1,6 +1,6 @@
 package com.cherryleafroad.rust.playground.services
 
-import com.cherryleafroad.rust.playground.utils.CargoPlayPath
+import com.cherryleafroad.rust.playground.cargoplay.CargoPlayPath
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import org.rust.cargo.project.settings.toolchain

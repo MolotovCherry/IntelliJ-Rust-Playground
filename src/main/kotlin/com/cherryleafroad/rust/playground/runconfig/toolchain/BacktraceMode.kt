@@ -10,7 +10,6 @@ enum class BacktraceMode(val index: Int, val title: String) {
     companion object {
         @JvmField
         val DEFAULT: BacktraceMode = SHORT
-
         fun fromIndex(index: Int): BacktraceMode = values().find { it.index == index } ?: DEFAULT
     }
 }

@@ -32,7 +32,7 @@ class SettingsForm {
             selectedEdition.addItem(c.myName)
         }
 
-        scratchDefault.text = Settings.getScratchDefault()
+        scratchDefault.text = Settings.getScratchOrDefault()
         scrollPane.addComponentListener(object : ComponentListener {
             override fun componentResized(e: ComponentEvent?) {
                 // wait until it's showing, otherwise scroll fails

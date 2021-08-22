@@ -10,7 +10,7 @@ import org.rust.lang.RsLanguage
 class RustScratchCreationHelper : ScratchFileCreationHelper() {
     override fun prepareText(project: Project, context: Context, dataContext: DataContext): Boolean {
         context.language = RsLanguage
-        context.text = Settings.getScratchDefault()
+        context.text = Settings.getScratchOrDefault()
         context.fileExtension = RsFileType.defaultExtension
         return true
     }

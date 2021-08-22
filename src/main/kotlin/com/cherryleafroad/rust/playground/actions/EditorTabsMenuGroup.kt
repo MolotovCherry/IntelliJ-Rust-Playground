@@ -31,7 +31,7 @@ class EditorTabsMenuGroup : DefaultActionGroup("Explore to Cargo Play...", true)
 
                 val settings = ScratchSettings(file)
                 val srcs = mutableListOf(file.name)
-                srcs.addAll(settings.SRC.getValue().split(" ").filter { it.isNotEmpty() })
+                srcs.addAll(settings.SRC.get().split(" ").filter { it.isNotEmpty() })
 
                 service.setCargoPlayPath(srcs, file.toNioPath().parent.toString())
             }

@@ -1,5 +1,6 @@
-package com.cherryleafroad.rust.playground.utils
+package com.cherryleafroad.rust.playground.cargoplay
 
+import com.cherryleafroad.rust.playground.runconfig.constants.CargoConstants.MANIFEST_FILE
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
@@ -10,40 +11,33 @@ private enum class TargetType(val folderName: String) {
     RELEASE("release")
 }
 
+@Suppress("MemberVisibilityCanBePrivate")
 class CargoPlayPath(
     private val srcs: List<String>,
     private val cwd: String
 ) {
-    private val hash = getSrcHash()
+    val srcHash = genSrcHash()
+    val projectHash = "p${srcHash.lowercase()}"
 
-    val cargoPlayDir: Path = Paths.get(System.getProperty("java.io.tmpdir"), "cargo-play.$hash")
+    val cargoPlayDir: Path = Paths.get(System.getProperty("java.io.tmpdir"), "cargo-play.$srcHash")
+    val cargoManifest: Path = Paths.get(cargoPlayDir.toString(), MANIFEST_FILE)
     val debugTarget = binaryTarget(TargetType.DEBUG)
     val releaseTarget = binaryTarget(TargetType.RELEASE)
 
     private fun binaryTarget(target: TargetType): Path {
-        val hashl = hash.lowercase()
-
         val os = System.getProperty("os.name").lowercase()
-        val fileExt = if (os.contains("win")) {
-            ".exe"
-        } else {
-            ""
-        }
+        val fileExt = if (os.contains("win")) ".exe" else ""
 
-        return Paths.get(cargoPlayDir.toString(), "target/${target.folderName}/p$hashl$fileExt")
+        return Paths.get(cargoPlayDir.toString(), "target/${target.folderName}/$projectHash$fileExt")
     }
 
-    private fun getSrcHash(): String {
+    private fun genSrcHash(): String {
         val hash = MessageDigest.getInstance("SHA-1")
         val canonicalized = srcs.map {
             val f = Paths.get(it).toFile()
 
             val os = System.getProperty("os.name").lowercase()
-            val prefix = if (os.contains("win")) {
-                "\\\\?\\"
-            } else {
-                ""
-            }
+            val prefix = if (os.contains("win")) "\\\\?\\" else ""
 
             if (!f.isAbsolute) {
                 "$prefix${Paths.get(cwd, it).toFile().canonicalPath}"

@@ -1,10 +1,8 @@
-@file:Suppress("ComponentNotRegistered")
-
 package com.cherryleafroad.rust.playground.scratch.ui
 
 import com.cherryleafroad.rust.playground.actions.CleanAction
 import com.cherryleafroad.rust.playground.actions.ToolbarExecuteAction
-import com.cherryleafroad.rust.playground.config.Settings
+import com.cherryleafroad.rust.playground.config.*
 import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
 import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.intellij.openapi.actionSystem.AnAction
@@ -66,263 +64,250 @@ class RustScratchFileEditor(
 }
 
 class ArgsTextField(
-    private val ARGS: Setting
+    private val ARGS: StringSetting
 ) : LabeledTextEditAction("Args", "Arguments to pass to program") {
     override val textfieldLength: Int =  100
 
     init {
-        val saved = ARGS.getValue()
-        textfield.text = saved
+        textfield.text = ARGS.get()
     }
 
     override fun textChanged(text: String) {
-        ARGS.setValue(text)
+        ARGS.set(text)
     }
 }
 
 class SrcTextField(
-    private val SRC: Setting
+    private val SRC: StringSetting
 ) : LabeledTextEditAction("Src", "List of (spaced) additional Rust files to build. CWD is scratch dir") {
     override val textfieldLength: Int =  100
 
     init {
-        val saved = SRC.getValue()
-        textfield.text = saved
+        textfield.text = SRC.get()
     }
 
     override fun textChanged(text: String) {
-        SRC.setValue(text)
+        SRC.set(text)
     }
 }
 
 class CargoOptionTextField(
-    private val CARGO_OPTION: Setting
+    private val CARGO_OPTION: StringSetting
 ) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo") {
     override val textfieldLength: Int =  100
 
     init {
-        val saved = CARGO_OPTION.getValue()
-        textfield.text = saved
+        textfield.text = CARGO_OPTION.get()
     }
 
     override fun textChanged(text: String) {
-        CARGO_OPTION.setValue(text)
+        CARGO_OPTION.set(text)
     }
 }
 
 class ModeTextField(
-    private val MODE: Setting
+    private val MODE: StringSetting
 ) : LabeledTextEditAction("Mode", "Specify subcommand to use when calling Cargo [default: run]") {
     override val textfieldLength: Int =  65
 
     init {
-        val saved = MODE.getValue()
-        textfield.text = saved
+        textfield.text = MODE.get()
     }
 
     override fun textChanged(text: String) {
-        MODE.setValue(text)
+        MODE.set(text)
     }
 }
 
 class ExpandCheckBoxAction(
-    private val EXPAND: Setting
+    private val EXPAND: BooleanSetting
 ) : SmallBorderCheckboxAction("Expand", "Expand macros in your code") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = EXPAND.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = EXPAND.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return EXPAND.getBoolean()
+        return EXPAND.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        EXPAND.setValue(state)
+        EXPAND.set(state)
     }
 }
 
 class VerboseCheckBoxAction(
-    private val VERBOSE: Setting
+    private val VERBOSE: BooleanSetting
 ) : SmallBorderCheckboxAction("Verbose", "Set Cargo verbose level") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = VERBOSE.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = VERBOSE.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return VERBOSE.getBoolean()
+        return VERBOSE.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        VERBOSE.setValue(state)
+        VERBOSE.set(state)
     }
 }
 
 class TestCheckBoxAction(
-    private val TEST: Setting
+    private val TEST: BooleanSetting
 ) : SmallBorderCheckboxAction("Test", "Run test code") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = TEST.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = TEST.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return TEST.getBoolean()
+        return TEST.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        TEST.setValue(state)
+        TEST.set(state)
     }
 }
 
 class ReleaseCheckBoxAction(
-    private val RELEASE: Setting
+    private val RELEASE: BooleanSetting
 ) : SmallBorderCheckboxAction("Release", "Build program in release mode") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = RELEASE.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = RELEASE.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return RELEASE.getBoolean()
+        return RELEASE.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        RELEASE.setValue(state)
+        RELEASE.set(state)
     }
 }
 
 class QuietCheckBoxAction(
-    private val QUIET: Setting
+    private val QUIET: BooleanSetting
 ) : SmallBorderCheckboxAction("Quiet", "Disable output from Cargo") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = QUIET.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = QUIET.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return QUIET.getBoolean()
+        return QUIET.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        QUIET.setValue(state)
+        QUIET.set(state)
     }
 }
 
 class InferCheckBoxAction(
-    private val INFER: Setting
+    private val INFER: BooleanSetting
 ) : SmallBorderCheckboxAction("Infer", "[Experimental] Automatically infers crate dependencies") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = INFER.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = INFER.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return INFER.getBoolean()
+        return INFER.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        INFER.setValue(state)
+        INFER.set(state)
     }
 }
 
 class CleanCheckBoxAction(
-    private val CLEAN: Setting
+    private val CLEAN: BooleanSetting
 ) : SmallBorderCheckboxAction("Clean", "Rebuild the Cargo project without the cache from previous run") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = CLEAN.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = CLEAN.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return CLEAN.getBoolean()
+        return CLEAN.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        CLEAN.setValue(state)
+        CLEAN.set(state)
     }
 }
 
 class CheckCheckBoxAction(
-    private val CHECK: Setting
+    private val CHECK: BooleanSetting
 ) : SmallBorderCheckboxAction("Check", "Check for errors in your code") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = CHECK.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = CHECK.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return CHECK.getBoolean()
+        return CHECK.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        CHECK.setValue(state)
+        CHECK.set(state)
     }
 }
 
 class CargoOptionNoDefaultCheckBoxAction(
-    private val CARGO_OPTION_NO_DEFAULT: Setting
+    private val CARGO_OPTION_NO_DEFAULT: BooleanSetting
 ) : SmallBorderCheckboxAction("No Defaults", "Remove default cargo options") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        val saved = CARGO_OPTION_NO_DEFAULT.getBoolean()
-        checkbox.isSelected = saved
+        checkbox.isSelected = CARGO_OPTION_NO_DEFAULT.get()
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return CARGO_OPTION_NO_DEFAULT.getBoolean()
+        return CARGO_OPTION_NO_DEFAULT.get()
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        CARGO_OPTION_NO_DEFAULT.setValue(state)
+        CARGO_OPTION_NO_DEFAULT.set(state)
     }
 }
 
 class ToolchainComboBoxAction(
-    private val TOOLCHAIN: Setting,
+    private val TOOLCHAIN: ToolchainSetting,
     val updateToolbar: () -> Unit
 ) : ComboBoxAction("Toolchain") {
-    private val defaultSelection = Settings.getSelectedToolchain()
+    private val defaultSelection = Settings.TOOLCHAIN.get()
 
     override val itemList = RustChannel.values().map { it.name }
 
     init {
-        TOOLCHAIN.setValue(defaultSelection.index)
+        TOOLCHAIN.set(defaultSelection.index)
     }
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
-        (action as InnerAction).index == TOOLCHAIN.getInt(defaultSelection.index)
+        (action as InnerAction).index == TOOLCHAIN.get(defaultSelection.index)
     }
 
     override var currentSelection: String = defaultSelection.name
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        TOOLCHAIN.setValue(index)
+        TOOLCHAIN.set(index)
         currentSelection = RustChannel.values()[index].name
         updateToolbar()
     }
 }
 
 class EditionComboBoxAction(
-    private val EDITION: Setting,
+    private val EDITION: EditionSetting,
     val updateToolbar: () -> Unit
 ) : ComboBoxAction("Edition") {
-    private val defaultSelection = Settings.getSelectedEdition()
+    private val defaultSelection = Settings.EDITION.get()
 
     override val itemList = Edition.values().map { it.myName }
 
     init {
-        EDITION.setValue(defaultSelection.index)
+        EDITION.set(defaultSelection.index)
     }
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
-        (action as InnerAction).index == EDITION.getInt(defaultSelection.index)
+        (action as InnerAction).index == EDITION.get(defaultSelection.index)
     }
 
     override var currentSelection: String = defaultSelection.myName
 
     override fun performAction(e: AnActionEvent, index: Int) {
-        EDITION.setValue(index)
+        EDITION.set(index)
         currentSelection = Edition.values()[index].myName
         updateToolbar()
     }

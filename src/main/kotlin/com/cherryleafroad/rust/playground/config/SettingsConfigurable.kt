@@ -1,12 +1,6 @@
 package com.cherryleafroad.rust.playground.config
 
-import com.cherryleafroad.rust.playground.config.Settings.EDITION_KEY
-import com.cherryleafroad.rust.playground.config.Settings.SCRATCH_KEY
-import com.cherryleafroad.rust.playground.config.Settings.TOOLCHAIN_KEY
 import com.cherryleafroad.rust.playground.config.ui.SettingsForm
-import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
-import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.project.Project
@@ -16,8 +10,7 @@ import javax.swing.JComponent
 class SettingsConfigurable(private val project: Project) : SearchableConfigurable, Disposable {
     private var mySettings: SettingsForm? = SettingsForm()
         get() = field!!
-    private val properties: PropertiesComponent = PropertiesComponent.getInstance()
-    private val origHash: Int = Settings.getScratchDefault().hashCode()
+    private val origHash: Int = Settings.getScratchOrDefault().hashCode()
 
     override fun createComponent(): JComponent {
         reset()
@@ -26,15 +19,15 @@ class SettingsConfigurable(private val project: Project) : SearchableConfigurabl
 
     override fun isModified(): Boolean {
         val scratch = mySettings!!.getScratch().hashCode() != origHash
-        val toolchain = mySettings!!.selectedToolchain.selectedIndex != properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index)
-        val edition = mySettings!!.selectedEdition.selectedIndex != properties.getInt(EDITION_KEY, Edition.DEFAULT.index)
+        val toolchain = mySettings!!.selectedToolchain.selectedIndex != Settings.TOOLCHAIN.get().index
+        val edition = mySettings!!.selectedEdition.selectedIndex != Settings.EDITION.get().index
         return scratch || toolchain || edition
     }
 
     override fun apply() {
-        properties.setValue(SCRATCH_KEY, mySettings!!.getScratch())
-        properties.setValue(TOOLCHAIN_KEY, mySettings!!.selectedToolchain.selectedIndex, RustChannel.DEFAULT.index)
-        properties.setValue(EDITION_KEY, mySettings!!.selectedEdition.selectedIndex, Edition.DEFAULT.index)
+        Settings.SCRATCH.set(mySettings!!.getScratch())
+        Settings.TOOLCHAIN.set(mySettings!!.selectedToolchain.selectedIndex)
+        Settings.EDITION.set(mySettings!!.selectedEdition.selectedIndex)
     }
 
     override fun reset() {
@@ -45,9 +38,9 @@ class SettingsConfigurable(private val project: Project) : SearchableConfigurabl
             mySettings!!.cargoExpandInstalled.isEnabled = it
         }
 
-        mySettings!!.selectedToolchain.selectedIndex = properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index)
-        mySettings!!.selectedEdition.selectedIndex = properties.getInt(EDITION_KEY, Edition.DEFAULT.index)
-        mySettings!!.setScratch(Settings.getScratchDefault())
+        mySettings!!.selectedToolchain.selectedIndex = Settings.TOOLCHAIN.get().index
+        mySettings!!.selectedEdition.selectedIndex = Settings.EDITION.get().index
+        mySettings!!.setScratch(Settings.getScratchOrDefault())
     }
 
     override fun getDisplayName(): String {

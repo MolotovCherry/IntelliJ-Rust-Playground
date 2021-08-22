@@ -1,27 +1,19 @@
 package com.cherryleafroad.rust.playground.config
 
-import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
-import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.intellij.ide.util.PropertiesComponent
 
+@Suppress("PropertyName")
 object Settings {
     private val properties = PropertiesComponent.getInstance()
+    private const val prefix: String = "rust_scratch"
 
-    fun getScratchDefault(): String {
-        return properties.getValue(SCRATCH_KEY, DEFAULT_TEXT)
+    val TOOLCHAIN = ToolchainSetting("$prefix.rust_toolchain", properties)
+    val EDITION = EditionSetting("$prefix.rust_edition", properties)
+    val SCRATCH = StringSetting("$prefix.scratch_default", properties)
+
+    fun getScratchOrDefault(): String {
+        return SCRATCH.get(DEFAULT_TEXT)
     }
-
-    fun getSelectedToolchain(): RustChannel {
-        return RustChannel.fromIndex(properties.getInt(TOOLCHAIN_KEY, RustChannel.DEFAULT.index))
-    }
-
-    fun getSelectedEdition(): Edition {
-        return Edition.fromIndex(properties.getInt(EDITION_KEY, Edition.DEFAULT.index))
-    }
-
-    const val TOOLCHAIN_KEY: String = "rust_toolchain"
-    const val SCRATCH_KEY: String = "scratch_default"
-    const val EDITION_KEY: String = "rust_edition"
 
     val DEFAULT_TEXT =
         """
@@ -36,6 +28,5 @@ object Settings {
             fn main() {
                 println!("Hello, world!");
             }
-
         """.trimIndent()
 }
