@@ -21,9 +21,9 @@ class CargoPlayPath(
     val releaseTarget = binaryTarget(TargetType.RELEASE)
 
     private fun binaryTarget(target: TargetType): Path {
-        val hashl = hash.toLowerCase()
+        val hashl = hash.lowercase()
 
-        val os = System.getProperty("os.name").toLowerCase()
+        val os = System.getProperty("os.name").lowercase()
         val fileExt = if (os.contains("win")) {
             ".exe"
         } else {
@@ -38,7 +38,7 @@ class CargoPlayPath(
         val canonicalized = srcs.map {
             val f = Paths.get(it).toFile()
 
-            val os = System.getProperty("os.name").toLowerCase()
+            val os = System.getProperty("os.name").lowercase()
             val prefix = if (os.contains("win")) {
                 "\\\\?\\"
             } else {
@@ -63,7 +63,6 @@ class CargoPlayPath(
     }
 }
 
-
 private object Base58 {
     private val ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".toCharArray()
     private val ENCODED_ZERO = ALPHABET[0]
@@ -72,29 +71,29 @@ private object Base58 {
     init {
         Arrays.fill(INDEXES, -1)
         for (i in ALPHABET.indices) {
-            INDEXES[ALPHABET[i].toInt()] = i // FIXME .toInt()
+            INDEXES[ALPHABET[i].code] = i
         }
     }
 
     fun encode(input: ByteArray): String {
-        var input = input
-        if (input.isEmpty()) {
+        var data = input
+        if (data.isEmpty()) {
             return ""
         }
         // Count leading zeros.
         var zeros = 0
-        while (zeros < input.size && input[zeros].toInt() == 0) {
+        while (zeros < data.size && data[zeros].toInt() == 0) {
             ++zeros
         }
         // Convert base-256 digits to base-58 digits (plus conversion to ASCII characters)
-        input = input.copyOf(input.size) // since we modify it in-place
-        val encoded = CharArray(input.size * 2) // upper bound
+        data = data.copyOf(data.size) // since we modify it in-place
+        val encoded = CharArray(data.size * 2) // upper bound
         var outputStart = encoded.size
         var inputStart = zeros
-        while (inputStart < input.size) {
-            val remainder = divmod(input, inputStart, 256, 58)
+        while (inputStart < data.size) {
+            val remainder = divmod(data, inputStart, 256, 58)
             encoded[--outputStart] = ALPHABET[remainder]
-            if (input[inputStart].toInt() == 0) {
+            if (data[inputStart].toInt() == 0) {
                 ++inputStart // optimization - skip leading zeros
             }
         }
