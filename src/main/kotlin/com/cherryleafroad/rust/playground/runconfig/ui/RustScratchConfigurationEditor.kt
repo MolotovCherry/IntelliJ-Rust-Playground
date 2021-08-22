@@ -53,8 +53,16 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
                 }
             }
 
+            val quotedArgs = args.map {
+                if (it.contains(" ")) {
+                    "\"$it\""
+                } else {
+                    it
+                }
+            }
+
             command.text = "${options.joinToString(" ")} ${quotedSources.joinToString(" ")}".trim()
-            command.text += " ${args.joinToString(" ")}".trimEnd()
+            command.text += " ${quotedArgs.joinToString(" ")}".trimEnd()
         }
 
         workingDirectory.component.text = configuration.commandConfiguration.workingDirectory.toString()
@@ -131,38 +139,37 @@ fun splitPlayCommand(command: String): Triple<List<String>, List<String>, List<S
 
     var argSwitch = false
 
-    // don't do any regex parsing on actual args since it may remove chars
-    val unparsedArgs = command.split(" ")
-
     val r = Regex("[^\\s\"']+|\"[^\"]*\"|'[^']*'")
-    run beg@ {
-        r.findAll(command).forEach { match ->
-            if ((match.value.startsWith("--") ||
-                match.value.startsWith("-")) &&
-                !argSwitch && !argSwitchInside(match.value)
-            ) {
-                options.add(match.value)
-            } else if (argSwitchInside(match.value)) {
-                return@beg
-            } else if (options.lastIndex != -1 && options[options.lastIndex].endsWith("=")) {
-                // anything ending in = means the last option should be tied with it
-                // also solves --foobar="foo" where "foo" got split separately
-                // so recombine them
-                options[options.lastIndex] += match.value
+    r.findAll(command).forEach beg@ {
+        if (argSwitch) {
+            // special handling to allow "multiple space" quotation args since by default quotes are put in \"
+            if (it.value.startsWith("\"") && it.value.endsWith("\"")) {
+                // add as a chunk
+                args.add(it.value.removeSurrounding("\""))
             } else {
-                sources.add(match.value.removeSurrounding("\"").removeSurrounding("\'"))
+                // don't change the contents
+                args.add(it.value)
             }
-        }
-    }
 
-    // add unparsed args
-    unparsedArgs.forEach {
-        if (it == "--") {
+            return@beg
+        }
+
+        if ((it.value.startsWith("--") ||
+            it.value.startsWith("-")) &&
+            !argSwitch && !argSwitchInside(it.value)
+        ) {
+            options.add(it.value)
+        } else if (argSwitchInside(it.value)) {
             argSwitch = true
-        }
-
-        if (argSwitch || it == "--") {
-            args.add(it)
+            args.add(it.value)
+            return@beg
+        } else if (options.lastIndex != -1 && options[options.lastIndex].endsWith("=")) {
+            // anything ending in = means the last option should be tied with it
+            // also solves --foobar="foo" where "foo" got split separately
+            // so recombine them
+            options[options.lastIndex] += it.value
+        } else {
+            sources.add(it.value.removeSurrounding("\"").removeSurrounding("\'"))
         }
     }
 
