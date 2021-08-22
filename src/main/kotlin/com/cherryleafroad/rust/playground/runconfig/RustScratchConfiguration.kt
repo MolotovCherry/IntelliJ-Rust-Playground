@@ -51,7 +51,7 @@ class RustScratchConfiguration(
         element.writeBool("isFromRun", commandConfiguration.isFromRun)
         element.writeString("options", commandConfiguration.runtime.options.joinToString(" "))
         element.writePaths("sources", commandConfiguration.runtime.sources)
-        element.writeString("runtimeArgs", commandConfiguration.runtime.args.joinToString(" "))
+        element.writeArgs("runtimeArgs", commandConfiguration.runtime.args)
 
         element.writeBool("isPlayRun", commandConfiguration.isPlayRun)
         element.writeEnum("backtraceMode", commandConfiguration.backtraceMode)
@@ -72,7 +72,7 @@ class RustScratchConfiguration(
         element.readBool("isFromRun")?.let { commandConfiguration.isFromRun = it }
         element.readString("options")?.let { out -> commandConfiguration.runtime.options = out.split(" ").filterNot { it.isEmpty() } }
         element.readPaths("sources")?.let { commandConfiguration.runtime.sources = it }
-        element.readString("runtimeArgs")?.let { arg -> commandConfiguration.runtime.args = arg.split(" ").filterNot { it.isEmpty() } }
+        element.readArgs("runtimeArgs")?.let { commandConfiguration.runtime.args = it }
 
         // rebuild args from sources to fix the paths
         commandConfiguration.runtime.apply {

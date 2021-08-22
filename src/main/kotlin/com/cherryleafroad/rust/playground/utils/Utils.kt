@@ -74,6 +74,18 @@ fun Element.readPaths(name: String): List<String>? {
     return null
 }
 
+fun Element.writeArgs(name: String, value: List<String>) {
+    writeString(name, value.joinToString("#sep#"))
+}
+
+fun Element.readArgs(name: String): List<String>? {
+    readString(name)?.let { str ->
+        return str.split("#sep#")
+    }
+
+    return null
+}
+
 inline fun <reified E : Enum<E>> Element.readEnum(name: String): E? {
     val variantName = readString(name) ?: return null
     return try {
