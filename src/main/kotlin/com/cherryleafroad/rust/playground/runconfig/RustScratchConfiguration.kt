@@ -2,24 +2,28 @@ package com.cherryleafroad.rust.playground.runconfig
 
 import com.cherryleafroad.rust.playground.runconfig.constants.CargoConstants
 import com.cherryleafroad.rust.playground.runconfig.runtime.CommandConfiguration
-import com.cherryleafroad.rust.playground.runconfig.runtime.PlayConfiguration
 import com.cherryleafroad.rust.playground.runconfig.toolchain.BacktraceMode
+import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.runconfig.ui.RustScratchConfigurationEditor
-import com.cherryleafroad.rust.playground.utils.*
+import com.cherryleafroad.rust.playground.services.Settings
+import com.cherryleafroad.rust.playground.settings.PlayRunConfiguration
+import com.cherryleafroad.rust.playground.utils.toPath
 import com.intellij.execution.Executor
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.execution.configurations.*
 import com.intellij.execution.process.ElevationService
 import com.intellij.execution.runners.ExecutionEnvironment
+import com.intellij.openapi.components.service
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.util.io.systemIndependentPath
-import org.jdom.Element
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.toolchain.tools.rustc
 import java.io.File
 import java.nio.file.Path
+import java.nio.file.Paths
 
+@Suppress("PrivatePropertyName")
 class RustScratchConfiguration(
     project: Project,
     name: String?,
@@ -30,66 +34,35 @@ class RustScratchConfiguration(
     )
 
     // the scratch root directory is always the default working directory
-    var playConfiguration: PlayConfiguration = PlayConfiguration()
     var commandConfiguration: CommandConfiguration = CommandConfiguration()
+    val runConfig: PlayRunConfiguration = Settings.getInstance().runConfigurations[uniqueID]
+
+    // read external run config settings into CommandConfiguration
+    init {
+        commandConfiguration.command = runConfig.command
+
+        // rebuild args from sources to fix the paths
+        runConfig.apply {
+            commandConfiguration.args = options + srcs + args
+        }
+
+        commandConfiguration.backtraceMode = runConfig.backtraceMode
+        commandConfiguration.env = EnvironmentVariablesData.DEFAULT.with(runConfig.env)
+
+        commandConfiguration.workingDirectory = runConfig.workingDirectory
+        commandConfiguration.withSudo = runConfig.withSudo
+    }
 
     override fun suggestedName(): String {
         var name = ""
-        commandConfiguration.runtime.sources.getOrNull(0)?.let {
+        runConfig.srcs.getOrNull(0)?.let {
             name = File(it).name
         }
         return "Play $name"
     }
 
-    override fun writeExternal(element: Element) {
-        super.writeExternal(element)
-
-        element.writeString("command", commandConfiguration.command)
-        // file paths in args will be ruined
-        //element.writeString("args", commandConfiguration.args.joinToString(" "))
-
-        element.writeBool("isFromRun", commandConfiguration.isFromRun)
-        element.writeString("options", commandConfiguration.runtime.options.joinToString(" "))
-        element.writePaths("sources", commandConfiguration.runtime.sources)
-        element.writeArgs("runtimeArgs", commandConfiguration.runtime.args)
-
-        element.writeBool("isPlayRun", commandConfiguration.isPlayRun)
-        element.writeEnum("backtraceMode", commandConfiguration.backtraceMode)
-
-        commandConfiguration.env.writeExternal(element)
-
-        element.writePath("workingDirectory", commandConfiguration.workingDirectory)
-        element.writeBool("withSudo", commandConfiguration.withSudo)
-    }
-
-    override fun readExternal(element: Element) {
-        super.readExternal(element)
-
-        element.readString("command")?.let { commandConfiguration.command = it }
-        // file paths get ruined
-        //element.readString("args")?.let { commandConfiguration.args = it.split(" ") }
-
-        element.readBool("isFromRun")?.let { commandConfiguration.isFromRun = it }
-        element.readString("options")?.let { out -> commandConfiguration.runtime.options = out.split(" ").filterNot { it.isEmpty() } }
-        element.readPaths("sources")?.let { commandConfiguration.runtime.sources = it }
-        element.readArgs("runtimeArgs")?.let { commandConfiguration.runtime.args = it }
-
-        // rebuild args from sources to fix the paths
-        commandConfiguration.runtime.apply {
-            commandConfiguration.args = options + sources + args
-        }
-
-        element.readBool("isPlayRun")?.let { commandConfiguration.isPlayRun = it }
-        element.readEnum<BacktraceMode>("backtraceMode")?.let { commandConfiguration.backtraceMode = it }
-        commandConfiguration.env = EnvironmentVariablesData.readExternal(element)
-
-        element.readPath("workingDirectory")?.let { commandConfiguration.workingDirectory = it }
-        element.readBool("withSudo")?.let { commandConfiguration.withSudo = it }
-    }
-
     fun setFromCmd(cmd: RustScratchCommandLine) {
         commandConfiguration = cmd.commandConfiguration
-        playConfiguration = cmd.playConfiguration
     }
 
     override fun getState(executor: Executor, environment: ExecutionEnvironment): RunProfileState {
@@ -102,45 +75,59 @@ class RustScratchConfiguration(
     fun toGeneralCommandLine(
         project: Project
     ): GeneralCommandLine? {
-        val toolchain = project.toolchain
+        val toolchain = project.toolchain ?: return null
 
-        if (toolchain != null) {
-            val rustcExecutable = toolchain.rustc().executable.toString()
-            val cargoExecutable = toolchain.pathToExecutable(CargoConstants.CARGO)
+        val rustcExecutable = toolchain.rustc().executable.toString()
+        val cmdExecutable = if (!commandConfiguration.directRun) {
+            toolchain.pathToExecutable(CargoConstants.CARGO)
+        } else {
+            Paths.get(commandConfiguration.command)
+        }
 
-            val params = commandConfiguration.args.toMutableList()
+        val params = commandConfiguration.args.toMutableList()
 
-            if (commandConfiguration.processColors && !commandConfiguration.isPlayRun &&
-                !commandConfiguration.isFromRun &&
+        if (!commandConfiguration.directRun) {
+            // first command is cargo subcommand
+            params.add(0, commandConfiguration.command)
+
+            // ... but, believe it or not, cargo options come before that
+
+                commandConfiguration.cargoOptions.asReversed().forEach {
+                    params.add(0, it)
+                }
+
+
+            // ... and there are others before that!
+            if (commandConfiguration.processColors &&
                 commandConfiguration.command in COLOR_ACCEPTING_COMMANDS &&
                 params.none { it.startsWith("--color")}) {
 
                 params.add(0, "--color=always")
             }
 
-            // true first command is cargo executable, so we technically need this as a param
-            params.add(0, commandConfiguration.command)
-
-            val generalCommandLine = GeneralCommandLine(cargoExecutable, commandConfiguration.withSudo)
-                .withWorkDirectory(commandConfiguration.workingDirectory)
-                .withEnvironment("TERM", "ansi")
-                .withParameters(params)
-                .withCharset(Charsets.UTF_8)
-                .withRedirectErrorStream(true)
-                .withEnvironment("RUSTC", rustcExecutable)
-
-            when (commandConfiguration.backtraceMode) {
-                BacktraceMode.SHORT -> generalCommandLine.withEnvironment(CargoConstants.RUST_BACKTRACE_ENV_VAR, "short")
-                BacktraceMode.FULL -> generalCommandLine.withEnvironment(CargoConstants.RUST_BACKTRACE_ENV_VAR, "full")
-                BacktraceMode.NO -> Unit
+            // ... and what's even more, toolchain comes BEFORE THOSE! Play run configs its own toolchain
+            if (commandConfiguration.toolchain != RustChannel.DEFAULT) {
+                params.add(0, "+${commandConfiguration.toolchain.channel}")
             }
-
-            commandConfiguration.env.configureCommandLine(generalCommandLine, true)
-
-            return generalCommandLine
         }
 
-        return null
+        val generalCommandLine = GeneralCommandLine(cmdExecutable, commandConfiguration.withSudo)
+            .withWorkDirectory(commandConfiguration.workingDirectory.toPath())
+            .withEnvironment("TERM", "ansi")
+            .withParameters(params)
+            .withCharset(Charsets.UTF_8)
+            .withRedirectErrorStream(true)
+            .withEnvironment("RUSTC", rustcExecutable)
+
+        when (commandConfiguration.backtraceMode) {
+            BacktraceMode.SHORT -> generalCommandLine.withEnvironment(CargoConstants.RUST_BACKTRACE_ENV_VAR, "short")
+            BacktraceMode.FULL -> generalCommandLine.withEnvironment(CargoConstants.RUST_BACKTRACE_ENV_VAR, "full")
+            BacktraceMode.NO -> Unit
+        }
+
+        commandConfiguration.env.configureCommandLine(generalCommandLine, true)
+
+        return generalCommandLine
     }
 }
 
@@ -148,7 +135,7 @@ class RustScratchConfiguration(
 fun GeneralCommandLine(path: Path, withSudo: Boolean = false, vararg args: String) =
     object : GeneralCommandLine(path.systemIndependentPath, *args) {
         override fun createProcess(): Process = if (withSudo) {
-            ElevationService.getInstance().createProcess(this)
+            service<ElevationService>().createProcess(this)
         } else {
             super.createProcess()
         }

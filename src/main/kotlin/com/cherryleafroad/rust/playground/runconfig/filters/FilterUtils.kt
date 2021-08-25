@@ -7,6 +7,7 @@ package com.cherryleafroad.rust.playground.runconfig.filters
 
 import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapiext.isUnitTestMode
@@ -115,7 +116,7 @@ object FilterUtils {
                     val fullPath = vfile.findFileByRelativePath(nPath)?.path
                     val key = "org.rust.hideNoCargoProjectNotifications$fullPath"
                     // hide no cargo project notification for opened files
-                    PropertiesComponent.getInstance(project).setValue(key, true)
+                    project.service<PropertiesComponent>().setValue(key, true)
                 }
             }
         }

@@ -4,8 +4,8 @@ import com.cherryleafroad.rust.playground.runconfig.RustScratchConfiguration
 import com.cherryleafroad.rust.playground.runconfig.toolchain.BacktraceMode
 import com.intellij.execution.ExecutionBundle
 import com.intellij.execution.configuration.EnvironmentVariablesComponent
+import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.options.SettingsEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.ComboBox
@@ -18,7 +18,6 @@ import com.intellij.ui.layout.CCFlags
 import com.intellij.ui.layout.LayoutBuilder
 import com.intellij.ui.layout.Row
 import com.intellij.ui.layout.panel
-import java.nio.file.Paths
 import javax.swing.JComponent
 import javax.swing.JTextField
 
@@ -41,53 +40,47 @@ class RustScratchConfigurationEditor(val project: Project): SettingsEditor<RustS
     private val environmentVariables = EnvironmentVariablesComponent()
 
     override fun resetEditorFrom(configuration: RustScratchConfiguration) {
-        backtraceMode.selectedIndex = configuration.commandConfiguration.backtraceMode.index
-        environmentVariables.envData = configuration.commandConfiguration.env
+        backtraceMode.item = configuration.runConfig.backtraceMode
+        environmentVariables.envData = EnvironmentVariablesData.DEFAULT.with(configuration.runConfig.env)
 
-        configuration.commandConfiguration.runtime.apply {
-            val quotedSources = sources.map {
-                if (it.contains(" ")) {
-                    "\"$it\""
-                } else {
-                    it
-                }
+        val quotedSources = configuration.runConfig.srcs.map {
+            if (it.contains(" ")) {
+                "\"$it\""
+            } else {
+                it
             }
-
-            val quotedArgs = args.map {
-                if (it.contains(" ")) {
-                    "\"$it\""
-                } else {
-                    it
-                }
-            }
-
-            command.text = "${options.joinToString(" ")} ${quotedSources.joinToString(" ")}".trim()
-            command.text += " ${quotedArgs.joinToString(" ")}".trimEnd()
         }
 
-        workingDirectory.component.text = configuration.commandConfiguration.workingDirectory.toString()
+        val quotedArgs = configuration.runConfig.args.map {
+            if (it.contains(" ")) {
+                "\"$it\""
+            } else {
+                it
+            }
+        }
 
-        withSudo.isSelected = configuration.commandConfiguration.withSudo
+        command.text = "${configuration.runConfig.options.joinToString(" ")} ${quotedSources.joinToString(" ")}".trim()
+        command.text += " ${quotedArgs.joinToString(" ")}".trimEnd()
+        
+        workingDirectory.component.text = configuration.runConfig.workingDirectory
+
+        withSudo.isSelected = configuration.runConfig.withSudo
     }
 
-    @Throws(ConfigurationException::class)
     override fun applyEditorTo(configuration: RustScratchConfiguration) {
-        configuration.commandConfiguration.backtraceMode = BacktraceMode.fromIndex(backtraceMode.selectedIndex)
-        configuration.commandConfiguration.env = environmentVariables.envData
-
-        configuration.commandConfiguration.isPlayRun = true
-        configuration.commandConfiguration.command = "play"
-        configuration.commandConfiguration.isFromRun = true
+        configuration.runConfig.command = "play"
+        configuration.runConfig.backtraceMode = backtraceMode.item
+        configuration.runConfig.env = environmentVariables.envData.envs
 
         val (options, sources, args) = splitPlayCommand(command.text)
-        configuration.commandConfiguration.runtime.options = options
-        configuration.commandConfiguration.runtime.sources = sources
-        configuration.commandConfiguration.runtime.args = args
-        configuration.commandConfiguration.args = options + sources + args
+        configuration.runConfig.options = options
+        configuration.runConfig.srcs = sources
+        configuration.runConfig.args = args
 
-        configuration.commandConfiguration.workingDirectory = Paths.get(workingDirectory.component.text)
-
-        configuration.commandConfiguration.withSudo = withSudo.isSelected
+        configuration.runConfig.workingDirectory = workingDirectory.component.text
+        configuration.runConfig.withSudo = withSudo.isSelected
+        
+        configuration.commandConfiguration.fromRunConfiguration(configuration.runConfig)
     }
 
     override fun createEditor(): JComponent = panel {

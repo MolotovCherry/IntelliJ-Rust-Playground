@@ -1,11 +1,10 @@
 package com.cherryleafroad.rust.playground.actions
 
-import com.cherryleafroad.rust.playground.scratch.ui.ScratchSettings
-import com.cherryleafroad.rust.playground.services.CargoPlayProjectService
+import com.cherryleafroad.rust.playground.services.CargoPlayProject
+import com.cherryleafroad.rust.playground.services.Settings
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import org.rust.cargo.project.settings.toolchain
@@ -27,11 +26,11 @@ class EditorTabsMenuGroup : DefaultActionGroup("Explore to Cargo Play...", true)
             if (isRust && isScratch) {
                 e.presentation.isEnabledAndVisible = true
 
-                val service = project.service<CargoPlayProjectService>()
+                val service = CargoPlayProject.getInstance(project)
 
-                val settings = ScratchSettings(file)
+                val settings = Settings.getInstance().scratches[file.path]
                 val srcs = mutableListOf(file.name)
-                srcs.addAll(settings.SRC.get().split(" ").filter { it.isNotEmpty() })
+                srcs.addAll(settings.srcs)
 
                 service.setCargoPlayPath(srcs, file.toNioPath().parent.toString())
             }

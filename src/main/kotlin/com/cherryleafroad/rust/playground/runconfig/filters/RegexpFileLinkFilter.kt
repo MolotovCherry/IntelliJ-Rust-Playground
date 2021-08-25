@@ -6,10 +6,9 @@
 package com.cherryleafroad.rust.playground.runconfig.filters
 
 import com.cherryleafroad.rust.playground.runconfig.filters.FilterUtils.rewriteCargoPlayPaths
-import com.cherryleafroad.rust.playground.services.CargoPlayProjectService
+import com.cherryleafroad.rust.playground.services.CargoPlayProject
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.OpenFileHyperlinkInfo
-import com.intellij.openapi.components.service
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
@@ -127,7 +126,7 @@ open class RegexpFileLinkFilter(
         return match.groupValues[1]
     }
 
-    private fun getSysroot(): String? = project.service<CargoPlayProjectService>().sysroot
+    private fun getSysroot(): String? = CargoPlayProject.getInstance(project).sysroot
 
     private fun getCargoRoot(): String = project.rustSettings.toolchain?.location?.parent.toString()
 

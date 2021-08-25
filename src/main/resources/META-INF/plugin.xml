@@ -22,9 +22,10 @@
         <scratch.creationHelper language="Rust" implementationClass="com.cherryleafroad.rust.playground.scratch.RustScratchCreationHelper"/>
         <editorFactoryListener implementation="com.cherryleafroad.rust.playground.listeners.EditorCreatedListener"/>
 
-        <projectService serviceImplementation="com.cherryleafroad.rust.playground.services.CargoPlayProjectService"/>
+        <applicationService serviceImplementation="com.cherryleafroad.rust.playground.services.Settings"/>
+        <projectService serviceImplementation="com.cherryleafroad.rust.playground.services.CargoPlayProject"/>
 
-        <projectConfigurable instance="com.cherryleafroad.rust.playground.config.SettingsConfigurable" id="Rust.Playground.Settings"
+        <projectConfigurable instance="com.cherryleafroad.rust.playground.settings.plugin.SettingsConfigurable" id="Rust.Playground.Settings"
                              displayName="Playground" nonDefaultProject="true" groupId="language" parentId="language.rust"/>
 
         <notificationGroup id="Rust Playground" displayType="BALLOON"/>

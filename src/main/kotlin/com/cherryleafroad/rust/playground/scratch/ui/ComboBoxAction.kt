@@ -16,35 +16,35 @@ import com.intellij.openapi.vcs.changes.committed.LabeledComboBoxAction
 import com.intellij.util.ui.UIUtil
 import javax.swing.JComponent
 
-abstract class ComboBoxAction(
+abstract class ComboBoxAction<E : Enum<E>>(
     label: String
 ) : LabeledComboBoxAction(label), DumbAware {
-    abstract val itemList: List<String>
+    abstract val itemList: List<E>
     abstract val preselectedItem: Condition<AnAction>
-    abstract var currentSelection: String
+    abstract var currentSelection: E
 
     override fun getPreselectCondition(): Condition<AnAction> = preselectedItem
 
     override fun createPopupActionGroup(button: JComponent): DefaultActionGroup {
         val actionGroup = DefaultActionGroup()
 
-        for ((index, item) in itemList.withIndex()) {
-            actionGroup.add(InnerAction(item, index))
+        for (item in itemList) {
+            actionGroup.add(InnerAction(item.name, item))
         }
 
         return actionGroup
     }
 
-    abstract fun performAction(e: AnActionEvent, index: Int)
+    abstract fun performAction(e: AnActionEvent, item: E)
 
     override fun update(e: AnActionEvent) {
         super.update(e)
-        e.presentation.text = currentSelection
+        e.presentation.text = currentSelection.name
     }
 
-    inner class InnerAction(label: String, val index: Int) : DumbAwareAction(label) {
+    inner class InnerAction(label: String, val item: E) : DumbAwareAction(label) {
         override fun actionPerformed(e: AnActionEvent) {
-            performAction(e, index)
+            performAction(e, item)
         }
     }
 

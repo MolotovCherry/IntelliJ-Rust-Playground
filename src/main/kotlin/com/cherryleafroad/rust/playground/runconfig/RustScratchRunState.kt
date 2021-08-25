@@ -1,10 +1,12 @@
 package com.cherryleafroad.rust.playground.runconfig
 
-import com.cherryleafroad.rust.playground.runconfig.console.RustScratchConsoleBuilder
 //import com.cherryleafroad.rust.playground.runconfig.filters.RsBacktraceFilter
+import com.cherryleafroad.rust.playground.runconfig.console.RustScratchConsoleBuilder
 import com.cherryleafroad.rust.playground.runconfig.filters.RsConsoleFilter
 import com.cherryleafroad.rust.playground.runconfig.filters.RsExplainFilter
 import com.cherryleafroad.rust.playground.runconfig.filters.RsPanicFilter
+import com.cherryleafroad.rust.playground.services.Settings
+import com.cherryleafroad.rust.playground.utils.toPath
 import com.intellij.execution.configurations.CommandLineState
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.process.ProcessHandler
@@ -19,6 +21,7 @@ class RustScratchRunState(
     private val runConfiguration: RustScratchConfiguration
 ) : CommandLineState(environment) {
     val project = environment.project
+    private val settings = Settings.getInstance().scratches[runConfiguration.commandConfiguration.scratchFile]
 
     init {
         val scope = GlobalSearchScopes.executionScope(environment.project, environment.runProfile)
@@ -27,19 +30,12 @@ class RustScratchRunState(
     }
 
     private fun createFilters(project: Project): List<Filter> {
-        val rootDir = VirtualFileManager.getInstance().findFileByNioPath(runConfiguration.commandConfiguration.workingDirectory)!!
-        val sourceScratches = if (runConfiguration.commandConfiguration.isPlayRun && !runConfiguration.commandConfiguration.isFromRun) {
-            runConfiguration.playConfiguration.src
-        } else if (runConfiguration.commandConfiguration.isFromRun) {
-            runConfiguration.commandConfiguration.runtime.sources
-        } else {
-            listOf()
-        }
+        val rootDir = VirtualFileManager.getInstance().findFileByNioPath(runConfiguration.commandConfiguration.workingDirectory.toPath())!!
 
         return mutableListOf<Filter>().apply {
             add(RsExplainFilter())
-            add(RsConsoleFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
-            add(RsPanicFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
+            add(RsConsoleFilter(project, rootDir, true, settings.srcs))
+            add(RsPanicFilter(project, rootDir, true, settings.srcs))
             //add(RsBacktraceFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
         }
     }

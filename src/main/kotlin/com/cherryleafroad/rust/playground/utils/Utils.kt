@@ -1,11 +1,11 @@
 package com.cherryleafroad.rust.playground.utils
 
 import com.cherryleafroad.rust.playground.runconfig.runtime.CommandConfiguration
-import com.intellij.execution.ExternalizablePath
+import com.cherryleafroad.rust.playground.settings.PlayRunConfiguration
+import com.cherryleafroad.rust.playground.settings.ScratchConfiguration
 import com.intellij.openapi.project.Project
-import org.jdom.Element
+import com.intellij.util.xmlb.annotations.MapAnnotation
 import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.runconfig.readString
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -13,84 +13,57 @@ import java.nio.file.Paths
 fun installBinaryCrate(project: Project, crateName: String) {
     project.toolchain?.let {
         val commandLine = CommandConfiguration(
-            "install",
-            listOf("--force", crateName)
+            command = "install",
+            args = listOf("--force", crateName)
         ).toRustScratchCommandLine()
         commandLine.run(project, "Install $crateName")
     }
 }
 
-fun Element.writeString(name: String, value: String) {
-    val opt = Element("option")
-    opt.setAttribute("name", name)
-    opt.setAttribute("value", value)
-    addContent(opt)
-}
-
-fun Element.readString(name: String): String? =
-    children
-        .find { it.name == "option" && it.getAttributeValue("name") == name }
-        ?.getAttributeValue("value")
-
-fun Element.writeBool(name: String, value: Boolean) {
-    writeString(name, value.toString())
-}
-
-fun Element.readBool(name: String): Boolean? =
-    readString(name)?.toBoolean()
-
-fun <E : Enum<*>> Element.writeEnum(name: String, value: E) {
-    writeString(name, value.name)
-}
-
-fun Element.writePath(name: String, value: Path?) {
-    if (value != null) {
-        val s = ExternalizablePath.urlValue(value.toString())
-        writeString(name, s)
-    }
-}
-
-fun Element.readPath(name: String): Path? {
-    return readString(name)?.let { Paths.get(ExternalizablePath.localPathValue(it)) }
-}
-
-fun Element.writePaths(name: String, value: List<String>) {
-    val s = value.map {
-        ExternalizablePath.urlValue(it)
-    }
-    // why //// ? Because / is forbidden in a file name, but one / is used in a filepath
-    // two // is used for the special file url file://, and 3 could be used if the path was Linux dir file:///usr/
-    writeString(name, s.joinToString("////"))
-}
-
-fun Element.readPaths(name: String): List<String>? {
-    readString(name)?.let { str ->
-        val paths = str.split("////").map {
-            ExternalizablePath.localPathValue(it)
+// creates a default value if it doesn't exist
+// source code stolen from kotlin with love :) <3
+@MapAnnotation(
+    keyAttributeName = "file",
+    valueAttributeName = "settings", entryTagName = "scratch"
+)
+class ScratchConfigMap : HashMap<String, ScratchConfiguration>() {
+    override fun get(key: String): ScratchConfiguration {
+        val value = super.get(key)
+        return if (value == null) {
+            val default = ScratchConfiguration()
+            put(key, default)
+            default
+        } else {
+            value
         }
-        return paths
     }
-
-    return null
 }
 
-fun Element.writeArgs(name: String, value: List<String>) {
-    writeString(name, value.joinToString("#sep#"))
+// creates a default value if it doesn't exist
+@MapAnnotation(
+    keyAttributeName = "run",
+    valueAttributeName = "settings", entryTagName = "config"
+)
+class PlayRunConfigMap : HashMap<Int, PlayRunConfiguration>() {
+    override fun get(key: Int): PlayRunConfiguration {
+        val value = super.get(key)
+        return if (value == null) {
+            val default = PlayRunConfiguration()
+            put(key, default)
+            default
+        } else {
+            value
+        }
+    }
 }
 
-fun Element.readArgs(name: String): List<String>? {
-    readString(name)?.let { str ->
-        return str.split("#sep#")
+// why does .split() even create so many empty items? I mean, really
+fun CharSequence.splitIgnoreEmpty(vararg delimiters: String): List<String> {
+    return this.split(*delimiters).filter {
+        it.isNotEmpty()
     }
-
-    return null
 }
 
-inline fun <reified E : Enum<E>> Element.readEnum(name: String): E? {
-    val variantName = readString(name) ?: return null
-    return try {
-        java.lang.Enum.valueOf(E::class.java, variantName)
-    } catch (_: IllegalArgumentException) {
-        null
-    }
+fun String.toPath(): Path {
+    return Paths.get(this)
 }

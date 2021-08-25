@@ -2,9 +2,11 @@ package com.cherryleafroad.rust.playground.scratch.ui
 
 import com.cherryleafroad.rust.playground.actions.CleanAction
 import com.cherryleafroad.rust.playground.actions.ToolbarExecuteAction
-import com.cherryleafroad.rust.playground.config.*
 import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
 import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
+import com.cherryleafroad.rust.playground.services.Settings
+import com.cherryleafroad.rust.playground.settings.ScratchConfiguration
+import com.cherryleafroad.rust.playground.utils.splitIgnoreEmpty
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -19,7 +21,7 @@ class RustScratchFileEditor(
 ) : ToolbarTextEditor(project, file, true) {
     private val updateToolbar = { refreshToolbar() }
     
-    private val settings = ScratchSettings(file)
+    private val settings = Settings.getInstance().scratches[file.path]
 
     override fun addTopActions(toolbarGroup: DefaultActionGroup) {
         toolbarGroup.apply {
@@ -27,288 +29,280 @@ class RustScratchFileEditor(
             addSeparator()
             add(CleanAction())
             addSeparator()
-            add(CheckCheckBoxAction(settings.CHECK))
+            add(CheckCheckBoxAction(settings))
             addSeparator()
-            add(CleanCheckBoxAction(settings.CLEAN))
+            add(CleanCheckBoxAction(settings))
             addSeparator()
-            add(ExpandCheckBoxAction(settings.EXPAND))
+            add(ExpandCheckBoxAction(settings))
             addSeparator()
-            add(InferCheckBoxAction(settings.INFER))
+            add(InferCheckBoxAction(settings))
             addSeparator()
-            add(QuietCheckBoxAction(settings.QUIET))
+            add(QuietCheckBoxAction(settings))
             addSeparator()
-            add(ReleaseCheckBoxAction(settings.RELEASE))
+            add(ReleaseCheckBoxAction(settings))
             addSeparator()
-            add(TestCheckBoxAction(settings.TEST))
+            add(TestCheckBoxAction(settings))
             addSeparator()
-            add(VerboseCheckBoxAction(settings.VERBOSE))
+            add(VerboseCheckBoxAction(settings))
         }
     }
 
     override fun addBottomActions(toolbarGroup: DefaultActionGroup) {
         toolbarGroup.apply {
-            add(ToolchainComboBoxAction(settings.TOOLCHAIN, updateToolbar))
+            add(ToolchainComboBoxAction(settings, updateToolbar))
             addSeparator()
-            add(EditionComboBoxAction(settings.EDITION, updateToolbar))
+            add(EditionComboBoxAction(settings, updateToolbar))
             addSeparator()
-            add(SrcTextField(settings.SRC))
+            add(SrcsTextField(settings))
             addSeparator()
-            add(ArgsTextField(settings.ARGS))
+            add(ArgsTextField(settings))
             addSeparator()
-            add(ModeTextField(settings.MODE))
+            add(ModeTextField(settings))
             addSeparator()
-            add(CargoOptionTextField(settings.CARGO_OPTIONS))
-            add(CargoOptionNoDefaultCheckBoxAction(settings.CARGO_OPTIONS_NO_DEFAULTS))
+            add(CargoOptionsTextField(settings))
+            add(CargoOptionNoDefaultCheckBoxAction(settings))
         }
     }
 }
 
 class ArgsTextField(
-    private val ARGS: StringSetting
+    private val settings: ScratchConfiguration
 ) : LabeledTextEditAction("Args", "Arguments to pass to program") {
     override val textfieldLength: Int =  100
 
     init {
-        textfield.text = ARGS.get()
+        textfield.text = settings.args.joinToString(" ")
     }
 
     override fun textChanged(text: String) {
-        ARGS.set(text)
+        settings.args = text.splitIgnoreEmpty(" ")
     }
 }
 
-class SrcTextField(
-    private val SRC: StringSetting
-) : LabeledTextEditAction("Src", "List of (spaced) additional Rust files to build. CWD is scratch dir") {
+class SrcsTextField(
+    private val settings: ScratchConfiguration
+) : LabeledTextEditAction("Srcs", "List of (spaced) additional Rust files to build. CWD is scratch dir") {
     override val textfieldLength: Int =  100
 
     init {
-        textfield.text = SRC.get()
+        textfield.text = settings.srcs.joinToString(" ")
     }
 
     override fun textChanged(text: String) {
-        SRC.set(text)
+        settings.srcs = text.splitIgnoreEmpty(" ")
     }
 }
 
-class CargoOptionTextField(
-    private val CARGO_OPTION: StringSetting
+class CargoOptionsTextField(
+    private val settings: ScratchConfiguration
 ) : LabeledTextEditAction("Cargo Options", "Customize flags passed to Cargo") {
     override val textfieldLength: Int =  100
 
     init {
-        textfield.text = CARGO_OPTION.get()
+        textfield.text = settings.cargoOptions.joinToString(" ")
     }
 
     override fun textChanged(text: String) {
-        CARGO_OPTION.set(text)
+        settings.cargoOptions = text.splitIgnoreEmpty(" ")
     }
 }
 
 class ModeTextField(
-    private val MODE: StringSetting
+    private val settings: ScratchConfiguration
 ) : LabeledTextEditAction("Mode", "Specify subcommand to use when calling Cargo [default: run]") {
     override val textfieldLength: Int =  65
 
     init {
-        textfield.text = MODE.get()
+        textfield.text = settings.mode
     }
 
     override fun textChanged(text: String) {
-        MODE.set(text)
+        settings.mode = text
     }
 }
 
 class ExpandCheckBoxAction(
-    private val EXPAND: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Expand", "Expand macros in your code") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = EXPAND.get()
+        checkbox.isSelected = settings.expand
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return EXPAND.get()
+        return settings.expand
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        EXPAND.set(state)
+        settings.expand = state
     }
 }
 
 class VerboseCheckBoxAction(
-    private val VERBOSE: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Verbose", "Set Cargo verbose level") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = VERBOSE.get()
+        checkbox.isSelected = settings.verbose
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return VERBOSE.get()
+        return settings.verbose
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        VERBOSE.set(state)
+        settings.verbose = state
     }
 }
 
 class TestCheckBoxAction(
-    private val TEST: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Test", "Run test code") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = TEST.get()
+        checkbox.isSelected = settings.test
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return TEST.get()
+        return settings.test
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        TEST.set(state)
+        settings.test = state
     }
 }
 
 class ReleaseCheckBoxAction(
-    private val RELEASE: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Release", "Build program in release mode") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = RELEASE.get()
+        checkbox.isSelected = settings.release
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return RELEASE.get()
+        return settings.release
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        RELEASE.set(state)
+        settings.release = state
     }
 }
 
 class QuietCheckBoxAction(
-    private val QUIET: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Quiet", "Disable output from Cargo") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = QUIET.get()
+        checkbox.isSelected = settings.quiet
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return QUIET.get()
+        return settings.quiet
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        QUIET.set(state)
+        settings.quiet = state
     }
 }
 
 class InferCheckBoxAction(
-    private val INFER: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Infer", "[Experimental] Automatically infers crate dependencies") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = INFER.get()
+        checkbox.isSelected = settings.infer
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return INFER.get()
+        return settings.infer
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        INFER.set(state)
+        settings.infer = state
     }
 }
 
 class CleanCheckBoxAction(
-    private val CLEAN: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Clean", "Rebuild the Cargo project without the cache from previous run") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = CLEAN.get()
+        checkbox.isSelected = settings.clean
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return CLEAN.get()
+        return settings.clean
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        CLEAN.set(state)
+        settings.clean = state
     }
 }
 
 class CheckCheckBoxAction(
-    private val CHECK: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("Check", "Check for errors in your code") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = CHECK.get()
+        checkbox.isSelected = settings.check
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return CHECK.get()
+        return settings.check
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        CHECK.set(state)
+        settings.check = state
     }
 }
 
 class CargoOptionNoDefaultCheckBoxAction(
-    private val CARGO_OPTION_NO_DEFAULT: BooleanSetting
+    private val settings: ScratchConfiguration
 ) : SmallBorderCheckboxAction("No Defaults", "Remove default cargo options") {
     override fun setPreselected(checkbox: JBCheckBox) {
-        checkbox.isSelected = CARGO_OPTION_NO_DEFAULT.get()
+        checkbox.isSelected = settings.cargoOptionsNoDefault
     }
 
     override fun isSelected(e: AnActionEvent): Boolean {
-        return CARGO_OPTION_NO_DEFAULT.get()
+        return settings.cargoOptionsNoDefault
     }
 
     override fun setSelected(e: AnActionEvent, state: Boolean) {
-        CARGO_OPTION_NO_DEFAULT.set(state)
+        settings.cargoOptionsNoDefault = state
     }
 }
 
 class ToolchainComboBoxAction(
-    private val TOOLCHAIN: ToolchainSetting,
+    private val settings: ScratchConfiguration,
     val updateToolbar: () -> Unit
-) : ComboBoxAction("Toolchain") {
-    private val defaultSelection = Settings.TOOLCHAIN.get()
+) : ComboBoxAction<RustChannel>("Toolchain") {
+    private val defaultSelection = settings.toolchain
 
-    override val itemList = RustChannel.values().map { it.name }
-
-    init {
-        TOOLCHAIN.set(defaultSelection.index)
-    }
+    override val itemList = RustChannel.values().toList()
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
-        (action as InnerAction).index == TOOLCHAIN.get(defaultSelection.index)
+        (action as ComboBoxAction<*>.InnerAction).item == settings.toolchain
     }
 
-    override var currentSelection: String = defaultSelection.name
+    override var currentSelection = defaultSelection
 
-    override fun performAction(e: AnActionEvent, index: Int) {
-        TOOLCHAIN.set(index)
-        currentSelection = RustChannel.values()[index].name
+    override fun performAction(e: AnActionEvent, item: RustChannel) {
+        settings.toolchain = item
+        currentSelection = item
         updateToolbar()
     }
 }
 
 class EditionComboBoxAction(
-    private val EDITION: EditionSetting,
+    private val settings: ScratchConfiguration,
     val updateToolbar: () -> Unit
-) : ComboBoxAction("Edition") {
-    private val defaultSelection = Settings.EDITION.get()
+) : ComboBoxAction<Edition>("Edition") {
+    private val defaultSelection = settings.edition
 
-    override val itemList = Edition.values().map { it.myName }
-
-    init {
-        EDITION.set(defaultSelection.index)
-    }
+    override val itemList = Edition.values().toList()
 
     override val preselectedItem: Condition<AnAction> = Condition { action ->
-        (action as InnerAction).index == EDITION.get(defaultSelection.index)
+        (action as ComboBoxAction<*>.InnerAction).item == settings.edition
     }
 
-    override var currentSelection: String = defaultSelection.myName
+    override var currentSelection = defaultSelection
 
-    override fun performAction(e: AnActionEvent, index: Int) {
-        EDITION.set(index)
-        currentSelection = Edition.values()[index].myName
+    override fun performAction(e: AnActionEvent, item: Edition) {
+        settings.edition = item
+        currentSelection = item
         updateToolbar()
     }
 }

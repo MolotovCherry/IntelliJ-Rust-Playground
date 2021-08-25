@@ -1,5 +1,6 @@
-package com.cherryleafroad.rust.playground.cargoplay
+package com.cherryleafroad.rust.playground.kargoplay
 
+import com.cherryleafroad.rust.playground.runconfig.constants.CargoConstants
 import com.cherryleafroad.rust.playground.runconfig.constants.CargoConstants.MANIFEST_FILE
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -11,7 +12,7 @@ private enum class TargetType(val folderName: String) {
     RELEASE("release")
 }
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class CargoPlayPath(
     private val srcs: List<String>,
     private val cwd: String
@@ -19,16 +20,20 @@ class CargoPlayPath(
     val srcHash = genSrcHash()
     val projectHash = "p${srcHash.lowercase()}"
 
-    val cargoPlayDir: Path = Paths.get(System.getProperty("java.io.tmpdir"), "cargo-play.$srcHash")
-    val cargoManifest: Path = Paths.get(cargoPlayDir.toString(), MANIFEST_FILE)
-    val debugTarget = binaryTarget(TargetType.DEBUG)
-    val releaseTarget = binaryTarget(TargetType.RELEASE)
+    val cargoPlayDir = Paths.get(System.getProperty("java.io.tmpdir"), "cargo-play.$srcHash").toString()
+    val cargoManifest = Paths.get(cargoPlayDir, MANIFEST_FILE).toString()
+    val srcDir = Paths.get(cargoPlayDir, CargoConstants.ProjectLayout.source).toString()
+    val targetDir = Paths.get(cargoPlayDir, CargoConstants.ProjectLayout.target).toString()
+    val debugDir = Paths.get(targetDir, CargoConstants.ProjectLayout.debugDir).toString()
+    val releaseDir = Paths.get(targetDir, CargoConstants.ProjectLayout.releaseDir).toString()
+    val debugTarget = binaryTarget(TargetType.DEBUG).toString()
+    val releaseTarget = binaryTarget(TargetType.RELEASE).toString()
 
     private fun binaryTarget(target: TargetType): Path {
         val os = System.getProperty("os.name").lowercase()
         val fileExt = if (os.contains("win")) ".exe" else ""
 
-        return Paths.get(cargoPlayDir.toString(), "target/${target.folderName}/$projectHash$fileExt")
+        return Paths.get(cargoPlayDir, "target/${target.folderName}/$projectHash$fileExt")
     }
 
     private fun genSrcHash(): String {

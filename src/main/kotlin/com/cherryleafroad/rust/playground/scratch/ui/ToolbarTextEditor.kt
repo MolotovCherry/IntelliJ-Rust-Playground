@@ -6,6 +6,7 @@ import com.intellij.ide.structureView.StructureViewBuilder
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.fileEditor.impl.text.TextEditorProvider
@@ -100,14 +101,14 @@ abstract class ToolbarTextEditor(
     private fun createToolbarWrapper(): EditorToolbar {
         val topToolbarGroup = DefaultActionGroup()
         addTopActions(topToolbarGroup)
-        myTopActionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, topToolbarGroup, true)
+        myTopActionToolbar = service<ActionManager>().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, topToolbarGroup, true)
         myTopActionToolbar.setTargetComponent(myTopActionToolbar.component)
         myTopActionToolbar.setReservePlaceAutoPopupIcon(false)
 
         val bottomToolbarGroup = DefaultActionGroup()
         if (doubleToolbar) {
             addBottomActions(bottomToolbarGroup)
-            myBottomActionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, bottomToolbarGroup, true)
+            myBottomActionToolbar = service<ActionManager>().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, bottomToolbarGroup, true)
             myBottomActionToolbar!!.setTargetComponent(myBottomActionToolbar!!.component)
             myBottomActionToolbar!!.setReservePlaceAutoPopupIcon(false)
         }
@@ -237,7 +238,7 @@ private class EditorToolbar(
 
             val hideGroup = DefaultActionGroup()
             hideGroup.add(ToggleBottomToolbarAction())
-            val hideButton = ActionManager.getInstance().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, hideGroup, true)
+            val hideButton = service<ActionManager>().createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, hideGroup, true)
             hideButton.setTargetComponent(hideButton.component)
             hideButton.setReservePlaceAutoPopupIcon(false)
 
@@ -259,7 +260,7 @@ private class EditorToolbar(
     override fun dispose() {}
 
     inner class ToggleBottomToolbarAction: DumbAwareAction("Show/Hide Bottom Toolbar", null, AllIcons.General.HideToolWindow) {
-        val properties: PropertiesComponent = PropertiesComponent.getInstance(project)
+        val properties: PropertiesComponent = project.service<PropertiesComponent>()
         val bottomBarKey = "ToolbarTextEditor/bottomBarShown"
         var shown = properties.getBoolean(bottomBarKey, true)
 

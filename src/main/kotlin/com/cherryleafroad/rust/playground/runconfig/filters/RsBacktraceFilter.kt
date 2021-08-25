@@ -5,11 +5,12 @@
 
 package com.cherryleafroad.rust.playground.runconfig.filters
 
-import com.cherryleafroad.rust.playground.cargoplay.CargoPlayPath
+import com.cherryleafroad.rust.playground.kargoplay.CargoPlayPath
 import com.cherryleafroad.rust.playground.runconfig.constants.CargoConstants.MANIFEST_FILE
 import com.cherryleafroad.rust.playground.runconfig.filters.RegexpFileLinkFilter.Companion.FILE_POSITION_RE
 import com.intellij.execution.filters.Filter
 import com.intellij.execution.filters.OpenFileHyperlinkInfo
+import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.project.Project
@@ -96,7 +97,7 @@ class RsBacktraceItemFilter(
     }
 
     companion object {
-        val DIMMED_TEXT = EditorColorsManager.getInstance().globalScheme
+        val DIMMED_TEXT = service<EditorColorsManager>().globalScheme
             .getAttributes(TextAttributesKey.createTextAttributesKey("org.rust.DIMMED_TEXT"))!!
         val SKIP_PREFIXES = arrayOf(
             "std::rt::lang_start",

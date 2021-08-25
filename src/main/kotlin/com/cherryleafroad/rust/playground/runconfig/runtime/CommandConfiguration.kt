@@ -2,50 +2,111 @@ package com.cherryleafroad.rust.playground.runconfig.runtime
 
 import com.cherryleafroad.rust.playground.runconfig.RustScratchCommandLine
 import com.cherryleafroad.rust.playground.runconfig.toolchain.BacktraceMode
+import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
+import com.cherryleafroad.rust.playground.services.Settings
+import com.cherryleafroad.rust.playground.settings.PlayRunConfiguration
 import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.ide.scratch.ScratchFileService
 import com.intellij.ide.scratch.ScratchRootType
-import java.nio.file.Path
-import java.nio.file.Paths
+import com.intellij.openapi.vfs.VirtualFile
 
+/*
+* Configuration for a Command
+* Normally it's cargo.exe <cargoOptions> <subcommand> <args>
+* but *if you have to* you can override it with a directRun
+* which is like a normal cli call
+ */
 data class CommandConfiguration(
-        var command: String = "",
-        var args: List<String> = listOf(),
-        var isPlayRun: Boolean = false,
-        // scratch root directory (default cause it's usually this one for play runs)
-        var workingDirectory: Path = Paths.get(
-            ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
-        ),
+    // cargo subcommand
+    var command: String = "",
+    // these are placed BEFORE the subcommand
+    var cargoOptions: List<String> = listOf(),
+    // and all args are placed after it
+    var args: List<String> = listOf(),
 
-        // use colors in output
-        var processColors: Boolean = true,
-        var backtraceMode: BacktraceMode = BacktraceMode.SHORT,
-        var env: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT,
+    var workingDirectory: String = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance()),
 
-        // only for runtime configuration, don't touch these
-        var isFromRun: Boolean = false,
-        var runtime: RuntimeConfiguration = RuntimeConfiguration(),
-        var withSudo: Boolean = false
-    ) {
+    // command is run as normal command, and cargo is unused
+    var directRun: Boolean = false,
 
+    // selected toolchain, gets added automatically
+    var toolchain: RustChannel = RustChannel.DEFAULT,
+
+    // use colors in output
+    var processColors: Boolean = true,
+
+    // env vars
+    var backtraceMode: BacktraceMode = BacktraceMode.SHORT,
+    var env: EnvironmentVariablesData = EnvironmentVariablesData.DEFAULT,
+
+    var withSudo: Boolean = false,
+
+    // store the path of the current executing scratch file
+    // this is conveniently used to retrieve settings later as needed
+    var scratchFile: String = ""
+) {
     fun toRustScratchCommandLine(): RustScratchCommandLine {
         return RustScratchCommandLine(this)
     }
 
     fun clone(): CommandConfiguration {
         val other = CommandConfiguration()
-        other.command = this.command
-        other.args = this.args
-        other.isPlayRun = this.isPlayRun
-        other.workingDirectory = this.workingDirectory
-        other.processColors = this.processColors
-        other.backtraceMode = this.backtraceMode
-        other.env = this.env
-        other.isFromRun = this.isFromRun
-        other.runtime.options = this.runtime.options
-        other.runtime.sources = this.runtime.sources
-        other.runtime.args = this.runtime.args
-        other.withSudo = this.withSudo
+        other.command = command
+        other.cargoOptions = cargoOptions
+        other.args = args
+        other.workingDirectory = workingDirectory
+        other.directRun = directRun
+        other.toolchain  = toolchain
+        other.processColors = processColors
+        other.backtraceMode = backtraceMode
+        other.env = env
+        other.withSudo = withSudo
+        other.scratchFile = scratchFile
         return other
+    }
+
+    fun fromRunConfiguration(config: PlayRunConfiguration) {
+        command = config.command
+        args = config.options + config.srcs + config.args
+        workingDirectory = config.workingDirectory
+        env = EnvironmentVariablesData.DEFAULT.with(config.env)
+        backtraceMode = config.backtraceMode
+        withSudo = config.withSudo
+    }
+
+    companion object {
+        fun fromScratch(file: VirtualFile): CommandConfiguration {
+            val cmdConfig = CommandConfiguration()
+
+            val settings = Settings.getInstance().scratches[file.path]
+            val pluginSettings = Settings.getInstance().plugin
+
+            if (pluginSettings.kargoPlay) {
+                // kargo play run
+                cmdConfig.directRun = settings.directRun
+
+                if (!cmdConfig.directRun) {
+                    cmdConfig.toolchain = settings.toolchain
+                    cmdConfig.command = settings.kommand
+                    cmdConfig.cargoOptions = settings.cargoOptions
+                    cmdConfig.args = settings.args
+                    cmdConfig.workingDirectory = settings.workingDirectory
+                } else {
+                    // kargo play direct exe run
+                    cmdConfig.command = settings.kommand
+                    cmdConfig.args = settings.args
+                }
+            } else {
+                // normal cargo play run
+                cmdConfig.command = "play"
+                cmdConfig.args = settings.generatedArgs
+                // scratch root directory
+                cmdConfig.workingDirectory = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
+            }
+
+            cmdConfig.scratchFile = file.path
+
+            return cmdConfig
+        }
     }
 }

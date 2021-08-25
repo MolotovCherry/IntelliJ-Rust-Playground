@@ -11,8 +11,9 @@ object CargoConstants {
     const val XARGO = "xargo"
 
     object ProjectLayout {
-        val sources = listOf("src", "examples")
-        val tests = listOf("tests", "benches")
+        const val source = "src"
         const val target = "target"
+        const val debugDir = "debug"
+        const val releaseDir = "release"
     }
 }

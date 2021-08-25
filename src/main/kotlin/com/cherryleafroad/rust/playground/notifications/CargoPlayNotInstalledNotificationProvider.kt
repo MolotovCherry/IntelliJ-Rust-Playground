@@ -4,6 +4,7 @@ import com.cherryleafroad.rust.playground.utils.Helpers
 import com.cherryleafroad.rust.playground.utils.installBinaryCrate
 import com.intellij.ide.scratch.ScratchUtil
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
@@ -25,11 +26,11 @@ class CargoPlayNotInstalledNotificationProvider(
     private val KEY: Key<EditorNotificationPanel> = Key.create(KEY_VAL)
 
     private fun disableNotification(file: VirtualFile) {
-        PropertiesComponent.getInstance(project).setValue(KEY_VAL + file.path, true)
+        project.service<PropertiesComponent>().setValue(KEY_VAL + file.path, true)
     }
 
     private fun isNotificationDisabled(file: VirtualFile): Boolean {
-        return PropertiesComponent.getInstance(project).getBoolean(KEY_VAL + file.path)
+        return project.service<PropertiesComponent>().getBoolean(KEY_VAL + file.path)
     }
 
     private fun updateAllNotifications() {

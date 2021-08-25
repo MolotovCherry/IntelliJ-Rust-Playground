@@ -1,9 +1,10 @@
 package com.cherryleafroad.rust.playground.utils
 
-import com.cherryleafroad.rust.playground.config.SettingsConfigurable
+import com.cherryleafroad.rust.playground.settings.plugin.SettingsConfigurable
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.components.service
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.util.PlatformUtils
@@ -24,7 +25,7 @@ object Helpers {
         val installed = project.toolchain?.hasCargoExecutable("cargo-expand") ?: false
 
         if (project.toolchain != null && !installed && !executionUnsupported(project)) {
-            val notification = NotificationGroupManager.getInstance().getNotificationGroup("Rust Playground")
+            val notification = service<NotificationGroupManager>().getNotificationGroup("Rust Playground")
                 .createNotification(
                     "Rust Playground",
                     "Cargo-expand is required to use the expand feature",
@@ -51,7 +52,7 @@ object Helpers {
         val installed = project.toolchain?.hasCargoExecutable("cargo-play") ?: false
 
         if (project.toolchain != null && !installed && !executionUnsupported(project)) {
-            val notification = NotificationGroupManager.getInstance().getNotificationGroup("Rust Playground")
+            val notification = service<NotificationGroupManager>().getNotificationGroup("Rust Playground")
                 .createNotification(
                     "Rust Playground",
                     "Playground requires cargo-play binary crate",
@@ -63,7 +64,7 @@ object Helpers {
                 notification.hideBalloon()
             }
             val settings = NotificationAction.createSimple("Settings") {
-                ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)
+                service<ShowSettingsUtil>().showSettingsDialog(project, SettingsConfigurable::class.java)
             }
             val dismiss = NotificationAction.createSimple("Dismiss") {
                 notification.hideBalloon()
