@@ -33,6 +33,9 @@ object ActionTools {
 
         val settings = Settings.getInstance()
         val scratch = settings.scratches[doc.path]
+        settings.global.runtime.currentScratch = scratch
+        settings.global.runtime.clean = clean
+        settings.global.runtime.scratchFile = doc
 
         val cargoPlayInstalled = Helpers.checkAndNotifyCargoPlayInstallation(project)
         // if we selected the expand feature, then cargo-expand needs to be installed
@@ -47,9 +50,9 @@ object ActionTools {
             val fileName = doc.name
 
             if (settings.plugin.kargoPlay) {
-                KargoPlay(doc, clean).run()
+                KargoPlay.run()
             } else {
-                processPlayOptions(doc, clean)
+                processPlayOptions()
             }
 
             val commandLine = CommandConfiguration.fromScratch(doc).toRustScratchCommandLine()

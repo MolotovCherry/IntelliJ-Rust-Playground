@@ -8,15 +8,13 @@ package com.cherryleafroad.rust.playground.kargoplay
 import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
 import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.services.Settings
-import com.cherryleafroad.rust.playground.utils.toPath
+import com.cherryleafroad.rust.playground.settings.ScratchConfiguration
 import com.intellij.ide.scratch.ScratchFileService
 import com.intellij.ide.scratch.ScratchRootType
-import com.intellij.openapi.vfs.VirtualFile
 import org.rust.openapiext.document
 import java.io.File
 import java.io.PrintWriter
 import java.nio.file.Paths
-import kotlin.io.path.name
 
 
 /*
@@ -38,49 +36,73 @@ import kotlin.io.path.name
  *                          \    ) |`------##---~~~~-~  ) )
  *                           ~-_/_/                  ~~ ~~
  *
- * - Figure 1 : A Ferrari, a.k.a Ferrari "Kargo" Play
+ * - Figure 1 : A Ferrari, a.k.a. Ferrari "Kargo" Play
  *
  * Pure fresh cold build times (no intermediaries):
- * Cargo play: 1040ms
- * Cargo run : 738ms
+ * Cargo Play: ~1040ms*
+ * Cargo run : ~738ms*
+ * Kargo play: ~20ms** (object instantiation)
  *
  * Warmed up build times:
- * Cargo play: 698ms
- * Cargo run : 209ms
+ * Cargo Play: ~698ms*
+ * Cargo run : ~209ms*
+ * Kargo Play: ~1ms** (already instantiated)
  *
- * Kargo Play takes a grand total of... Drum roll...
- *           >>>> 33ms! <<<<
+ * * These figures include multiple factors like waiting for
+ *   the command to run from cmd, initialize its code, copying
+ *   files, and so on. In cargo-play's case, we have 3 binaru
+ *   calls total (cargo-play, cp, and cargo). Cargo-play's total
+ *   run time is the difference between cargo run and cargo-play.
  *
- * ... So you can see we can be much faster without
- * calling so many binaries. The kotlin class is already
- * loaded up and hot, meaning less calling overhead (only 1
- * binary, that is, cargo itself). With Cargo Play, we call
- * 2 or 3 binaries (cargo-play, potentially "cp", and
- * of course cargo itself). 1 sounds nicer doesn't it. :)
+ *  ** Figure includes only setup code, not the time it takes to
+ *     run cargo. To get a comparison, subtract cargo-play <minus> cargo.
+       So, the difference between both is ~300ms or ~500ms
  */
 
-class KargoPlay(
-    private val scratchFile: VirtualFile,
+@Suppress("ObjectPropertyName")
+object KargoPlay {
+    private val settings = Settings.getInstance()
+    private val scratchSettings: ScratchConfiguration
+        get() = settings.global.runtime.currentScratch
     private val clean: Boolean
-) {
-    private val settings = Settings.getInstance().scratches[scratchFile.path]
-    private var cwd = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
-    private val srcs = settings.srcs.toMutableList().also {
-        it.add(0, scratchFile.path.toPath().name)
-    }
+        get() = settings.global.runtime.clean
 
-    private val cargoPlayPath = CargoPlayPath(settings.srcs, cwd)
+    private val scratchRoot = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
+
+    private var _srcs: List<String>? = null
+    private val srcs: List<String>
+        get() = _srcs ?: run {
+            _srcs = scratchSettings.srcs.toMutableList().also {
+                it.add(0, settings.global.runtime.scratchFile.name)
+            }
+            _srcs!!
+        }
+
+    private var _cargoPlayPath: CargoPlayPath? = null
+    private val cargoPlayPath: CargoPlayPath
+        get() = _cargoPlayPath ?: run {
+            _cargoPlayPath = CargoPlayPath(srcs, scratchRoot)
+            cwd = _cargoPlayPath!!.cargoPlayDir
+            _cargoPlayPath!!
+        }
+
+    private var cwd: String = ""
 
     // track whether the project changed and needs to be compiled again (cached or not)
     private var needsCompile = false
-    private val edition = run {
-        val e = settings.edition
-        if (e == Edition.DEFAULT) {
-            Edition.EDITION_2018.myName
-        } else {
-            e.myName
+
+    private var _edition: Edition? = null
+    private val edition: String
+        get() = _edition?.myName ?: run {
+            val e = scratchSettings.edition
+            if (e == Edition.DEFAULT) {
+                _edition = Edition.EDITION_2018
+                Edition.EDITION_2018.myName
+            } else {
+                _edition = e
+                e.myName
+            }
         }
-    }
 
     private var cargoOptions = mutableListOf<String>()
     private var kommand = "run"
@@ -88,14 +110,22 @@ class KargoPlay(
     private var directRun = false
 
     // there's seriously no java/kotlin libraries that can programmatically serialize toml?
-    private var cargoToml = """
+    private val _cargoTomlDefault = """
         [package]
-        name = "${cargoPlayPath.projectHash}"
+        name = "%s"
         version = "0.1.0"
-        edition = "$edition"
+        edition = "%s"
 
         [dependencies]
     """.trimIndent()
+    private var _cargoToml: String? = null
+    private var cargoToml: String
+        get() = _cargoToml ?: run {
+            _cargoToml = _cargoTomlDefault.format(cargoPlayPath.projectHash, edition)
+            _cargoToml!!
+        }
+        set(value) = run { _cargoToml = value }
+
 
     // returns Cargo Options, command, args, and a cwd
     fun run() {
@@ -111,73 +141,85 @@ class KargoPlay(
         }
     }
 
+    private fun postSetup() {
+        // set up scratch settings
+        scratchSettings.kommand = kommand
+        scratchSettings.cargoOptions = cargoOptions
+        scratchSettings.args = args
+        scratchSettings.workingDirectory = cargoPlayPath.cargoPlayDir
+        scratchSettings.directRun = directRun
+
+        // clean up and reset vars
+        _srcs = null
+        _cargoPlayPath = null
+        needsCompile = false
+        _edition = null
+        cargoOptions = mutableListOf()
+        kommand = "run"
+        args = mutableListOf()
+        directRun = false
+        _cargoToml = null
+    }
+
     private fun checkOptions() {
-        if (settings.toolchain != RustChannel.DEFAULT) {
-            cargoOptions.add("+${settings.toolchain.channel}")
+        if (scratchSettings.toolchain != RustChannel.DEFAULT) {
+            cargoOptions.add("+${scratchSettings.toolchain.channel}")
         }
 
-        if (settings.quiet) {
+        if (scratchSettings.quiet) {
             cargoOptions.add("--quiet")
         }
 
-        if (settings.verbose) {
+        if (scratchSettings.verbose) {
             cargoOptions.add("--verbose")
         }
 
-        if (settings.cargoOptions.isNotEmpty()) {
-            settings.cargoOptions.forEach {
+        if (scratchSettings.cargoOptions.isNotEmpty()) {
+            scratchSettings.cargoOptions.forEach {
                 cargoOptions.add(it)
             }
         }
 
-        if (settings.release) {
+        if (scratchSettings.release) {
             args.add("--release")
         }
 
-        if (settings.test) {
+        if (scratchSettings.test) {
             cwd = cargoPlayPath.cargoPlayDir
             kommand = "test"
             return
         }
 
-        if (settings.check) {
+        if (scratchSettings.check) {
             cwd = cargoPlayPath.cargoPlayDir
             kommand = "check"
             return
         }
 
-        if (settings.expand) {
+        if (scratchSettings.expand) {
             cwd = cargoPlayPath.cargoPlayDir
             kommand = "expand"
             return
         }
 
-        if (settings.args.isNotEmpty()) {
+        if (scratchSettings.args.isNotEmpty()) {
             args.add("--")
-            settings.args.forEach {
+            scratchSettings.args.forEach {
                 args.add(it)
             }
         }
 
-        if (settings.mode.isNotBlank()) {
-            kommand = settings.mode
+        if (scratchSettings.mode.isNotBlank()) {
+            kommand = scratchSettings.mode
             return
         }
-    }
-
-    private fun postSetup() {
-        settings.kommand = kommand
-        settings.cargoOptions = cargoOptions
-        settings.args = args
-        settings.workingDirectory = cargoPlayPath.cargoPlayDir
-        settings.directRun = directRun
     }
 
     private fun directRun() {
         // this is a special case here
         // check whether we can run it cached or not (faster)
         if (!needsCompile) {
-            val target = if (settings.release) cargoPlayPath.releaseTarget else cargoPlayPath.debugTarget
+            val target = if (scratchSettings.release) cargoPlayPath.releaseTarget else cargoPlayPath.debugTarget
             kommand = target
             directRun = true
 
@@ -197,7 +239,7 @@ class KargoPlay(
 
     private fun cleanProject() {
         // remove target folder
-        if (settings.clean) {
+        if (scratchSettings.clean) {
             val target = File(cargoPlayPath.targetDir)
             if (target.exists()) {
                 needsCompile = true
@@ -269,7 +311,7 @@ class KargoPlay(
                         // compare all file hashes inside
                         run run@ {
                             sortedInputSrcs.forEachIndexed { i, it ->
-                                val file = Paths.get(cwd, it).toFile()
+                                val file = Paths.get(scratchRoot, it).toFile()
                                 // file contents different
                                 needsCompile = file.readText().hashCode() != srcFiles[i].readText().hashCode()
 
@@ -305,14 +347,14 @@ class KargoPlay(
             // first file is always main.rs
             if (i == 0) targetName = "main.rs"
 
-            val file = Paths.get(cwd, it).toFile()
+            val file = Paths.get(scratchRoot, it).toFile()
             val targetFile = Paths.get(cargoPlayPath.srcDir, targetName).toFile()
             file.copyTo(targetFile)
         }
     }
 
     private fun addDependencies() {
-        scratchFile.document?.let { doc ->
+        settings.global.runtime.scratchFile.document?.let { doc ->
             run beg@ {
                 doc.text.lines().forEach {
                     // skip these lines at beginning (just like original program)

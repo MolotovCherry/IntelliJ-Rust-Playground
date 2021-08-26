@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground.listeners
 
+import com.cherryleafroad.rust.playground.kargoplay.KargoPlay
 import com.cherryleafroad.rust.playground.services.CargoPlayProject
 import com.cherryleafroad.rust.playground.services.Settings
 import com.cherryleafroad.rust.playground.utils.Helpers
@@ -7,9 +8,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManagerListener
 import com.jetbrains.rd.util.Callable
-import org.rust.cargo.project.settings.toolchain
-import org.rust.cargo.toolchain.tools.rustc
-import java.nio.file.Paths
 
 internal class ProjectManagerListener : ProjectManagerListener {
     override fun projectOpened(project: Project) {
@@ -21,6 +19,7 @@ internal class ProjectManagerListener : ProjectManagerListener {
         ApplicationManager.getApplication().executeOnPooledThread(Callable {
             CargoPlayProject.getInstance(project)
             Settings.getInstance()
+            KargoPlay
         })
     }
 }

@@ -3,32 +3,30 @@ package com.cherryleafroad.rust.playground.runconfig.runtime
 import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
 import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.services.Settings
-import com.cherryleafroad.rust.playground.utils.Helpers
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 
-fun processPlayOptions(file: VirtualFile, clean: Boolean) {
-    val settings = Settings.getInstance().scratches[file.path]
+fun processPlayOptions() {
+    val settings = Settings.getInstance()
+    val scratchSettings = settings.global.runtime.currentScratch
 
-    val check = settings.check
-    val cleanProp = settings.clean
-    val expand = settings.expand
-    val infer = settings.infer
-    val quiet = settings.quiet
-    val release = settings.release
-    val test = settings.test
-    val verbose = settings.verbose
+    val check = scratchSettings.check
+    val clean = scratchSettings.clean
+    val expand = scratchSettings.expand
+    val infer = scratchSettings.infer
+    val quiet = scratchSettings.quiet
+    val release = scratchSettings.release
+    val test = scratchSettings.test
+    val verbose = scratchSettings.verbose
 
-    val toolchain = settings.toolchain
-    val edition = settings.edition
+    val toolchain = scratchSettings.toolchain
+    val edition = scratchSettings.edition
 
-    val srcs = settings.srcs.toMutableList()
-    srcs.add(0, file.name)
+    val srcs = scratchSettings.srcs.toMutableList()
+    srcs.add(0, settings.global.runtime.scratchFile.name)
 
-    val args = settings.args.toMutableList()
-    val mode = settings.mode
-    val cargoOptions = settings.cargoOptions.toMutableList()
-    val cargoOptionNoDefault = settings.cargoOptionsNoDefault
+    val args = scratchSettings.args.toMutableList()
+    val mode = scratchSettings.mode
+    val cargoOptions = scratchSettings.cargoOptions.toMutableList()
+    val cargoOptionNoDefault = scratchSettings.cargoOptionsNoDefault
 
     val runCmd = mutableListOf<String>()
 
@@ -37,7 +35,7 @@ fun processPlayOptions(file: VirtualFile, clean: Boolean) {
         runCmd.add("+${toolchain.channel}")
     }
 
-    if (clean) {
+    if (settings.global.runtime.clean) {
         // one time clean and exit
         runCmd.add("--mode")
         runCmd.add("clean")
@@ -49,7 +47,7 @@ fun processPlayOptions(file: VirtualFile, clean: Boolean) {
         if (check) {
             runCmd.add("--check")
         }
-        if (cleanProp) {
+        if (clean) {
             runCmd.add("--clean")
         }
         if (expand) {
@@ -90,5 +88,5 @@ fun processPlayOptions(file: VirtualFile, clean: Boolean) {
     }
 
     val finalArgs = runCmd + srcs + args
-    settings.generatedArgs = finalArgs
+    scratchSettings.generatedArgs = finalArgs
 }

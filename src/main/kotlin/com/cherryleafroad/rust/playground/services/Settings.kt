@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground.services
 
+import com.cherryleafroad.rust.playground.settings.GlobalConfiguration
 import com.cherryleafroad.rust.playground.settings.plugin.PluginConfiguration
 import com.cherryleafroad.rust.playground.utils.PlayRunConfigMap
 import com.cherryleafroad.rust.playground.utils.ScratchConfigMap
@@ -10,6 +11,7 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Tag
+import com.intellij.util.xmlb.annotations.Transient
 
 @Suppress("MemberVisibilityCanBePrivate")
 @State(
@@ -40,9 +42,12 @@ class Settings : PersistentStateComponent<Settings> {
 
     /************* Settings and Properties ******************/
 
+    @Tag("global")
+    var global: GlobalConfiguration = GlobalConfiguration()
+    @Transient
     var plugin: PluginConfiguration = PluginConfiguration()
-    @Tag("scratches")
+    @Tag("Scratches")
     var scratches: ScratchConfigMap = ScratchConfigMap()
-    @Tag("runConfigurations")
+    @Tag("RunConfigurations")
     var runConfigurations: PlayRunConfigMap = PlayRunConfigMap()
 }
