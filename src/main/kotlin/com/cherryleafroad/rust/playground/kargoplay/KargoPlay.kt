@@ -9,8 +9,7 @@ import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
 import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.services.Settings
 import com.cherryleafroad.rust.playground.settings.ScratchConfiguration
-import com.intellij.ide.scratch.ScratchFileService
-import com.intellij.ide.scratch.ScratchRootType
+import com.cherryleafroad.rust.playground.utils.toFile
 import org.rust.openapiext.document
 import java.io.File
 import java.io.PrintWriter
@@ -67,8 +66,6 @@ object KargoPlay {
     private val clean: Boolean
         get() = settings.global.runtime.clean
 
-    private val scratchRoot = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
-
     private var _srcs: List<String>? = null
     private val srcs: List<String>
         get() = _srcs ?: run {
@@ -81,7 +78,7 @@ object KargoPlay {
     private var _cargoPlayPath: CargoPlayPath? = null
     private val cargoPlayPath: CargoPlayPath
         get() = _cargoPlayPath ?: run {
-            _cargoPlayPath = CargoPlayPath(srcs, scratchRoot)
+            _cargoPlayPath = CargoPlayPath(srcs, settings.global.runtime.scratchRoot)
             cwd = _cargoPlayPath!!.cargoPlayDir
             _cargoPlayPath!!
         }
@@ -148,6 +145,7 @@ object KargoPlay {
         scratchSettings.args = args
         scratchSettings.workingDirectory = cargoPlayPath.cargoPlayDir
         scratchSettings.directRun = directRun
+        scratchSettings.srcs = srcs
 
         // clean up and reset vars
         _srcs = null
@@ -231,7 +229,7 @@ object KargoPlay {
     }
 
     private fun cleanOnly() {
-        val target = File(cargoPlayPath.targetDir)
+        val target = cargoPlayPath.targetDir.toFile()
         if (target.exists()) {
             kommand = "clean"
         }
@@ -240,7 +238,7 @@ object KargoPlay {
     private fun cleanProject() {
         // remove target folder
         if (scratchSettings.clean) {
-            val target = File(cargoPlayPath.targetDir)
+            val target = cargoPlayPath.targetDir.toFile()
             if (target.exists()) {
                 needsCompile = true
                 target.deleteRecursively()
@@ -250,7 +248,7 @@ object KargoPlay {
 
     @Suppress("LiftReturnOrAssignment")
     private fun createCargoProject() {
-        val dir = File(cargoPlayPath.cargoPlayDir)
+        val dir = cargoPlayPath.cargoPlayDir.toFile()
 
         // make temp directory
         if (!dir.exists()) {
@@ -264,7 +262,7 @@ object KargoPlay {
 
         // compare cargo toml to see if it changed or not
         if (!needsCompile) {
-            val cargoManifest = File(cargoPlayPath.cargoManifest)
+            val cargoManifest = cargoPlayPath.cargoManifest.toFile()
             if (cargoManifest.exists()) {
                 needsCompile = cargoManifest.readText().hashCode() != cargoToml.hashCode()
             } else {
@@ -277,7 +275,7 @@ object KargoPlay {
             PrintWriter(cargoPlayPath.cargoManifest).use { it.print(cargoToml) }
         }
 
-        val sourcesDir = File(cargoPlayPath.srcDir)
+        val sourcesDir = cargoPlayPath.srcDir.toFile()
         if (!sourcesDir.exists()) {
             needsCompile = true
             sourcesDir.mkdir()
@@ -311,7 +309,7 @@ object KargoPlay {
                         // compare all file hashes inside
                         run run@ {
                             sortedInputSrcs.forEachIndexed { i, it ->
-                                val file = Paths.get(scratchRoot, it).toFile()
+                                val file = Paths.get(settings.global.runtime.scratchRoot, it).toFile()
                                 // file contents different
                                 needsCompile = file.readText().hashCode() != srcFiles[i].readText().hashCode()
 
@@ -347,7 +345,7 @@ object KargoPlay {
             // first file is always main.rs
             if (i == 0) targetName = "main.rs"
 
-            val file = Paths.get(scratchRoot, it).toFile()
+            val file = Paths.get(settings.global.runtime.scratchRoot, it).toFile()
             val targetFile = Paths.get(cargoPlayPath.srcDir, targetName).toFile()
             file.copyTo(targetFile)
         }

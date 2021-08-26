@@ -6,6 +6,7 @@
 package com.cherryleafroad.rust.playground.runconfig.filters
 
 import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants
+import com.cherryleafroad.rust.playground.utils.toFile
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
@@ -84,21 +85,21 @@ object FilterUtils {
             // main.rs == sourceScratch
             // src/main.rs, strip path first
             val split = path.split("/")
-            val name = File(path).name
+            val name = path.toFile().name
 
             // most likely it's the actual src cargo dir
             if (split.size == 2 && split[0] == "src") {
                 if (name == RsConstants.MAIN_RS_FILE) {
                     // get the directory for the file, try absolute first then relative
-                    File(sourceScratches[0]).parent?.let {
+                    sourceScratches[0].toFile().parent?.let {
                         vfile = cargoProjectDir.findFileByMaybeRelativePath(it) ?: cargoProjectDir
                     }
-                    nPath = File(sourceScratches[0]).name
+                    nPath = sourceScratches[0].toFile().name
                     matched = true
                 } else {
                     // skip the main.rs file
                     for (i in 1 until sourceScratches.size) {
-                        val fname = File(sourceScratches[i])
+                        val fname = sourceScratches[i].toFile()
                         if (fname.name == name) {
                             fname.parent?.let {
                                 vfile = cargoProjectDir.findFileByMaybeRelativePath(it) ?: cargoProjectDir

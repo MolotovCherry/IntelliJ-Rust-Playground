@@ -6,6 +6,7 @@ import com.cherryleafroad.rust.playground.settings.ScratchConfiguration
 import com.intellij.openapi.project.Project
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import org.rust.cargo.project.settings.toolchain
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -66,4 +67,8 @@ fun CharSequence.splitIgnoreEmpty(vararg delimiters: String): List<String> {
 
 fun String.toPath(): Path {
     return Paths.get(this)
+}
+
+fun String.toFile(): File {
+    return File(this)
 }

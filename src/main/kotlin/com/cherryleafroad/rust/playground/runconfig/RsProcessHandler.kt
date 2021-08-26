@@ -5,10 +5,15 @@
 
 package com.cherryleafroad.rust.playground.runconfig
 
+import com.cherryleafroad.rust.playground.kargoplay.CargoPlayPath
+import com.cherryleafroad.rust.playground.services.Settings
+import com.cherryleafroad.rust.playground.utils.toFile
+import com.cherryleafroad.rust.playground.utils.toPath
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.AnsiEscapeDecoder
 import com.intellij.execution.process.KillableProcessHandler
 import com.intellij.openapi.util.Key
+import com.intellij.util.io.exists
 
 /**
  * Same as [com.intellij.execution.process.KillableColoredProcessHandler], but uses [RsAnsiEscapeDecoder].
@@ -29,5 +34,19 @@ class RsProcessHandler(
 
     override fun coloredTextAvailable(text: String, attributes: Key<*>) {
         super.notifyTextAvailable(text, attributes)
+    }
+
+    override fun notifyProcessTerminated(exitCode: Int) {
+        super.notifyProcessTerminated(exitCode)
+
+        // if non-0 exit code, the command had an error
+        // so let's make sure project will recompile next time instead of a dry run
+        val settings = Settings.getInstance()
+        if (settings.plugin.kargoPlay && exitCode != 0) {
+            val cargoPlayPath = CargoPlayPath(settings.global.runtime.currentScratch.srcs, settings.global.runtime.scratchRoot)
+            if (cargoPlayPath.cargoPlayDir.toPath().exists()) {
+                cargoPlayPath.cargoPlayDir.toFile().deleteRecursively()
+            }
+        }
     }
 }

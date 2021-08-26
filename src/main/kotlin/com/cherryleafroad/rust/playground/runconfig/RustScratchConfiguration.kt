@@ -7,6 +7,7 @@ import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.runconfig.ui.RustScratchConfigurationEditor
 import com.cherryleafroad.rust.playground.services.Settings
 import com.cherryleafroad.rust.playground.settings.PlayRunConfiguration
+import com.cherryleafroad.rust.playground.utils.toFile
 import com.cherryleafroad.rust.playground.utils.toPath
 import com.intellij.execution.Executor
 import com.intellij.execution.configuration.EnvironmentVariablesData
@@ -56,7 +57,7 @@ class RustScratchConfiguration(
     override fun suggestedName(): String {
         var name = ""
         runConfig.srcs.getOrNull(0)?.let {
-            name = File(it).name
+            name = it.toFile().name
         }
         return "Play $name"
     }
