@@ -140,7 +140,7 @@
         <properties>
           <selected value="true"/>
           <text value=""/>
-          <toolTipText value="Kargo Play is a native and much faster plugin internal Kotlin implementation of Cargo-Play"/>
+          <toolTipText value="Kargo Play is a native and much faster plugin internal Kotlin implementation of Cargo-Play (1ms top speed vs 300-500ms cargo play)"/>
         </properties>
       </component>
       <component id="59baa" class="javax.swing.JLabel">
@@ -149,7 +149,7 @@
         </constraints>
         <properties>
           <text value="Use Kargo Play"/>
-          <toolTipText value="Kargo Play is a native and much faster plugin internal Kotlin implementation of Cargo-Play"/>
+          <toolTipText value="Kargo Play is a native and much faster plugin internal Kotlin implementation of Cargo-Play (1ms top speed vs 300-500ms cargo play)"/>
         </properties>
       </component>
     </children>
