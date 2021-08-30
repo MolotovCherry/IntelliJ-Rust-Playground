@@ -233,7 +233,11 @@ object KargoPlay {
     private fun directRun() {
         // this is a special case here
         // check whether we can run it cached or not (faster)
-        if (!needsCompile) {
+
+        // some options shouldn't run the executable on
+        val dontRun = scratchSettings.expand || scratchSettings.check || scratchSettings.test
+
+        if (!needsCompile && !dontRun) {
             val target = if (scratchSettings.release) cargoPlayPath.releaseTarget else cargoPlayPath.debugTarget
             if (target.toFile().exists()) {
                 kommand = target
