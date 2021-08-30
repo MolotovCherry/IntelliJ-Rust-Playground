@@ -10,6 +10,7 @@ import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.services.Settings
 import com.cherryleafroad.rust.playground.settings.ScratchConfiguration
 import com.cherryleafroad.rust.playground.utils.toFile
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import org.rust.openapiext.document
 import java.io.File
 import java.io.PrintWriter
@@ -130,6 +131,7 @@ object KargoPlay {
     fun run() {
         // do steps
         if (!clean) {
+            preSetup()
             cleanProject()
             createCargoProject()
             checkOptions()
@@ -137,6 +139,20 @@ object KargoPlay {
             postSetup()
         } else {
             cleanOnly()
+        }
+    }
+
+    private fun preSetup() {
+        // the main scratch is probably the open one, and the text isn't always saved immediately in the document.
+        // so it won't always immediately respond to changes, so we can't reliably hash it.
+        // In this case, it's better to simply save the document manually so it's always current
+        settings.global.runtime.scratchFile.document?.let { doc ->
+            // save main document so the file can be transferred
+            FileDocumentManager.getInstance().let {
+                if (it.isDocumentUnsaved(doc)) {
+                    it.saveDocument(doc)
+                }
+            }
         }
     }
 
