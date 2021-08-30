@@ -235,12 +235,14 @@ object KargoPlay {
         // check whether we can run it cached or not (faster)
         if (!needsCompile) {
             val target = if (scratchSettings.release) cargoPlayPath.releaseTarget else cargoPlayPath.debugTarget
-            kommand = target
-            directRun = true
+            if (target.toFile().exists()) {
+                kommand = target
+                directRun = true
 
-            // "--" arg is now invalid
-            if (args.isNotEmpty()) {
-                args.removeAt(0)
+                // "--" arg is now invalid
+                if (args.isNotEmpty()) {
+                    args.removeAt(0)
+                }
             }
         }
     }
