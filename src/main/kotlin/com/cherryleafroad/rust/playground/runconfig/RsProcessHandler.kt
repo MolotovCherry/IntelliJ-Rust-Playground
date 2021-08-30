@@ -39,7 +39,7 @@ class RsProcessHandler(
         // if non-0 exit code, the command had an error
         // so let's make sure project will recompile next time instead of a dry run
         val settings = Settings.getInstance()
-        if (settings.plugin.kargoPlay) {
+        if (settings.plugin.kargoPlay && !settings.global.runtime.currentScratch.directRun) {
             KargoPlay.lastExitCode = exitCode
         }
     }

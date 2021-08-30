@@ -91,11 +91,9 @@ class RustScratchConfiguration(
             params.add(0, commandConfiguration.command)
 
             // ... but, believe it or not, cargo options come before that
-
-                commandConfiguration.cargoOptions.asReversed().forEach {
-                    params.add(0, it)
-                }
-
+            commandConfiguration.cargoOptions.asReversed().forEach {
+                params.add(0, it)
+            }
 
             // ... and there are others before that!
             if (commandConfiguration.processColors &&
