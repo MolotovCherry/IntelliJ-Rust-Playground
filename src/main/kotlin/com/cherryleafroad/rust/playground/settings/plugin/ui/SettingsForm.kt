@@ -1,5 +1,6 @@
 package com.cherryleafroad.rust.playground.settings.plugin.ui
 
+import com.cherryleafroad.rust.playground.kargoplay.KargoPlay
 import com.cherryleafroad.rust.playground.runconfig.toolchain.Edition
 import com.cherryleafroad.rust.playground.runconfig.toolchain.RustChannel
 import com.cherryleafroad.rust.playground.services.Settings
@@ -45,6 +46,8 @@ class SettingsForm {
         kargoPlay.addActionListener {
             val cb = it.source as JCheckBox
             settings.kargoPlay = cb.isSelected
+            // make sure this is truly reset to 0
+            KargoPlay.lastExitCode = 0
         }
 
         scratchTextArea = settings.scratchText
