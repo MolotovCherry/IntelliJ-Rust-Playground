@@ -9,6 +9,7 @@ import com.intellij.execution.configuration.EnvironmentVariablesData
 import com.intellij.ide.scratch.ScratchFileService
 import com.intellij.ide.scratch.ScratchRootType
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.xmlb.annotations.Transient
 
 /*
 * Configuration for a Command
@@ -43,7 +44,12 @@ data class CommandConfiguration(
 
     // store the path of the current executing scratch file
     // this is conveniently used to retrieve settings later as needed
-    var scratchFile: String = ""
+    var scratchFile: String = "",
+
+    // is this a manual run configuration?
+    var isManualRun: Boolean = false,
+    // the sources used for the filters
+    var filterSrcs: List<String> = listOf()
 ) {
     fun toRustScratchCommandLine(): RustScratchCommandLine {
         return RustScratchCommandLine(this)
@@ -62,6 +68,8 @@ data class CommandConfiguration(
         other.env = env
         other.withSudo = withSudo
         other.scratchFile = scratchFile
+        other.isManualRun = isManualRun
+        other.filterSrcs = filterSrcs
         return other
     }
 
@@ -72,6 +80,8 @@ data class CommandConfiguration(
         env = EnvironmentVariablesData.DEFAULT.with(config.env)
         backtraceMode = config.backtraceMode
         withSudo = config.withSudo
+        filterSrcs = config.srcs
+        isManualRun = true
     }
 
     companion object {
@@ -104,6 +114,7 @@ data class CommandConfiguration(
                 cmdConfig.workingDirectory = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
             }
 
+            cmdConfig.filterSrcs = settings.filterSrcs
             cmdConfig.scratchFile = file.path
 
             return cmdConfig

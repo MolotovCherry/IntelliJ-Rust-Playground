@@ -163,6 +163,7 @@ object KargoPlay {
         scratchSettings.args = args
         scratchSettings.workingDirectory = cargoPlayPath.cargoPlayDir
         scratchSettings.directRun = directRun
+        scratchSettings.filterSrcs = srcs
 
         // clean up and reset vars
         _srcs = null

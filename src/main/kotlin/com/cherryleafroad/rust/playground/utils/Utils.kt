@@ -4,6 +4,8 @@ import com.cherryleafroad.rust.playground.runconfig.runtime.CommandConfiguration
 import com.cherryleafroad.rust.playground.settings.PlayRunConfiguration
 import com.cherryleafroad.rust.playground.settings.ScratchConfiguration
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.xmlb.annotations.MapAnnotation
 import org.rust.cargo.project.settings.toolchain
 import java.io.File
@@ -72,3 +74,9 @@ fun String.toPath(): Path {
 fun String.toFile(): File {
     return File(this)
 }
+
+fun VirtualFile.findFileByMaybeRelativePath(path: String): VirtualFile? =
+    if (FileUtil.isAbsolute(path))
+        fileSystem.findFileByPath(path)
+    else
+        findFileByRelativePath(path)

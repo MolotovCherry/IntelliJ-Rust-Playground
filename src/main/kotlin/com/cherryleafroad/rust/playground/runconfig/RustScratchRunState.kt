@@ -21,7 +21,6 @@ class RustScratchRunState(
     private val runConfiguration: RustScratchConfiguration
 ) : CommandLineState(environment) {
     val project = environment.project
-    private val settings = Settings.getInstance().scratches[runConfiguration.commandConfiguration.scratchFile]
 
     init {
         val scope = GlobalSearchScopes.executionScope(environment.project, environment.runProfile)
@@ -30,14 +29,23 @@ class RustScratchRunState(
     }
 
     private fun createFilters(project: Project): List<Filter> {
-        val rootDir = VirtualFileManager.getInstance().findFileByNioPath(runConfiguration.commandConfiguration.workingDirectory.toPath())!!
-
-        return mutableListOf<Filter>().apply {
-            add(RsExplainFilter())
-            add(RsConsoleFilter(project, rootDir, true, settings.srcs))
-            add(RsPanicFilter(project, rootDir, true, settings.srcs))
-            //add(RsBacktraceFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
+        VirtualFileManager.getInstance().findFileByNioPath(
+            if (!runConfiguration.commandConfiguration.isManualRun)
+                Settings.getInstance().global.runtime.scratchRoot.toPath()
+            else
+                runConfiguration.commandConfiguration.workingDirectory.toPath()
+        )?.let {
+            if (!runConfiguration.commandConfiguration.directRun) {
+                return mutableListOf<Filter>().apply {
+                    add(RsExplainFilter())
+                    add(RsConsoleFilter(project, it, true, runConfiguration.commandConfiguration.filterSrcs))
+                    add(RsPanicFilter(project, it, true, runConfiguration.commandConfiguration.filterSrcs))
+                    //add(RsBacktraceFilter(project, rootDir, runConfiguration.commandConfiguration.isPlayRun, sourceScratches))
+                }
+            }
         }
+
+        return listOf()
     }
 
     override fun startProcess(): ProcessHandler {

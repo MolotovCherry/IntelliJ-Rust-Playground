@@ -6,23 +6,12 @@
 package com.cherryleafroad.rust.playground.runconfig.filters
 
 import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants
+import com.cherryleafroad.rust.playground.utils.findFileByMaybeRelativePath
 import com.cherryleafroad.rust.playground.utils.toFile
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapiext.isUnitTestMode
-import org.rust.cargo.project.workspace.CargoWorkspace
-import org.rust.lang.core.psi.RsCodeFragmentFactory
-import org.rust.lang.core.psi.RsFile
-import org.rust.lang.core.psi.ext.RsNamedElement
-import org.rust.lang.core.resolve.indexes.RsLangItemIndex
-import org.rust.lang.core.resolve.splitAbsolutePath
-import org.rust.lang.core.resolve2.defMapService
-import org.rust.lang.core.resolve2.getOrUpdateIfNeeded
-import org.rust.lang.core.resolve2.isNewResolveEnabled
-import org.rust.openapiext.findFileByMaybeRelativePath
-import java.io.File
 
 object FilterUtils {
     /**
@@ -126,7 +115,7 @@ object FilterUtils {
     }
 }
 
-fun resolveStringPath(path: String, workspace: CargoWorkspace, project: Project): Pair<RsNamedElement, CargoWorkspace.Package>? {
+/*fun resolveStringPath(path: String, workspace: CargoWorkspace, project: Project): Pair<RsNamedElement, CargoWorkspace.Package>? {
     val (pkgName, crateRelativePath) = splitAbsolutePath(path) ?: return null
     val pkg = workspace.findPackageByName(pkgName) ?: run {
         return if (isUnitTestMode) {
@@ -151,4 +140,4 @@ fun resolveStringPath(path: String, workspace: CargoWorkspace, project: Project)
         .filterIsInstance<RsNamedElement>()
         .firstOrNull() ?: return null
     return el to pkg
-}
+}*/

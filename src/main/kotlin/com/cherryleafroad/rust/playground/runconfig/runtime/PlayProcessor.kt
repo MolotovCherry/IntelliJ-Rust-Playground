@@ -89,4 +89,5 @@ fun processPlayOptions() {
 
     val finalArgs = runCmd + srcs + args
     scratchSettings.generatedArgs = finalArgs
+    scratchSettings.filterSrcs = srcs
 }

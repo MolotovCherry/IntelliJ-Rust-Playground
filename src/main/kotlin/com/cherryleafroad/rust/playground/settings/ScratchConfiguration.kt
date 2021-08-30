@@ -35,5 +35,9 @@ data class ScratchConfiguration(
 
     // pass whether direct run or not for Kargo Play
     @Transient
-    var directRun: Boolean = false
+    var directRun: Boolean = false,
+
+    // the sources used for the filters
+    @Transient
+    var filterSrcs: List<String> = listOf()
 )
