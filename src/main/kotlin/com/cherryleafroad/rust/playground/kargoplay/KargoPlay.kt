@@ -123,6 +123,8 @@ object KargoPlay {
         }
         set(value) = run { _cargoToml = value }
 
+    var lastExitCode = 0
+
 
     // returns Cargo Options, command, args, and a cwd
     fun run() {
@@ -145,7 +147,6 @@ object KargoPlay {
         scratchSettings.args = args
         scratchSettings.workingDirectory = cargoPlayPath.cargoPlayDir
         scratchSettings.directRun = directRun
-        scratchSettings.srcs = srcs
 
         // clean up and reset vars
         _srcs = null
@@ -237,7 +238,7 @@ object KargoPlay {
 
     private fun cleanProject() {
         // remove target folder
-        if (scratchSettings.clean) {
+        if (scratchSettings.clean || lastExitCode != 0) {
             val target = cargoPlayPath.targetDir.toFile()
             if (target.exists()) {
                 needsCompile = true
@@ -287,7 +288,7 @@ object KargoPlay {
 
     private fun copyFilesOver(empty: Boolean = false) {
         if (!empty) {
-            val srcFiles = Paths.get(cargoPlayPath.srcDir).toFile().listFiles()?.toMutableList()
+            val srcFiles = cargoPlayPath.srcDir.toFile().listFiles()?.toMutableList()
             if (srcFiles != null) {
                 if (srcFiles.size != srcs.size) {
                     needsCompile = true

@@ -20,7 +20,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.io.systemIndependentPath
 import org.rust.cargo.project.settings.toolchain
 import org.rust.cargo.toolchain.tools.rustc
-import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 
