@@ -10,7 +10,7 @@ import java.nio.file.Paths
 import java.util.concurrent.Callable
 
 class CargoPlayProject(project: Project) {
-    lateinit var cargoPlayPath: CargoPlayPath
+    var cargoPlayPath: CargoPlayPath? = null
     var sysroot: String? = null
 
     init {

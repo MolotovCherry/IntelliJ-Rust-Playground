@@ -14,8 +14,9 @@ class OpenCargoPlayFolderAction : DumbAwareAction() {
         val project: Project = e.project ?: return
         val service = CargoPlayProject.getInstance(project)
 
-        val f = Paths.get(service.cargoPlayPath.cargoPlayDir)
-        RevealFileAction.openDirectory(f)
+        service.cargoPlayPath?.cargoPlayDir?.let {
+            RevealFileAction.openDirectory(Paths.get(it))
+        }
     }
 
     override fun update(e: AnActionEvent) {
@@ -23,7 +24,9 @@ class OpenCargoPlayFolderAction : DumbAwareAction() {
         val service = CargoPlayProject.getInstance(project)
 
         e.presentation.isVisible = true
-        e.presentation.isEnabled = Paths.get(service.cargoPlayPath.cargoPlayDir).exists()
+        e.presentation.isEnabled = service.cargoPlayPath?.cargoPlayDir?.let {
+            Paths.get(it).exists()
+        } ?: false
     }
 }
 
@@ -32,8 +35,9 @@ class OpenCargoPlayDebugBinaryAction : DumbAwareAction() {
         val project: Project = e.project ?: return
         val service = CargoPlayProject.getInstance(project)
 
-        val f = Paths.get(service.cargoPlayPath.debugTarget)
-        RevealFileAction.openFile(f)
+        service.cargoPlayPath?.debugTarget?.let {
+            RevealFileAction.openFile(Paths.get(it))
+        }
     }
 
     override fun update(e: AnActionEvent) {
@@ -41,7 +45,9 @@ class OpenCargoPlayDebugBinaryAction : DumbAwareAction() {
         val service = CargoPlayProject.getInstance(project)
 
         e.presentation.isVisible = true
-        e.presentation.isEnabled = Paths.get(service.cargoPlayPath.debugTarget).exists()
+        e.presentation.isEnabled = service.cargoPlayPath?.debugTarget?.let {
+            Paths.get(it).exists()
+        } ?: false
     }
 }
 
@@ -50,8 +56,9 @@ class OpenCargoPlayReleaseBinaryAction : DumbAwareAction() {
         val project: Project = e.project ?: return
         val service = CargoPlayProject.getInstance(project)
 
-        val f = Paths.get(service.cargoPlayPath.releaseTarget)
-        RevealFileAction.openFile(f)
+        service.cargoPlayPath?.releaseTarget?.let {
+            RevealFileAction.openFile(Paths.get(it))
+        }
     }
 
     override fun update(e: AnActionEvent) {
@@ -59,6 +66,8 @@ class OpenCargoPlayReleaseBinaryAction : DumbAwareAction() {
         val service = CargoPlayProject.getInstance(project)
 
         e.presentation.isVisible = true
-        e.presentation.isEnabled = Paths.get(service.cargoPlayPath.releaseTarget).exists()
+        e.presentation.isEnabled = service.cargoPlayPath?.releaseTarget?.let {
+            Paths.get(it).exists()
+        } ?: false
     }
 }
