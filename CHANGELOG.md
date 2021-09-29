@@ -1,4 +1,2 @@
-## [2.1.1]
-- Fix suggested title of manual run configuration
-- Manual runs squashed to just one command field for clarity
-- Manual runs now quote and space aware (like they should be)
+## [2.1.2]
+- Fix lateinit not initialized error with the right click menu
