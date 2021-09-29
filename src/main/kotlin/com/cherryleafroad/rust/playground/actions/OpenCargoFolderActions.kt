@@ -14,8 +14,9 @@ class OpenCargoPlayFolderAction : DumbAwareAction() {
         val project: Project = e.project ?: return
         val service = project.service<CargoPlayProjectService>()
 
-        val f = service.cargoPlayPath.cargoPlayDir
-        RevealFileAction.openDirectory(f)
+        service.cargoPlayPath?.cargoPlayDir?.let {
+            RevealFileAction.openDirectory(it)
+        }
     }
 
     override fun update(e: AnActionEvent) {
@@ -23,7 +24,7 @@ class OpenCargoPlayFolderAction : DumbAwareAction() {
         val service = project.service<CargoPlayProjectService>()
 
         e.presentation.isVisible = true
-        e.presentation.isEnabled = service.cargoPlayPath.cargoPlayDir.exists()
+        e.presentation.isEnabled = service.cargoPlayPath?.cargoPlayDir?.exists() ?: false
     }
 }
 
@@ -32,8 +33,9 @@ class OpenCargoPlayDebugBinaryAction : DumbAwareAction() {
         val project: Project = e.project ?: return
         val service = project.service<CargoPlayProjectService>()
 
-        val f = service.cargoPlayPath.debugTarget
-        RevealFileAction.openFile(f)
+        service.cargoPlayPath?.debugTarget?.let {
+            RevealFileAction.openFile(it)
+        }
     }
 
     override fun update(e: AnActionEvent) {
@@ -41,7 +43,7 @@ class OpenCargoPlayDebugBinaryAction : DumbAwareAction() {
         val service = project.service<CargoPlayProjectService>()
 
         e.presentation.isVisible = true
-        e.presentation.isEnabled = service.cargoPlayPath.debugTarget.exists()
+        e.presentation.isEnabled = service.cargoPlayPath?.debugTarget?.exists() ?: false
     }
 }
 
@@ -50,8 +52,9 @@ class OpenCargoPlayReleaseBinaryAction : DumbAwareAction() {
         val project: Project = e.project ?: return
         val service = project.service<CargoPlayProjectService>()
 
-        val f = service.cargoPlayPath.releaseTarget
-        RevealFileAction.openFile(f)
+        service.cargoPlayPath?.releaseTarget?.let {
+            RevealFileAction.openFile(it)
+        }
     }
 
     override fun update(e: AnActionEvent) {
@@ -59,6 +62,6 @@ class OpenCargoPlayReleaseBinaryAction : DumbAwareAction() {
         val service = project.service<CargoPlayProjectService>()
 
         e.presentation.isVisible = true
-        e.presentation.isEnabled = service.cargoPlayPath.releaseTarget.exists()
+        e.presentation.isEnabled = service.cargoPlayPath?.releaseTarget?.exists() ?: false
     }
 }
