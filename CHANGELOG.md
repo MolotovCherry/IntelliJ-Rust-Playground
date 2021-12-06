@@ -1,2 +1,2 @@
-## [2.1.2]
-- Fix lateinit not initialized error with the right click menu
+## [2.1.3]
+- IntelliJ 2021.3 compatibility

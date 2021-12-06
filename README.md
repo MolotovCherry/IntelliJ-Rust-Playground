@@ -29,7 +29,7 @@ Example `//# serde_json = "*"`
 - [Official Rust Plugin](https://plugins.jetbrains.com/plugin/8182-rust)
 - [Cargo cargo-play subcommand](https://github.com/fanzeyi/cargo-play) (it will prompt to install it automatically)
 - [Cargo cargo-expand subcommand](https://github.com/dtolnay/cargo-expand) (for --expand function)
-- IntelliJ 2021.2 or newer
+- IntelliJ 2021.3
 
 ### More information
 Check out [cargo-play](https://github.com/fanzeyi/cargo-play) for complete non-plugin usage

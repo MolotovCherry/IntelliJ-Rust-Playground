@@ -7,9 +7,9 @@ package com.cherryleafroad.rust.playground.runconfig.filters
 
 import com.cherryleafroad.rust.playground.runconfig.constants.RsConstants
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapiext.isUnitTestMode
 import org.rust.cargo.project.workspace.CargoWorkspace
 import org.rust.lang.core.psi.RsCodeFragmentFactory
 import org.rust.lang.core.psi.RsFile
@@ -127,7 +127,7 @@ object FilterUtils {
 fun resolveStringPath(path: String, workspace: CargoWorkspace, project: Project): Pair<RsNamedElement, CargoWorkspace.Package>? {
     val (pkgName, crateRelativePath) = splitAbsolutePath(path) ?: return null
     val pkg = workspace.findPackageByName(pkgName) ?: run {
-        return if (isUnitTestMode) {
+        return if (ApplicationManager.getApplication().isUnitTestMode) {
             // Allows to set a fake path for some item in tests via
             // lang attribute, e.g. `#[lang = "std::iter::Iterator"]`
             RsLangItemIndex.findLangItem(project, path)?.let { it to workspace.packages.first() }

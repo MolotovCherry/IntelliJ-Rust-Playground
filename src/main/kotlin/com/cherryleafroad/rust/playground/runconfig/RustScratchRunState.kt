@@ -12,7 +12,7 @@ import com.intellij.execution.process.ProcessTerminatedListener
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.psi.search.GlobalSearchScopes
+import com.intellij.psi.search.ExecutionSearchScopes
 
 class RustScratchRunState(
     environment: ExecutionEnvironment,
@@ -21,7 +21,7 @@ class RustScratchRunState(
     val project = environment.project
 
     init {
-        val scope = GlobalSearchScopes.executionScope(environment.project, environment.runProfile)
+        val scope = ExecutionSearchScopes.executionScope(environment.project, environment.runProfile)
         consoleBuilder = RustScratchConsoleBuilder(environment.project, scope)
         createFilters(environment.project).forEach { consoleBuilder.addFilter(it) }
     }
