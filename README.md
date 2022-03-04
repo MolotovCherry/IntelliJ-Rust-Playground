@@ -4,7 +4,8 @@
 
 [![Build](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml) [![IntelliJ Platform Plugin Compatibility](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml)
 
-An IntelliJ plugin allowing you to use a similar playground experience just like [https://play.rust-lang.org/](https://play.rust-lang.org/), except straight from your IDE!
+<!-- Plugin description -->
+An IntelliJ plugin offering a powerful local Rust playground, straight from your IDE! Inspired by the [official Rust playground](https://play.rust-lang.org/), but more convenient to use!
 
 ### Features
 - Complete integration with official IntelliJ Rust plugin
@@ -13,6 +14,7 @@ An IntelliJ plugin allowing you to use a similar playground experience just like
 - Ability to change the Rust default scratch file template to your own
 - Open Cargo Play folder from right click menu
 - Can be run in non-Cargo projects!
+<!-- Plugin description end -->
 
 ![QQ截图20210813124830](https://user-images.githubusercontent.com/13651622/129411302-c91c205a-e3ef-4c09-a021-fff94c7b1733.png)
 

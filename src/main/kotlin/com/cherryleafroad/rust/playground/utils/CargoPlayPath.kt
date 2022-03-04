@@ -21,9 +21,9 @@ class CargoPlayPath(
     val releaseTarget = binaryTarget(TargetType.RELEASE)
 
     private fun binaryTarget(target: TargetType): Path {
-        val hashl = hash.toLowerCase()
+        val hashl = hash.lowercase()
 
-        val os = System.getProperty("os.name").toLowerCase()
+        val os = System.getProperty("os.name").lowercase()
         val fileExt = if (os.contains("win")) {
             ".exe"
         } else {
@@ -38,7 +38,7 @@ class CargoPlayPath(
         val canonicalized = srcs.map {
             val f = Paths.get(it).toFile()
 
-            val os = System.getProperty("os.name").toLowerCase()
+            val os = System.getProperty("os.name").lowercase()
             val prefix = if (os.contains("win")) {
                 "\\\\?\\"
             } else {
@@ -72,7 +72,7 @@ private object Base58 {
     init {
         Arrays.fill(INDEXES, -1)
         for (i in ALPHABET.indices) {
-            INDEXES[ALPHABET[i].toInt()] = i // FIXME .toInt()
+            INDEXES[ALPHABET[i].code] = i // FIXME .toInt()
         }
     }
 

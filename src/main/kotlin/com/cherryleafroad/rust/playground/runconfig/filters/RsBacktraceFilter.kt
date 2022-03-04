@@ -87,7 +87,7 @@ class RsBacktraceItemFilter(
         val cargoPlayPath = CargoPlayPath(sourceScratches, cargoProjectDir.path)
         val manifest = Paths.get(cargoPlayPath.cargoPlayDir.toString(), MANIFEST_FILE)
 
-        val rawWorkspace = CargoProjectImpl(manifest, project.cargoProjects as CargoProjectsServiceImpl)
+        //val rawWorkspace = CargoProjectImpl(manifest, project.cargoProjects as CargoProjectsServiceImpl)
 
         val cargoProject = project.cargoProjects.findProjectForFile(VirtualFileManager.getInstance().findFileByNioPath(manifest)!!)!!
         val (element, pkg) = resolveStringPath(funcName, cargoProject.workspace!!, project) ?: return null
