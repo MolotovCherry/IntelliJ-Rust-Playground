@@ -7,16 +7,6 @@
     <depends>org.rust.lang</depends>
     <depends>org.toml.lang</depends>
 
-    <description>A powerful local Rust playground, straight from your IDE! Inspired by the official Rust playground, but more convenient to use!</description>
-
-    <change-notes><![CDATA[
-<h3>2.1.4</h3>
-<ul>
-    <li>IntelliJ 2021.3 compatibility fixes</li>
-    <li>Support Rust 2021 (please manually update cargo-play!)</li>
-</ul>
-    ]]></change-notes>
-
     <extensions defaultExtensionNs="com.intellij">
         <configurationType implementation="com.cherryleafroad.rust.playground.runconfig.RustScratchConfigurationType"/>
 
