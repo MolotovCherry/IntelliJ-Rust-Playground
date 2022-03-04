@@ -6,8 +6,6 @@
 
 An IntelliJ plugin allowing you to use a similar playground experience just like [https://play.rust-lang.org/](https://play.rust-lang.org/), except straight from your IDE!
 
-⚠️I am aware that 2021 edition has been released but the plugin doens't support it. The reason why is that the [cargo play author hasn't accepted my pull request yet](https://github.com/fanzeyi/cargo-play/pull/70). There's not much I can do to support it until then.⚠️
-
 ### Features
 - Complete integration with official IntelliJ Rust plugin
 - Run playground-like scripts directly from your IDE without having to setup any projects
