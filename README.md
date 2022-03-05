@@ -4,7 +4,8 @@
 
 [![Build](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml) [![IntelliJ Platform Plugin Compatibility](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml)
 
-An IntelliJ plugin allowing you to use a similar playground experience just like [https://play.rust-lang.org/](https://play.rust-lang.org/), except straight from your IDE!
+<!-- Plugin description -->
+An IntelliJ plugin offering a powerful local Rust playground, straight from your IDE! Inspired by the [official Rust playground](https://play.rust-lang.org/), but more convenient to use!
 
 ### Features
 - Complete integration with official IntelliJ Rust plugin
@@ -13,8 +14,7 @@ An IntelliJ plugin allowing you to use a similar playground experience just like
 - Ability to change the Rust default scratch file template to your own
 - Open Cargo Play folder from right click menu
 - Can be run in non-Cargo projects!
-
-
+<!-- Plugin description end -->
 
 ![QQ截图20210813124830](https://user-images.githubusercontent.com/13651622/129411302-c91c205a-e3ef-4c09-a021-fff94c7b1733.png)
 
@@ -31,7 +31,10 @@ Example `//# serde_json = "*"`
 - [Official Rust Plugin](https://plugins.jetbrains.com/plugin/8182-rust)
 - [Cargo cargo-play subcommand](https://github.com/fanzeyi/cargo-play) (it will prompt to install it automatically)
 - [Cargo cargo-expand subcommand](https://github.com/dtolnay/cargo-expand) (for --expand function)
-- IntelliJ 2021.2 or newer
+- IntelliJ 2021.3
 
 ### More information
 Check out [cargo-play](https://github.com/fanzeyi/cargo-play) for complete non-plugin usage
+
+### Contributions
+Please contribute to the latest stable branch `major.minor.x` instead of master (e.g. if the latest stable release is `2.1.4`, check for a branch `2.1.x` and contribute to that one). Master is currently very experimental and will likely fail compiling, and may even be out of date in respect to the stable branch.
