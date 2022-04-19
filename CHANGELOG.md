@@ -1,3 +1,2 @@
-## [2.1.4]
-- IntelliJ 2021.3 compatibility fixes
-- Support Rust 2021 (please manually update cargo-play!)
+## [2.1.5]
+- Version bump to IntelliJ 2022.1
