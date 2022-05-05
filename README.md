@@ -4,6 +4,9 @@
 
 [![Build](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml) [![IntelliJ Platform Plugin Compatibility](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml)
 
+#### Notice:
+Since I have to focus on more realistic things in life to stay afload, I do not have time to keep this updated with the ever changing IDE API (it's a LOT of work). So unfortunately I've had to discontinue development for this. The last IDE version this will work on is likely 2021 edition
+
 <!-- Plugin description -->
 An IntelliJ plugin offering a powerful local Rust playground, straight from your IDE! Inspired by the [official Rust playground](https://play.rust-lang.org/), but more convenient to use!
 
