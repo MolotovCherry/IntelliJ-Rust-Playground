@@ -4,8 +4,10 @@
 
 [![Build](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/build.yml) [![IntelliJ Platform Plugin Compatibility](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml/badge.svg?event=push)](https://github.com/cherryleafroad/IntelliJ-Rust-Playground/actions/workflows/compatibility.yml)
 
-### Notice:
-Since I have to focus on more realistic things in life to stay afload, I do not have time to keep this updated with the ever changing IDE API (it's a LOT of work). So unfortunately I've had to discontinue development for this. The last IDE version this will work on is likely 2021 edition
+## Archival Notice:
+Since I have to focus on more realistic things in life to stay afload, I do not have time to keep this updated with the ever changing IDE API (it's a LOT of work). So unfortunately I've had to discontinue development for this. The last IDE version this will work on is likely 2021 edition.
+
+You are welcome to take all of this source code and use it/modify it freely. Just please credit me, and also, I would love to know about/see your project that utilizes it!
 
 ---
 
